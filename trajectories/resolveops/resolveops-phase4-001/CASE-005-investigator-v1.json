@@ -1,0 +1,607 @@
+{
+  "agent_name": "ResolveOps Investigator",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 14189.885500003584,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 6664,
+        "tool_call_count": 6
+      },
+      "status": "completed",
+      "tool_calls": [
+        {
+          "arguments": {
+            "customer_id": "CUS-001"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "display_name": "Sample Household Alpha",
+                  "id": "CUS-001",
+                  "service_area": "District Aurora"
+                },
+                "entity_id": "CUS-001",
+                "source": "synthetic_world",
+                "summary": "Synthetic customer record."
+              },
+              {
+                "data": {
+                  "customer_id": "CUS-001",
+                  "id": "ACC-001",
+                  "provisioning_status": "complete",
+                  "service_activation": "active",
+                  "service_plan": "Home Fiber 500",
+                  "standing": "current"
+                },
+                "entity_id": "ACC-001",
+                "source": "synthetic_world",
+                "summary": "Synthetic account status."
+              },
+              {
+                "data": {
+                  "device_ids": [
+                    "DEV-001",
+                    "DEV-002"
+                  ]
+                },
+                "entity_id": "ACC-001",
+                "source": "synthetic_world",
+                "summary": "Devices registered to the synthetic account."
+              }
+            ],
+            "source_ids": [
+              "CUS-001",
+              "ACC-001"
+            ],
+            "success": true,
+            "summary": "Account ACC-001 is active.",
+            "tool_name": "get_account_status"
+          },
+          "tool_name": "get_account_status"
+        },
+        {
+          "arguments": {
+            "device_id": "DEV-001"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "account_id": "ACC-001",
+                  "device_type": "gateway",
+                  "id": "DEV-001",
+                  "label": "Alpha Gateway",
+                  "status": {
+                    "connection_state": "connected",
+                    "dns_reachable": true,
+                    "firmware_version": "FW-3.4.1",
+                    "gateway_reachable": true,
+                    "local_connectivity": true,
+                    "online": true,
+                    "signal_health": "good",
+                    "wan_connected": true,
+                    "wan_ip_available": true
+                  }
+                },
+                "entity_id": "DEV-001",
+                "source": "synthetic_world",
+                "summary": "Synthetic device state."
+              }
+            ],
+            "source_ids": [
+              "DEV-001"
+            ],
+            "success": true,
+            "summary": "Device DEV-001 is online.",
+            "tool_name": "get_device_status"
+          },
+          "tool_name": "get_device_status"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-001"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "service_area": "District Aurora"
+                },
+                "entity_id": "CUS-001",
+                "source": "synthetic_world",
+                "summary": "Synthetic service area used for outage lookup."
+              }
+            ],
+            "source_ids": [
+              "CUS-001"
+            ],
+            "success": true,
+            "summary": "No active outage found for District Aurora.",
+            "tool_name": "check_service_outages"
+          },
+          "tool_name": "check_service_outages"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-001"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "category": "billing",
+                  "created_at": "2026-07-04T09:30:00Z",
+                  "customer_id": "CUS-001",
+                  "id": "TKT-001",
+                  "outcome": "Provided self-service instructions.",
+                  "summary": "Asked how to view the synthetic monthly statement."
+                },
+                "entity_id": "TKT-001",
+                "source": "synthetic_ticket_history",
+                "summary": "Asked how to view the synthetic monthly statement."
+              }
+            ],
+            "source_ids": [
+              "TKT-001"
+            ],
+            "success": true,
+            "summary": "Found 1 ticket-history entries.",
+            "tool_name": "get_ticket_history"
+          },
+          "tool_name": "get_ticket_history"
+        },
+        {
+          "arguments": {
+            "device_id": "DEV-001"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "dns_reachable": true,
+                  "gateway_reachable": true,
+                  "local_connectivity": true,
+                  "signal_health": "good",
+                  "wan_connected": true,
+                  "wan_ip_available": true
+                },
+                "entity_id": "DEV-001",
+                "source": "synthetic_diagnostics",
+                "summary": "Deterministic gateway connectivity checks."
+              }
+            ],
+            "source_ids": [
+              "DEV-001"
+            ],
+            "success": true,
+            "summary": "Connectivity diagnostics completed for DEV-001.",
+            "tool_name": "run_connectivity_diagnostics"
+          },
+          "tool_name": "run_connectivity_diagnostics"
+        },
+        {
+          "arguments": {
+            "limit": 3,
+            "query": "phone cannot join Wi-Fi while other devices connected gateway troubleshooting"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "article_id": "KB-002",
+                  "excerpt": "When devices are connected to Wi-Fi but cannot reach the internet, inspect gateway reachability, WAN status, WAN IP availability, and DNS reachability. Check the service-area outage tool before treating the issue as loca",
+                  "score": 15,
+                  "title": "Wi-Fi connected but internet unavailable"
+                },
+                "entity_id": "KB-002",
+                "source": "synthetic_knowledge_base",
+                "summary": "KB match: Wi-Fi connected but internet unavailable"
+              },
+              {
+                "data": {
+                  "article_id": "KB-006",
+                  "excerpt": "Check whether the paired gateway is available before troubleshooting an offline sensor. If the gateway is pending activation or unavailable, restore that dependency first.",
+                  "score": 12,
+                  "title": "Connected-home sensor troubleshooting"
+                },
+                "entity_id": "KB-006",
+                "source": "synthetic_knowledge_base",
+                "summary": "KB match: Connected-home sensor troubleshooting"
+              },
+              {
+                "data": {
+                  "article_id": "KB-004",
+                  "excerpt": "For an offline gateway, confirm power and local reachability. If the gateway cannot be reached, collect the observed state and follow the offline-device escalation guidance when standard recovery steps do not help.",
+                  "score": 10,
+                  "title": "Offline gateway troubleshooting"
+                },
+                "entity_id": "KB-004",
+                "source": "synthetic_knowledge_base",
+                "summary": "KB match: Offline gateway troubleshooting"
+              }
+            ],
+            "source_ids": [
+              "KB-002",
+              "KB-006",
+              "KB-004"
+            ],
+            "success": true,
+            "summary": "Found 3 KB matches.",
+            "tool_name": "search_knowledge_base"
+          },
+          "tool_name": "search_knowledge_base"
+        }
+      ],
+      "usage": {
+        "input_tokens": 5590,
+        "output_tokens": 1074,
+        "reasoning_tokens": 206,
+        "total_tokens": 6664
+      }
+    }
+  ],
+  "case_id": "CASE-005",
+  "error": null,
+  "input_summary": "Ticket:\nOne phone at Sample Household Alpha cannot join the home Wi-Fi, while other connected-home devices still work.\n\nCustomer ID: CUS-001\nPrimary device ID: DEV-001",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "case_id": "CASE-005",
+    "contradictions": [],
+    "evidence_references": [
+      {
+        "source_id": "CUS-001",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "ACC-001",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-001",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-001",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-001",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "TKT-001",
+        "tool_name": "get_ticket_history"
+      }
+    ],
+    "hypotheses": [
+      {
+        "label": "Phone-specific Wi-Fi association or configuration issue",
+        "rationale": "Plausible because the gateway is online and healthy, diagnostics show local and upstream connectivity, and no area outage is active. The evidence does not identify the phone or establish the specific association failure cause."
+      },
+      {
+        "label": "Gateway-wide connectivity or area-outage issue",
+        "rationale": "Less supported by the current evidence: DEV-001 is reachable with healthy local/WAN/DNS checks, and no District Aurora outage is active. These checks do not directly test the affected phone's Wi-Fi association."
+      }
+    ],
+    "investigation_summary": "Available evidence supports an active, provisioned service and a healthy reachable gateway with no detected area outage. The reported symptom is therefore more consistent with an issue isolated to the affected phone's Wi-Fi association or configuration than with a confirmed gateway or service failure, but the phone-level evidence required to determine cause is absent.",
+    "missing_information": [
+      "Affected phone identifier, model, operating-system version, and Wi-Fi MAC/randomization state.",
+      "Exact join failure behavior and error message (for example, authentication failure, unable to join, or connects without internet).",
+      "Target SSID, Wi-Fi band, security mode, and whether the phone can see the SSID.",
+      "Whether the phone previously joined this network and the timing of the first failure.",
+      "Gateway Wi-Fi radio/SSID configuration, client list, authentication logs, and any access-control or device-limit state.",
+      "Direct verification that other connected-home devices remain connected and whether any other phone or general Wi-Fi client can join."
+    ],
+    "observed_facts": [
+      {
+        "evidence_references": [
+          {
+            "source_id": "CUS-001",
+            "tool_name": "get_account_status"
+          },
+          {
+            "source_id": "ACC-001",
+            "tool_name": "get_account_status"
+          }
+        ],
+        "statement": "Account ACC-001 for Sample Household Alpha is current, active, and fully provisioned on Home Fiber 500."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "DEV-001",
+            "tool_name": "get_device_status"
+          }
+        ],
+        "statement": "Primary device DEV-001 (Alpha Gateway) is online and connected; it reports local connectivity, WAN connectivity, a WAN IP, DNS reachability, and good signal health."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "DEV-001",
+            "tool_name": "run_connectivity_diagnostics"
+          }
+        ],
+        "statement": "Gateway connectivity diagnostics confirm the gateway is reachable with local connectivity, WAN connectivity, WAN IP availability, DNS reachability, and good signal health."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "CUS-001",
+            "tool_name": "check_service_outages"
+          }
+        ],
+        "statement": "No active service outage was found for District Aurora."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "TKT-001",
+            "tool_name": "get_ticket_history"
+          }
+        ],
+        "statement": "The only prior ticket is a billing inquiry; no prior Wi-Fi incident is present in the returned history."
+      }
+    ],
+    "ticket_summary": "Reported issue: one phone at Sample Household Alpha cannot join home Wi-Fi while other connected-home devices reportedly still work."
+  },
+  "prompt_id": "investigator-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase4-001",
+  "runtime_metrics": {
+    "latency_ms": 14189.885500003584,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 6664,
+    "tool_call_count": 6
+  },
+  "status": "completed",
+  "tool_calls": [
+    {
+      "arguments": {
+        "customer_id": "CUS-001"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "display_name": "Sample Household Alpha",
+              "id": "CUS-001",
+              "service_area": "District Aurora"
+            },
+            "entity_id": "CUS-001",
+            "source": "synthetic_world",
+            "summary": "Synthetic customer record."
+          },
+          {
+            "data": {
+              "customer_id": "CUS-001",
+              "id": "ACC-001",
+              "provisioning_status": "complete",
+              "service_activation": "active",
+              "service_plan": "Home Fiber 500",
+              "standing": "current"
+            },
+            "entity_id": "ACC-001",
+            "source": "synthetic_world",
+            "summary": "Synthetic account status."
+          },
+          {
+            "data": {
+              "device_ids": [
+                "DEV-001",
+                "DEV-002"
+              ]
+            },
+            "entity_id": "ACC-001",
+            "source": "synthetic_world",
+            "summary": "Devices registered to the synthetic account."
+          }
+        ],
+        "source_ids": [
+          "CUS-001",
+          "ACC-001"
+        ],
+        "success": true,
+        "summary": "Account ACC-001 is active.",
+        "tool_name": "get_account_status"
+      },
+      "tool_name": "get_account_status"
+    },
+    {
+      "arguments": {
+        "device_id": "DEV-001"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "account_id": "ACC-001",
+              "device_type": "gateway",
+              "id": "DEV-001",
+              "label": "Alpha Gateway",
+              "status": {
+                "connection_state": "connected",
+                "dns_reachable": true,
+                "firmware_version": "FW-3.4.1",
+                "gateway_reachable": true,
+                "local_connectivity": true,
+                "online": true,
+                "signal_health": "good",
+                "wan_connected": true,
+                "wan_ip_available": true
+              }
+            },
+            "entity_id": "DEV-001",
+            "source": "synthetic_world",
+            "summary": "Synthetic device state."
+          }
+        ],
+        "source_ids": [
+          "DEV-001"
+        ],
+        "success": true,
+        "summary": "Device DEV-001 is online.",
+        "tool_name": "get_device_status"
+      },
+      "tool_name": "get_device_status"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-001"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "service_area": "District Aurora"
+            },
+            "entity_id": "CUS-001",
+            "source": "synthetic_world",
+            "summary": "Synthetic service area used for outage lookup."
+          }
+        ],
+        "source_ids": [
+          "CUS-001"
+        ],
+        "success": true,
+        "summary": "No active outage found for District Aurora.",
+        "tool_name": "check_service_outages"
+      },
+      "tool_name": "check_service_outages"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-001"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "category": "billing",
+              "created_at": "2026-07-04T09:30:00Z",
+              "customer_id": "CUS-001",
+              "id": "TKT-001",
+              "outcome": "Provided self-service instructions.",
+              "summary": "Asked how to view the synthetic monthly statement."
+            },
+            "entity_id": "TKT-001",
+            "source": "synthetic_ticket_history",
+            "summary": "Asked how to view the synthetic monthly statement."
+          }
+        ],
+        "source_ids": [
+          "TKT-001"
+        ],
+        "success": true,
+        "summary": "Found 1 ticket-history entries.",
+        "tool_name": "get_ticket_history"
+      },
+      "tool_name": "get_ticket_history"
+    },
+    {
+      "arguments": {
+        "device_id": "DEV-001"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "dns_reachable": true,
+              "gateway_reachable": true,
+              "local_connectivity": true,
+              "signal_health": "good",
+              "wan_connected": true,
+              "wan_ip_available": true
+            },
+            "entity_id": "DEV-001",
+            "source": "synthetic_diagnostics",
+            "summary": "Deterministic gateway connectivity checks."
+          }
+        ],
+        "source_ids": [
+          "DEV-001"
+        ],
+        "success": true,
+        "summary": "Connectivity diagnostics completed for DEV-001.",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      "tool_name": "run_connectivity_diagnostics"
+    },
+    {
+      "arguments": {
+        "limit": 3,
+        "query": "phone cannot join Wi-Fi while other devices connected gateway troubleshooting"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "article_id": "KB-002",
+              "excerpt": "When devices are connected to Wi-Fi but cannot reach the internet, inspect gateway reachability, WAN status, WAN IP availability, and DNS reachability. Check the service-area outage tool before treating the issue as loca",
+              "score": 15,
+              "title": "Wi-Fi connected but internet unavailable"
+            },
+            "entity_id": "KB-002",
+            "source": "synthetic_knowledge_base",
+            "summary": "KB match: Wi-Fi connected but internet unavailable"
+          },
+          {
+            "data": {
+              "article_id": "KB-006",
+              "excerpt": "Check whether the paired gateway is available before troubleshooting an offline sensor. If the gateway is pending activation or unavailable, restore that dependency first.",
+              "score": 12,
+              "title": "Connected-home sensor troubleshooting"
+            },
+            "entity_id": "KB-006",
+            "source": "synthetic_knowledge_base",
+            "summary": "KB match: Connected-home sensor troubleshooting"
+          },
+          {
+            "data": {
+              "article_id": "KB-004",
+              "excerpt": "For an offline gateway, confirm power and local reachability. If the gateway cannot be reached, collect the observed state and follow the offline-device escalation guidance when standard recovery steps do not help.",
+              "score": 10,
+              "title": "Offline gateway troubleshooting"
+            },
+            "entity_id": "KB-004",
+            "source": "synthetic_knowledge_base",
+            "summary": "KB match: Offline gateway troubleshooting"
+          }
+        ],
+        "source_ids": [
+          "KB-002",
+          "KB-006",
+          "KB-004"
+        ],
+        "success": true,
+        "summary": "Found 3 KB matches.",
+        "tool_name": "search_knowledge_base"
+      },
+      "tool_name": "search_knowledge_base"
+    }
+  ],
+  "usage": {
+    "input_tokens": 5590,
+    "output_tokens": 1074,
+    "reasoning_tokens": 206,
+    "total_tokens": 6664
+  }
+}

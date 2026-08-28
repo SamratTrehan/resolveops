@@ -15,7 +15,7 @@ from resolveops.agents.baseline.records import RuntimeRecord
 from resolveops.agents.baseline.runner import MAX_INFRASTRUCTURE_RETRIES, _usage_data, select_case
 from resolveops.agents.baseline.tools import BaselineRunContext
 from resolveops.agents.resolveops.artifacts import ResolveOpsArtifactStore, ResolveOpsManifest
-from resolveops.agents.resolveops.evidence import with_authoritative_evidence_case_id
+from resolveops.agents.resolveops.evidence import normalize_evidence_bundle, with_authoritative_evidence_case_id
 from resolveops.agents.resolveops.factory import INVESTIGATOR_NAME, RESOLVER_NAME, create_investigator, create_resolver
 from resolveops.agents.resolveops.prompts import INVESTIGATOR_PROMPT_ID, RESOLVER_PROMPT_ID
 from resolveops.agents.resolveops.records import AgentAttempt, AgentTrajectory
@@ -74,7 +74,7 @@ def run_case(case: EvaluationCase, config: BaselineConfig, run_id: str, run_sync
     bundle, investigator = _run_agent(case, config, run_id, INVESTIGATOR_NAME, INVESTIGATOR_PROMPT_ID, create_investigator, investigator_input, True, run_sync)
     if bundle is None:
         return None, investigator, None
-    bundle = with_authoritative_evidence_case_id(case, EvidenceBundleDraft.model_validate(bundle))
+    bundle = normalize_evidence_bundle(with_authoritative_evidence_case_id(case, EvidenceBundleDraft.model_validate(bundle)))
     try:
         _validate_bundle(bundle, investigator.tool_calls)
     except ValueError as error:

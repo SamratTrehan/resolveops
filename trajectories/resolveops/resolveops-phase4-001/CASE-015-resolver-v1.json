@@ -1,0 +1,81 @@
+{
+  "agent_name": "ResolveOps Resolver",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 3660.8261999790557,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 1902,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 1601,
+        "output_tokens": 301,
+        "reasoning_tokens": 0,
+        "total_tokens": 1902
+      }
+    }
+  ],
+  "case_id": "CASE-015",
+  "error": null,
+  "input_summary": "{\"evidence_bundle\": {\"case_id\": \"CASE-015\", \"contradictions\": [\"The neighbour-reported outage is not corroborated by the current District Solstice outage lookup.\", \"The device is online and locally reachable, but it has not obtained WAN connectivity, an IP address, or DNS reachability.\"], \"evidence_references\": [{\"source_id\": \"ACC-003\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-004\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-004\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"CUS-003\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-004\", \"tool_name\": \"get_ticket_history\"}, {\"source_id\": \"KB-001\", \"tool_name\": \"search_knowledge_base\"}], \"hypotheses\": [{\"label\": \"Gateway/account activation remains incomplete\", \"rationale\": \"The account provisioning status, device connection state, and prior delivery ticket all indicate pending/awaiting gateway activation. The gateway is locally reachable, consistent with the prerequisite described in KB-001.\"}, {\"label\": \"Lack of WAN/IP/DNS is associated with the pending activation state\", \"rationale\": \"Diagnostics show all three external-connectivity checks failing while local gateway reachability and signal health are good; the evidence does not independently establish a physical WAN fault.\"}, {\"label\": \"Active area outage is not supported by the current lookup\", \"rationale\": \"The service-area outage check found no active outage. This does not establish whether there was an earlier, unrecorded, or neighbour-specific issue.\"}], \"investigation_summary\": \"Available evidence supports an incomplete replacement-gateway activation/provisioning state rather than a currently active area outage. DEV-004 is reachable locally but lacks WAN, IP, and DNS connectivity; no evidence establishes a physical WAN fault or confirms that activation was attempted.\", \"missing_information\": [\"Whether the required customer activation step has been attempted and its result.\", \"Activation/provisioning event logs or any activation error code for ACC-003 or DEV-004.\", \"Physical WAN/ONT link status and cabling observations.\", \"Timing and scope of the neighbour's reported outage relative to the current outage check.\"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"ACC-003\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-003 is current but service activation is pending, with provisioning status `awaiting_gateway_activation` on the Home Fiber 300 plan.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-004\", \"tool_name\": \"get_device_status\"}], \"statement\": \"DEV-004 is the registered replacement gateway for ACC-003. It is online and reachable locally, with good signal health, but its connection state is `activation_pending`.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-004\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-004\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"DEV-004 has no WAN connection, WAN IP, or DNS reachability; diagnostics also confirm local connectivity and gateway reachability.\"}, {\"evidence_references\": [{\"source_id\": \"CUS-003\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"No active outage was found for District Solstice during the outage lookup.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-004\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"Ticket history records replacement-gateway delivery confirmation, with outcome `Awaiting customer activation`.\"}, {\"evidence_references\": [{\"source_id\": \"KB-001\", \"tool_name\": \"search_knowledge_base\"}], \"statement\": \"The knowledge base states that a replacement gateway requires activation after being powered on and locally connected, and directs confirmation of account provisioning status.\"}], \"ticket_summary\": \"CUS-003 reports that DEV-004, a newly delivered replacement gateway, has never completed internet setup; a neighbour separately mentioned an outage.\"}, \"ticket\": \"Ticket:\\nSample Household Gamma says a neighbour mentioned an outage, but this household's newly delivered gateway has never reached internet setup.\\n\\nCustomer ID: CUS-003\\nPrimary device ID: DEV-004\"}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "asserted_claim_ids": [],
+    "confidence": 0.93,
+    "customer_response": "Your replacement gateway appears to be powered on and reachable, but its activation has not yet completed. We also found no active outage for your area. Please complete the gateway activation steps for your replacement device, then allow it time to finish connecting. If activation does not complete or you receive an error, contact us with the error message so we can help further.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "ACC-003",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-004",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-004",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "TKT-004",
+        "tool_name": "get_ticket_history"
+      },
+      {
+        "source_id": "KB-001",
+        "tool_name": "search_knowledge_base"
+      },
+      {
+        "source_id": "CUS-003",
+        "tool_name": "check_service_outages"
+      }
+    ],
+    "internal_notes": "ACC-003 is current but awaiting_gateway_activation; DEV-004 is the registered replacement gateway and is activation_pending. It is locally reachable with good signal, but has no WAN, IP, or DNS connectivity. Delivery history states Awaiting customer activation, and KB-001 supports activation after local connection. Current District Solstice outage lookup found no active outage. No physical WAN fault is established by available evidence.",
+    "recommended_action_id": "guide_gateway_activation",
+    "root_cause_id": "pending_gateway_provisioning"
+  },
+  "prompt_id": "resolver-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase4-001",
+  "runtime_metrics": {
+    "latency_ms": 3660.8261999790557,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 1902,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 1601,
+    "output_tokens": 301,
+    "reasoning_tokens": 0,
+    "total_tokens": 1902
+  }
+}

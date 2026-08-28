@@ -1,0 +1,662 @@
+{
+  "agent_name": "ResolveOps Investigator",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 15225.863300031051,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 7240,
+        "tool_call_count": 7
+      },
+      "status": "completed",
+      "tool_calls": [
+        {
+          "arguments": {
+            "customer_id": "CUS-003"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "display_name": "Sample Household Gamma",
+                  "id": "CUS-003",
+                  "service_area": "District Solstice"
+                },
+                "entity_id": "CUS-003",
+                "source": "synthetic_world",
+                "summary": "Synthetic customer record."
+              },
+              {
+                "data": {
+                  "customer_id": "CUS-003",
+                  "id": "ACC-003",
+                  "provisioning_status": "awaiting_gateway_activation",
+                  "service_activation": "pending",
+                  "service_plan": "Home Fiber 300",
+                  "standing": "current"
+                },
+                "entity_id": "ACC-003",
+                "source": "synthetic_world",
+                "summary": "Synthetic account status."
+              },
+              {
+                "data": {
+                  "device_ids": [
+                    "DEV-004",
+                    "DEV-005"
+                  ]
+                },
+                "entity_id": "ACC-003",
+                "source": "synthetic_world",
+                "summary": "Devices registered to the synthetic account."
+              }
+            ],
+            "source_ids": [
+              "CUS-003",
+              "ACC-003"
+            ],
+            "success": true,
+            "summary": "Account ACC-003 is pending.",
+            "tool_name": "get_account_status"
+          },
+          "tool_name": "get_account_status"
+        },
+        {
+          "arguments": {
+            "device_id": "DEV-005"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "account_id": "ACC-003",
+                  "device_type": "sensor",
+                  "id": "DEV-005",
+                  "label": "Gamma Window Sensor",
+                  "status": {
+                    "connection_state": "gateway_unavailable",
+                    "dns_reachable": null,
+                    "firmware_version": "FW-1.8.0",
+                    "gateway_reachable": null,
+                    "local_connectivity": false,
+                    "online": false,
+                    "signal_health": "unknown",
+                    "wan_connected": null,
+                    "wan_ip_available": null
+                  }
+                },
+                "entity_id": "DEV-005",
+                "source": "synthetic_world",
+                "summary": "Synthetic device state."
+              }
+            ],
+            "source_ids": [
+              "DEV-005"
+            ],
+            "success": true,
+            "summary": "Device DEV-005 is offline.",
+            "tool_name": "get_device_status"
+          },
+          "tool_name": "get_device_status"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-003"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "category": "activation",
+                  "created_at": "2026-08-27T16:45:00Z",
+                  "customer_id": "CUS-003",
+                  "id": "TKT-004",
+                  "outcome": "Awaiting customer activation.",
+                  "summary": "Replacement gateway delivery confirmed."
+                },
+                "entity_id": "TKT-004",
+                "source": "synthetic_ticket_history",
+                "summary": "Replacement gateway delivery confirmed."
+              }
+            ],
+            "source_ids": [
+              "TKT-004"
+            ],
+            "success": true,
+            "summary": "Found 1 ticket-history entries.",
+            "tool_name": "get_ticket_history"
+          },
+          "tool_name": "get_ticket_history"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-003"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "service_area": "District Solstice"
+                },
+                "entity_id": "CUS-003",
+                "source": "synthetic_world",
+                "summary": "Synthetic service area used for outage lookup."
+              }
+            ],
+            "source_ids": [
+              "CUS-003"
+            ],
+            "success": true,
+            "summary": "No active outage found for District Solstice.",
+            "tool_name": "check_service_outages"
+          },
+          "tool_name": "check_service_outages"
+        },
+        {
+          "arguments": {
+            "device_id": "DEV-005"
+          },
+          "result": {
+            "error": "Unsupported diagnostic target: DEV-005 (sensor)",
+            "evidence": [],
+            "source_ids": [],
+            "success": false,
+            "summary": "Unsupported diagnostic target: DEV-005 (sensor)",
+            "tool_name": "run_connectivity_diagnostics"
+          },
+          "tool_name": "run_connectivity_diagnostics"
+        },
+        {
+          "arguments": {
+            "limit": 3,
+            "query": "sensor gateway unavailable replacement gateway activation"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "article_id": "KB-001",
+                  "excerpt": "A replacement gateway must be powered on and connected locally before activation can complete. Confirm the account provisioning status, then guide the customer through the synthetic activation step. Escalate when activat",
+                  "score": 15,
+                  "title": "Activate a replacement gateway"
+                },
+                "entity_id": "KB-001",
+                "source": "synthetic_knowledge_base",
+                "summary": "KB match: Activate a replacement gateway"
+              },
+              {
+                "data": {
+                  "article_id": "KB-006",
+                  "excerpt": "Check whether the paired gateway is available before troubleshooting an offline sensor. If the gateway is pending activation or unavailable, restore that dependency first.",
+                  "score": 11,
+                  "title": "Connected-home sensor troubleshooting"
+                },
+                "entity_id": "KB-006",
+                "source": "synthetic_knowledge_base",
+                "summary": "KB match: Connected-home sensor troubleshooting"
+              },
+              {
+                "data": {
+                  "article_id": "KB-004",
+                  "excerpt": "For an offline gateway, confirm power and local reachability. If the gateway cannot be reached, collect the observed state and follow the offline-device escalation guidance when standard recovery steps do not help.",
+                  "score": 6,
+                  "title": "Offline gateway troubleshooting"
+                },
+                "entity_id": "KB-004",
+                "source": "synthetic_knowledge_base",
+                "summary": "KB match: Offline gateway troubleshooting"
+              }
+            ],
+            "source_ids": [
+              "KB-001",
+              "KB-006",
+              "KB-004"
+            ],
+            "success": true,
+            "summary": "Found 3 KB matches.",
+            "tool_name": "search_knowledge_base"
+          },
+          "tool_name": "search_knowledge_base"
+        },
+        {
+          "arguments": {
+            "device_id": "DEV-004"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "account_id": "ACC-003",
+                  "device_type": "gateway",
+                  "id": "DEV-004",
+                  "label": "Gamma Replacement Gateway",
+                  "status": {
+                    "connection_state": "activation_pending",
+                    "dns_reachable": false,
+                    "firmware_version": "FW-3.4.1",
+                    "gateway_reachable": true,
+                    "local_connectivity": true,
+                    "online": true,
+                    "signal_health": "good",
+                    "wan_connected": false,
+                    "wan_ip_available": false
+                  }
+                },
+                "entity_id": "DEV-004",
+                "source": "synthetic_world",
+                "summary": "Synthetic device state."
+              }
+            ],
+            "source_ids": [
+              "DEV-004"
+            ],
+            "success": true,
+            "summary": "Device DEV-004 is online.",
+            "tool_name": "get_device_status"
+          },
+          "tool_name": "get_device_status"
+        }
+      ],
+      "usage": {
+        "input_tokens": 6123,
+        "output_tokens": 1117,
+        "reasoning_tokens": 289,
+        "total_tokens": 7240
+      }
+    }
+  ],
+  "case_id": "CASE-006",
+  "error": null,
+  "input_summary": "Ticket:\nSample Household Gamma's window sensor is offline following the gateway replacement.\n\nCustomer ID: CUS-003\nPrimary device ID: DEV-005",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "case_id": "CASE-006",
+    "contradictions": [
+      "No confirmed contradiction. DEV-004 is locally online while DEV-005 reports gateway_unavailable; these states may be compatible with a gateway that is powered/reachable locally but not activated for service or sensor connectivity."
+    ],
+    "evidence_references": [
+      {
+        "source_id": "CUS-003",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "ACC-003",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-005",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-004",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "TKT-004",
+        "tool_name": "get_ticket_history"
+      },
+      {
+        "source_id": "CUS-003",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "KB-001",
+        "tool_name": "search_knowledge_base"
+      },
+      {
+        "source_id": "KB-006",
+        "tool_name": "search_knowledge_base"
+      }
+    ],
+    "hypotheses": [
+      {
+        "label": "Replacement gateway activation is the dependency preventing sensor connectivity.",
+        "rationale": "The account is awaiting gateway activation, DEV-004 is activation_pending without WAN connectivity, and DEV-005 reports gateway_unavailable. The delivery ticket also remains awaiting customer activation."
+      }
+    ],
+    "investigation_summary": "Observable evidence points to an incomplete replacement-gateway activation rather than an area outage. Restore/complete the gateway activation dependency before further sensor-specific troubleshooting.",
+    "missing_information": [
+      "Whether the replacement gateway activation step has been completed successfully.",
+      "Whether DEV-005 is paired to DEV-004 after the gateway replacement.",
+      "Sensor-level connectivity diagnostics are unavailable because DEV-005 is an unsupported diagnostic target.",
+      "Gateway activation failure details or activation logs are not available. "
+    ],
+    "observed_facts": [
+      {
+        "evidence_references": [
+          {
+            "source_id": "ACC-003",
+            "tool_name": "get_account_status"
+          }
+        ],
+        "statement": "Account ACC-003 is current but has service activation pending and provisioning status awaiting_gateway_activation."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "DEV-005",
+            "tool_name": "get_device_status"
+          }
+        ],
+        "statement": "DEV-005 (Gamma Window Sensor) is offline with connection_state gateway_unavailable and no local connectivity."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "DEV-004",
+            "tool_name": "get_device_status"
+          }
+        ],
+        "statement": "DEV-004 is registered as the Gamma Replacement Gateway. It is online and locally reachable, but its connection state is activation_pending; WAN, WAN IP, and DNS are unavailable."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "TKT-004",
+            "tool_name": "get_ticket_history"
+          }
+        ],
+        "statement": "Replacement-gateway delivery was confirmed, with the prior ticket outcome recorded as awaiting customer activation."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "CUS-003",
+            "tool_name": "check_service_outages"
+          }
+        ],
+        "statement": "No active service outage was found for District Solstice."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "KB-006",
+            "tool_name": "search_knowledge_base"
+          }
+        ],
+        "statement": "Knowledge-base guidance states that an offline sensor's paired gateway should be restored first when the gateway is pending activation or unavailable."
+      }
+    ],
+    "ticket_summary": "Gamma Window Sensor (DEV-005) is offline after replacement-gateway delivery; the account and replacement gateway remain in activation-pending states."
+  },
+  "prompt_id": "investigator-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase4-001",
+  "runtime_metrics": {
+    "latency_ms": 15225.863300031051,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 7240,
+    "tool_call_count": 7
+  },
+  "status": "completed",
+  "tool_calls": [
+    {
+      "arguments": {
+        "customer_id": "CUS-003"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "display_name": "Sample Household Gamma",
+              "id": "CUS-003",
+              "service_area": "District Solstice"
+            },
+            "entity_id": "CUS-003",
+            "source": "synthetic_world",
+            "summary": "Synthetic customer record."
+          },
+          {
+            "data": {
+              "customer_id": "CUS-003",
+              "id": "ACC-003",
+              "provisioning_status": "awaiting_gateway_activation",
+              "service_activation": "pending",
+              "service_plan": "Home Fiber 300",
+              "standing": "current"
+            },
+            "entity_id": "ACC-003",
+            "source": "synthetic_world",
+            "summary": "Synthetic account status."
+          },
+          {
+            "data": {
+              "device_ids": [
+                "DEV-004",
+                "DEV-005"
+              ]
+            },
+            "entity_id": "ACC-003",
+            "source": "synthetic_world",
+            "summary": "Devices registered to the synthetic account."
+          }
+        ],
+        "source_ids": [
+          "CUS-003",
+          "ACC-003"
+        ],
+        "success": true,
+        "summary": "Account ACC-003 is pending.",
+        "tool_name": "get_account_status"
+      },
+      "tool_name": "get_account_status"
+    },
+    {
+      "arguments": {
+        "device_id": "DEV-005"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "account_id": "ACC-003",
+              "device_type": "sensor",
+              "id": "DEV-005",
+              "label": "Gamma Window Sensor",
+              "status": {
+                "connection_state": "gateway_unavailable",
+                "dns_reachable": null,
+                "firmware_version": "FW-1.8.0",
+                "gateway_reachable": null,
+                "local_connectivity": false,
+                "online": false,
+                "signal_health": "unknown",
+                "wan_connected": null,
+                "wan_ip_available": null
+              }
+            },
+            "entity_id": "DEV-005",
+            "source": "synthetic_world",
+            "summary": "Synthetic device state."
+          }
+        ],
+        "source_ids": [
+          "DEV-005"
+        ],
+        "success": true,
+        "summary": "Device DEV-005 is offline.",
+        "tool_name": "get_device_status"
+      },
+      "tool_name": "get_device_status"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-003"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "category": "activation",
+              "created_at": "2026-08-27T16:45:00Z",
+              "customer_id": "CUS-003",
+              "id": "TKT-004",
+              "outcome": "Awaiting customer activation.",
+              "summary": "Replacement gateway delivery confirmed."
+            },
+            "entity_id": "TKT-004",
+            "source": "synthetic_ticket_history",
+            "summary": "Replacement gateway delivery confirmed."
+          }
+        ],
+        "source_ids": [
+          "TKT-004"
+        ],
+        "success": true,
+        "summary": "Found 1 ticket-history entries.",
+        "tool_name": "get_ticket_history"
+      },
+      "tool_name": "get_ticket_history"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-003"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "service_area": "District Solstice"
+            },
+            "entity_id": "CUS-003",
+            "source": "synthetic_world",
+            "summary": "Synthetic service area used for outage lookup."
+          }
+        ],
+        "source_ids": [
+          "CUS-003"
+        ],
+        "success": true,
+        "summary": "No active outage found for District Solstice.",
+        "tool_name": "check_service_outages"
+      },
+      "tool_name": "check_service_outages"
+    },
+    {
+      "arguments": {
+        "device_id": "DEV-005"
+      },
+      "result": {
+        "error": "Unsupported diagnostic target: DEV-005 (sensor)",
+        "evidence": [],
+        "source_ids": [],
+        "success": false,
+        "summary": "Unsupported diagnostic target: DEV-005 (sensor)",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      "tool_name": "run_connectivity_diagnostics"
+    },
+    {
+      "arguments": {
+        "limit": 3,
+        "query": "sensor gateway unavailable replacement gateway activation"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "article_id": "KB-001",
+              "excerpt": "A replacement gateway must be powered on and connected locally before activation can complete. Confirm the account provisioning status, then guide the customer through the synthetic activation step. Escalate when activat",
+              "score": 15,
+              "title": "Activate a replacement gateway"
+            },
+            "entity_id": "KB-001",
+            "source": "synthetic_knowledge_base",
+            "summary": "KB match: Activate a replacement gateway"
+          },
+          {
+            "data": {
+              "article_id": "KB-006",
+              "excerpt": "Check whether the paired gateway is available before troubleshooting an offline sensor. If the gateway is pending activation or unavailable, restore that dependency first.",
+              "score": 11,
+              "title": "Connected-home sensor troubleshooting"
+            },
+            "entity_id": "KB-006",
+            "source": "synthetic_knowledge_base",
+            "summary": "KB match: Connected-home sensor troubleshooting"
+          },
+          {
+            "data": {
+              "article_id": "KB-004",
+              "excerpt": "For an offline gateway, confirm power and local reachability. If the gateway cannot be reached, collect the observed state and follow the offline-device escalation guidance when standard recovery steps do not help.",
+              "score": 6,
+              "title": "Offline gateway troubleshooting"
+            },
+            "entity_id": "KB-004",
+            "source": "synthetic_knowledge_base",
+            "summary": "KB match: Offline gateway troubleshooting"
+          }
+        ],
+        "source_ids": [
+          "KB-001",
+          "KB-006",
+          "KB-004"
+        ],
+        "success": true,
+        "summary": "Found 3 KB matches.",
+        "tool_name": "search_knowledge_base"
+      },
+      "tool_name": "search_knowledge_base"
+    },
+    {
+      "arguments": {
+        "device_id": "DEV-004"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "account_id": "ACC-003",
+              "device_type": "gateway",
+              "id": "DEV-004",
+              "label": "Gamma Replacement Gateway",
+              "status": {
+                "connection_state": "activation_pending",
+                "dns_reachable": false,
+                "firmware_version": "FW-3.4.1",
+                "gateway_reachable": true,
+                "local_connectivity": true,
+                "online": true,
+                "signal_health": "good",
+                "wan_connected": false,
+                "wan_ip_available": false
+              }
+            },
+            "entity_id": "DEV-004",
+            "source": "synthetic_world",
+            "summary": "Synthetic device state."
+          }
+        ],
+        "source_ids": [
+          "DEV-004"
+        ],
+        "success": true,
+        "summary": "Device DEV-004 is online.",
+        "tool_name": "get_device_status"
+      },
+      "tool_name": "get_device_status"
+    }
+  ],
+  "usage": {
+    "input_tokens": 6123,
+    "output_tokens": 1117,
+    "reasoning_tokens": 289,
+    "total_tokens": 7240
+  }
+}

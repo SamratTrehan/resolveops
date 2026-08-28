@@ -1,0 +1,44 @@
+{
+  "CASE-001": {
+    "case_id": "CASE-001",
+    "error_message": "ValueError: EvidenceBundle contains a reference not returned by an investigator tool.",
+    "error_type": "ValueError",
+    "infrastructure_retries": 0
+  },
+  "CASE-002": {
+    "case_id": "CASE-002",
+    "error_message": "ValueError: EvidenceBundle contains a reference not returned by an investigator tool.",
+    "error_type": "ValueError",
+    "infrastructure_retries": 0
+  },
+  "CASE-008": {
+    "case_id": "CASE-008",
+    "error_message": "ValueError: EvidenceBundle contains a reference not returned by an investigator tool.",
+    "error_type": "ValueError",
+    "infrastructure_retries": 0
+  },
+  "CASE-009": {
+    "case_id": "CASE-009",
+    "error_message": "ValueError: EvidenceBundle contains a reference not returned by an investigator tool.",
+    "error_type": "ValueError",
+    "infrastructure_retries": 0
+  },
+  "CASE-010": {
+    "case_id": "CASE-010",
+    "error_message": "ValueError: EvidenceBundle contains a reference not returned by an investigator tool.",
+    "error_type": "ValueError",
+    "infrastructure_retries": 0
+  },
+  "CASE-012": {
+    "case_id": "CASE-012",
+    "error_message": "ValueError: EvidenceBundle contains a reference not returned by an investigator tool.",
+    "error_type": "ValueError",
+    "infrastructure_retries": 0
+  },
+  "CASE-013": {
+    "case_id": "CASE-013",
+    "error_message": "ValueError: EvidenceBundle contains a reference not returned by an investigator tool.",
+    "error_type": "ValueError",
+    "infrastructure_retries": 0
+  }
+}

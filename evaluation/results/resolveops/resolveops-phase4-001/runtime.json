@@ -1,0 +1,167 @@
+{
+  "CASE-001": {
+    "metrics": {
+      "latency_ms": 12074.939000012819,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 4974,
+      "tool_call_count": 5
+    },
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "medium"
+  },
+  "CASE-002": {
+    "metrics": {
+      "latency_ms": 14664.50720001012,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 8043,
+      "tool_call_count": 8
+    },
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "medium"
+  },
+  "CASE-003": {
+    "metrics": {
+      "latency_ms": 16040.870199969504,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 7003,
+      "tool_call_count": 7
+    },
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "medium"
+  },
+  "CASE-004": {
+    "metrics": {
+      "latency_ms": 20133.50110000465,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 5322,
+      "tool_call_count": 6
+    },
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "medium"
+  },
+  "CASE-005": {
+    "metrics": {
+      "latency_ms": 17844.69600004377,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 8490,
+      "tool_call_count": 6
+    },
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "medium"
+  },
+  "CASE-006": {
+    "metrics": {
+      "latency_ms": 18363.01780003123,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 8958,
+      "tool_call_count": 7
+    },
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "medium"
+  },
+  "CASE-007": {
+    "metrics": {
+      "latency_ms": 16534.87790003419,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 6832,
+      "tool_call_count": 6
+    },
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "medium"
+  },
+  "CASE-008": {
+    "metrics": {
+      "latency_ms": 18809.262899972964,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 10126,
+      "tool_call_count": 8
+    },
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "medium"
+  },
+  "CASE-009": {
+    "metrics": {
+      "latency_ms": 16637.950900010765,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 5542,
+      "tool_call_count": 6
+    },
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "medium"
+  },
+  "CASE-010": {
+    "metrics": {
+      "latency_ms": 11451.536799955647,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 3879,
+      "tool_call_count": 6
+    },
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "medium"
+  },
+  "CASE-011": {
+    "metrics": {
+      "latency_ms": 18299.558600003365,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 6722,
+      "tool_call_count": 6
+    },
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "medium"
+  },
+  "CASE-012": {
+    "metrics": {
+      "latency_ms": 13378.56699997792,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 5387,
+      "tool_call_count": 7
+    },
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "medium"
+  },
+  "CASE-013": {
+    "metrics": {
+      "latency_ms": 17806.24040000839,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 7437,
+      "tool_call_count": 7
+    },
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "medium"
+  },
+  "CASE-014": {
+    "metrics": {
+      "latency_ms": 16061.201500007883,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 7629,
+      "tool_call_count": 7
+    },
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "medium"
+  },
+  "CASE-015": {
+    "metrics": {
+      "latency_ms": 18822.619499987923,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 7093,
+      "tool_call_count": 6
+    },
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "medium"
+  }
+}

@@ -1,0 +1,621 @@
+{
+  "agent_name": "ResolveOps Investigator",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 15161.793300008867,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 5191,
+        "tool_call_count": 6
+      },
+      "status": "completed",
+      "tool_calls": [
+        {
+          "arguments": {
+            "customer_id": "CUS-003"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "display_name": "Sample Household Gamma",
+                  "id": "CUS-003",
+                  "service_area": "District Solstice"
+                },
+                "entity_id": "CUS-003",
+                "source": "synthetic_world",
+                "summary": "Synthetic customer record."
+              },
+              {
+                "data": {
+                  "customer_id": "CUS-003",
+                  "id": "ACC-003",
+                  "provisioning_status": "awaiting_gateway_activation",
+                  "service_activation": "pending",
+                  "service_plan": "Home Fiber 300",
+                  "standing": "current"
+                },
+                "entity_id": "ACC-003",
+                "source": "synthetic_world",
+                "summary": "Synthetic account status."
+              },
+              {
+                "data": {
+                  "device_ids": [
+                    "DEV-004",
+                    "DEV-005"
+                  ]
+                },
+                "entity_id": "ACC-003",
+                "source": "synthetic_world",
+                "summary": "Devices registered to the synthetic account."
+              }
+            ],
+            "source_ids": [
+              "CUS-003",
+              "ACC-003"
+            ],
+            "success": true,
+            "summary": "Account ACC-003 is pending.",
+            "tool_name": "get_account_status"
+          },
+          "tool_name": "get_account_status"
+        },
+        {
+          "arguments": {
+            "device_id": "DEV-004"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "account_id": "ACC-003",
+                  "device_type": "gateway",
+                  "id": "DEV-004",
+                  "label": "Gamma Replacement Gateway",
+                  "status": {
+                    "connection_state": "activation_pending",
+                    "dns_reachable": false,
+                    "firmware_version": "FW-3.4.1",
+                    "gateway_reachable": true,
+                    "local_connectivity": true,
+                    "online": true,
+                    "signal_health": "good",
+                    "wan_connected": false,
+                    "wan_ip_available": false
+                  }
+                },
+                "entity_id": "DEV-004",
+                "source": "synthetic_world",
+                "summary": "Synthetic device state."
+              }
+            ],
+            "source_ids": [
+              "DEV-004"
+            ],
+            "success": true,
+            "summary": "Device DEV-004 is online.",
+            "tool_name": "get_device_status"
+          },
+          "tool_name": "get_device_status"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-003"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "service_area": "District Solstice"
+                },
+                "entity_id": "CUS-003",
+                "source": "synthetic_world",
+                "summary": "Synthetic service area used for outage lookup."
+              }
+            ],
+            "source_ids": [
+              "CUS-003"
+            ],
+            "success": true,
+            "summary": "No active outage found for District Solstice.",
+            "tool_name": "check_service_outages"
+          },
+          "tool_name": "check_service_outages"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-003"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "category": "activation",
+                  "created_at": "2026-08-27T16:45:00Z",
+                  "customer_id": "CUS-003",
+                  "id": "TKT-004",
+                  "outcome": "Awaiting customer activation.",
+                  "summary": "Replacement gateway delivery confirmed."
+                },
+                "entity_id": "TKT-004",
+                "source": "synthetic_ticket_history",
+                "summary": "Replacement gateway delivery confirmed."
+              }
+            ],
+            "source_ids": [
+              "TKT-004"
+            ],
+            "success": true,
+            "summary": "Found 1 ticket-history entries.",
+            "tool_name": "get_ticket_history"
+          },
+          "tool_name": "get_ticket_history"
+        },
+        {
+          "arguments": {
+            "device_id": "DEV-004"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "dns_reachable": false,
+                  "gateway_reachable": true,
+                  "local_connectivity": true,
+                  "signal_health": "good",
+                  "wan_connected": false,
+                  "wan_ip_available": false
+                },
+                "entity_id": "DEV-004",
+                "source": "synthetic_diagnostics",
+                "summary": "Deterministic gateway connectivity checks."
+              }
+            ],
+            "source_ids": [
+              "DEV-004"
+            ],
+            "success": true,
+            "summary": "Connectivity diagnostics completed for DEV-004.",
+            "tool_name": "run_connectivity_diagnostics"
+          },
+          "tool_name": "run_connectivity_diagnostics"
+        },
+        {
+          "arguments": {
+            "limit": 3,
+            "query": "gateway activation pending WAN connected activation setup"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "article_id": "KB-001",
+                  "excerpt": "A replacement gateway must be powered on and connected locally before activation can complete. Confirm the account provisioning status, then guide the customer through the synthetic activation step. Escalate when activat",
+                  "score": 11,
+                  "title": "Activate a replacement gateway"
+                },
+                "entity_id": "KB-001",
+                "source": "synthetic_knowledge_base",
+                "summary": "KB match: Activate a replacement gateway"
+              },
+              {
+                "data": {
+                  "article_id": "KB-006",
+                  "excerpt": "Check whether the paired gateway is available before troubleshooting an offline sensor. If the gateway is pending activation or unavailable, restore that dependency first.",
+                  "score": 10,
+                  "title": "Connected-home sensor troubleshooting"
+                },
+                "entity_id": "KB-006",
+                "source": "synthetic_knowledge_base",
+                "summary": "KB match: Connected-home sensor troubleshooting"
+              },
+              {
+                "data": {
+                  "article_id": "KB-002",
+                  "excerpt": "When devices are connected to Wi-Fi but cannot reach the internet, inspect gateway reachability, WAN status, WAN IP availability, and DNS reachability. Check the service-area outage tool before treating the issue as loca",
+                  "score": 8,
+                  "title": "Wi-Fi connected but internet unavailable"
+                },
+                "entity_id": "KB-002",
+                "source": "synthetic_knowledge_base",
+                "summary": "KB match: Wi-Fi connected but internet unavailable"
+              }
+            ],
+            "source_ids": [
+              "KB-001",
+              "KB-006",
+              "KB-002"
+            ],
+            "success": true,
+            "summary": "Found 3 KB matches.",
+            "tool_name": "search_knowledge_base"
+          },
+          "tool_name": "search_knowledge_base"
+        }
+      ],
+      "usage": {
+        "input_tokens": 4032,
+        "output_tokens": 1159,
+        "reasoning_tokens": 219,
+        "total_tokens": 5191
+      }
+    }
+  ],
+  "case_id": "CASE-015",
+  "error": null,
+  "input_summary": "Ticket:\nSample Household Gamma says a neighbour mentioned an outage, but this household's newly delivered gateway has never reached internet setup.\n\nCustomer ID: CUS-003\nPrimary device ID: DEV-004",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "case_id": "CASE-015",
+    "contradictions": [
+      "The neighbour-reported outage is not corroborated by the current District Solstice outage lookup.",
+      "The device is online and locally reachable, but it has not obtained WAN connectivity, an IP address, or DNS reachability."
+    ],
+    "evidence_references": [
+      {
+        "source_id": "ACC-003",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-004",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-004",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-003",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "TKT-004",
+        "tool_name": "get_ticket_history"
+      },
+      {
+        "source_id": "KB-001",
+        "tool_name": "search_knowledge_base"
+      }
+    ],
+    "hypotheses": [
+      {
+        "label": "Gateway/account activation remains incomplete",
+        "rationale": "The account provisioning status, device connection state, and prior delivery ticket all indicate pending/awaiting gateway activation. The gateway is locally reachable, consistent with the prerequisite described in KB-001."
+      },
+      {
+        "label": "Lack of WAN/IP/DNS is associated with the pending activation state",
+        "rationale": "Diagnostics show all three external-connectivity checks failing while local gateway reachability and signal health are good; the evidence does not independently establish a physical WAN fault."
+      },
+      {
+        "label": "Active area outage is not supported by the current lookup",
+        "rationale": "The service-area outage check found no active outage. This does not establish whether there was an earlier, unrecorded, or neighbour-specific issue."
+      }
+    ],
+    "investigation_summary": "Available evidence supports an incomplete replacement-gateway activation/provisioning state rather than a currently active area outage. DEV-004 is reachable locally but lacks WAN, IP, and DNS connectivity; no evidence establishes a physical WAN fault or confirms that activation was attempted.",
+    "missing_information": [
+      "Whether the required customer activation step has been attempted and its result.",
+      "Activation/provisioning event logs or any activation error code for ACC-003 or DEV-004.",
+      "Physical WAN/ONT link status and cabling observations.",
+      "Timing and scope of the neighbour's reported outage relative to the current outage check."
+    ],
+    "observed_facts": [
+      {
+        "evidence_references": [
+          {
+            "source_id": "ACC-003",
+            "tool_name": "get_account_status"
+          }
+        ],
+        "statement": "Account ACC-003 is current but service activation is pending, with provisioning status `awaiting_gateway_activation` on the Home Fiber 300 plan."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "DEV-004",
+            "tool_name": "get_device_status"
+          }
+        ],
+        "statement": "DEV-004 is the registered replacement gateway for ACC-003. It is online and reachable locally, with good signal health, but its connection state is `activation_pending`."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "DEV-004",
+            "tool_name": "get_device_status"
+          },
+          {
+            "source_id": "DEV-004",
+            "tool_name": "run_connectivity_diagnostics"
+          }
+        ],
+        "statement": "DEV-004 has no WAN connection, WAN IP, or DNS reachability; diagnostics also confirm local connectivity and gateway reachability."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "CUS-003",
+            "tool_name": "check_service_outages"
+          }
+        ],
+        "statement": "No active outage was found for District Solstice during the outage lookup."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "TKT-004",
+            "tool_name": "get_ticket_history"
+          }
+        ],
+        "statement": "Ticket history records replacement-gateway delivery confirmation, with outcome `Awaiting customer activation`."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "KB-001",
+            "tool_name": "search_knowledge_base"
+          }
+        ],
+        "statement": "The knowledge base states that a replacement gateway requires activation after being powered on and locally connected, and directs confirmation of account provisioning status."
+      }
+    ],
+    "ticket_summary": "CUS-003 reports that DEV-004, a newly delivered replacement gateway, has never completed internet setup; a neighbour separately mentioned an outage."
+  },
+  "prompt_id": "investigator-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase4-001",
+  "runtime_metrics": {
+    "latency_ms": 15161.793300008867,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 5191,
+    "tool_call_count": 6
+  },
+  "status": "completed",
+  "tool_calls": [
+    {
+      "arguments": {
+        "customer_id": "CUS-003"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "display_name": "Sample Household Gamma",
+              "id": "CUS-003",
+              "service_area": "District Solstice"
+            },
+            "entity_id": "CUS-003",
+            "source": "synthetic_world",
+            "summary": "Synthetic customer record."
+          },
+          {
+            "data": {
+              "customer_id": "CUS-003",
+              "id": "ACC-003",
+              "provisioning_status": "awaiting_gateway_activation",
+              "service_activation": "pending",
+              "service_plan": "Home Fiber 300",
+              "standing": "current"
+            },
+            "entity_id": "ACC-003",
+            "source": "synthetic_world",
+            "summary": "Synthetic account status."
+          },
+          {
+            "data": {
+              "device_ids": [
+                "DEV-004",
+                "DEV-005"
+              ]
+            },
+            "entity_id": "ACC-003",
+            "source": "synthetic_world",
+            "summary": "Devices registered to the synthetic account."
+          }
+        ],
+        "source_ids": [
+          "CUS-003",
+          "ACC-003"
+        ],
+        "success": true,
+        "summary": "Account ACC-003 is pending.",
+        "tool_name": "get_account_status"
+      },
+      "tool_name": "get_account_status"
+    },
+    {
+      "arguments": {
+        "device_id": "DEV-004"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "account_id": "ACC-003",
+              "device_type": "gateway",
+              "id": "DEV-004",
+              "label": "Gamma Replacement Gateway",
+              "status": {
+                "connection_state": "activation_pending",
+                "dns_reachable": false,
+                "firmware_version": "FW-3.4.1",
+                "gateway_reachable": true,
+                "local_connectivity": true,
+                "online": true,
+                "signal_health": "good",
+                "wan_connected": false,
+                "wan_ip_available": false
+              }
+            },
+            "entity_id": "DEV-004",
+            "source": "synthetic_world",
+            "summary": "Synthetic device state."
+          }
+        ],
+        "source_ids": [
+          "DEV-004"
+        ],
+        "success": true,
+        "summary": "Device DEV-004 is online.",
+        "tool_name": "get_device_status"
+      },
+      "tool_name": "get_device_status"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-003"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "service_area": "District Solstice"
+            },
+            "entity_id": "CUS-003",
+            "source": "synthetic_world",
+            "summary": "Synthetic service area used for outage lookup."
+          }
+        ],
+        "source_ids": [
+          "CUS-003"
+        ],
+        "success": true,
+        "summary": "No active outage found for District Solstice.",
+        "tool_name": "check_service_outages"
+      },
+      "tool_name": "check_service_outages"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-003"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "category": "activation",
+              "created_at": "2026-08-27T16:45:00Z",
+              "customer_id": "CUS-003",
+              "id": "TKT-004",
+              "outcome": "Awaiting customer activation.",
+              "summary": "Replacement gateway delivery confirmed."
+            },
+            "entity_id": "TKT-004",
+            "source": "synthetic_ticket_history",
+            "summary": "Replacement gateway delivery confirmed."
+          }
+        ],
+        "source_ids": [
+          "TKT-004"
+        ],
+        "success": true,
+        "summary": "Found 1 ticket-history entries.",
+        "tool_name": "get_ticket_history"
+      },
+      "tool_name": "get_ticket_history"
+    },
+    {
+      "arguments": {
+        "device_id": "DEV-004"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "dns_reachable": false,
+              "gateway_reachable": true,
+              "local_connectivity": true,
+              "signal_health": "good",
+              "wan_connected": false,
+              "wan_ip_available": false
+            },
+            "entity_id": "DEV-004",
+            "source": "synthetic_diagnostics",
+            "summary": "Deterministic gateway connectivity checks."
+          }
+        ],
+        "source_ids": [
+          "DEV-004"
+        ],
+        "success": true,
+        "summary": "Connectivity diagnostics completed for DEV-004.",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      "tool_name": "run_connectivity_diagnostics"
+    },
+    {
+      "arguments": {
+        "limit": 3,
+        "query": "gateway activation pending WAN connected activation setup"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "article_id": "KB-001",
+              "excerpt": "A replacement gateway must be powered on and connected locally before activation can complete. Confirm the account provisioning status, then guide the customer through the synthetic activation step. Escalate when activat",
+              "score": 11,
+              "title": "Activate a replacement gateway"
+            },
+            "entity_id": "KB-001",
+            "source": "synthetic_knowledge_base",
+            "summary": "KB match: Activate a replacement gateway"
+          },
+          {
+            "data": {
+              "article_id": "KB-006",
+              "excerpt": "Check whether the paired gateway is available before troubleshooting an offline sensor. If the gateway is pending activation or unavailable, restore that dependency first.",
+              "score": 10,
+              "title": "Connected-home sensor troubleshooting"
+            },
+            "entity_id": "KB-006",
+            "source": "synthetic_knowledge_base",
+            "summary": "KB match: Connected-home sensor troubleshooting"
+          },
+          {
+            "data": {
+              "article_id": "KB-002",
+              "excerpt": "When devices are connected to Wi-Fi but cannot reach the internet, inspect gateway reachability, WAN status, WAN IP availability, and DNS reachability. Check the service-area outage tool before treating the issue as loca",
+              "score": 8,
+              "title": "Wi-Fi connected but internet unavailable"
+            },
+            "entity_id": "KB-002",
+            "source": "synthetic_knowledge_base",
+            "summary": "KB match: Wi-Fi connected but internet unavailable"
+          }
+        ],
+        "source_ids": [
+          "KB-001",
+          "KB-006",
+          "KB-002"
+        ],
+        "success": true,
+        "summary": "Found 3 KB matches.",
+        "tool_name": "search_knowledge_base"
+      },
+      "tool_name": "search_knowledge_base"
+    }
+  ],
+  "usage": {
+    "input_tokens": 4032,
+    "output_tokens": 1159,
+    "reasoning_tokens": 219,
+    "total_tokens": 5191
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "agent_name": "ResolveOps Resolver",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 3654.8105000401847,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 1826,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 1523,
+        "output_tokens": 303,
+        "reasoning_tokens": 0,
+        "total_tokens": 1826
+      }
+    }
+  ],
+  "case_id": "CASE-005",
+  "error": null,
+  "input_summary": "{\"evidence_bundle\": {\"case_id\": \"CASE-005\", \"contradictions\": [], \"evidence_references\": [{\"source_id\": \"CUS-001\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"ACC-001\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-001\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-001\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"CUS-001\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-001\", \"tool_name\": \"get_ticket_history\"}], \"hypotheses\": [{\"label\": \"Phone-specific Wi-Fi association or configuration issue\", \"rationale\": \"Plausible because the gateway is online and healthy, diagnostics show local and upstream connectivity, and no area outage is active. The evidence does not identify the phone or establish the specific association failure cause.\"}, {\"label\": \"Gateway-wide connectivity or area-outage issue\", \"rationale\": \"Less supported by the current evidence: DEV-001 is reachable with healthy local/WAN/DNS checks, and no District Aurora outage is active. These checks do not directly test the affected phone's Wi-Fi association.\"}], \"investigation_summary\": \"Available evidence supports an active, provisioned service and a healthy reachable gateway with no detected area outage. The reported symptom is therefore more consistent with an issue isolated to the affected phone's Wi-Fi association or configuration than with a confirmed gateway or service failure, but the phone-level evidence required to determine cause is absent.\", \"missing_information\": [\"Affected phone identifier, model, operating-system version, and Wi-Fi MAC/randomization state.\", \"Exact join failure behavior and error message (for example, authentication failure, unable to join, or connects without internet).\", \"Target SSID, Wi-Fi band, security mode, and whether the phone can see the SSID.\", \"Whether the phone previously joined this network and the timing of the first failure.\", \"Gateway Wi-Fi radio/SSID configuration, client list, authentication logs, and any access-control or device-limit state.\", \"Direct verification that other connected-home devices remain connected and whether any other phone or general Wi-Fi client can join.\"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"CUS-001\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"ACC-001\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-001 for Sample Household Alpha is current, active, and fully provisioned on Home Fiber 500.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-001\", \"tool_name\": \"get_device_status\"}], \"statement\": \"Primary device DEV-001 (Alpha Gateway) is online and connected; it reports local connectivity, WAN connectivity, a WAN IP, DNS reachability, and good signal health.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-001\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"Gateway connectivity diagnostics confirm the gateway is reachable with local connectivity, WAN connectivity, WAN IP availability, DNS reachability, and good signal health.\"}, {\"evidence_references\": [{\"source_id\": \"CUS-001\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"No active service outage was found for District Aurora.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-001\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"The only prior ticket is a billing inquiry; no prior Wi-Fi incident is present in the returned history.\"}], \"ticket_summary\": \"Reported issue: one phone at Sample Household Alpha cannot join home Wi-Fi while other connected-home devices reportedly still work.\"}, \"ticket\": \"Ticket:\\nOne phone at Sample Household Alpha cannot join the home Wi-Fi, while other connected-home devices still work.\\n\\nCustomer ID: CUS-001\\nPrimary device ID: DEV-001\"}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "asserted_claim_ids": [],
+    "confidence": 0.76,
+    "customer_response": "Your home service and gateway appear to be online and healthy, and there is no active outage in your area. Since other connected-home devices are still working, this appears isolated to the affected phone\u2019s Wi-Fi connection. Please forget the home Wi-Fi network on that phone, restart the phone, then reconnect using the current Wi-Fi password. If it still cannot join, please share the exact error message and whether the network name is visible on the phone.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "CUS-001",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "ACC-001",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-001",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-001",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-001",
+        "tool_name": "check_service_outages"
+      }
+    ],
+    "internal_notes": "Account is active and provisioned. DEV-001 is online with healthy local, WAN, and DNS diagnostics; no District Aurora outage is active. Reported impact is limited to one phone while other connected-home devices work, supporting a local phone Wi-Fi association/configuration issue rather than gateway-wide or upstream failure. Phone-level join behavior, SSID/security details, and gateway client/authentication logs remain unavailable.",
+    "recommended_action_id": "guide_wifi_reconnect",
+    "root_cause_id": "local_wifi_configuration"
+  },
+  "prompt_id": "resolver-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase4-001",
+  "runtime_metrics": {
+    "latency_ms": 3654.8105000401847,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 1826,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 1523,
+    "output_tokens": 303,
+    "reasoning_tokens": 0,
+    "total_tokens": 1826
+  }
+}

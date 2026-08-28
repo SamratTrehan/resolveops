@@ -1,0 +1,77 @@
+{
+  "agent_name": "ResolveOps Resolver",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 3700.310999993235,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 1825,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 1545,
+        "output_tokens": 280,
+        "reasoning_tokens": 0,
+        "total_tokens": 1825
+      }
+    }
+  ],
+  "case_id": "CASE-014",
+  "error": null,
+  "input_summary": "{\"evidence_bundle\": {\"case_id\": \"CASE-014\", \"contradictions\": [], \"evidence_references\": [{\"source_id\": \"CUS-001\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"ACC-001\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-002\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-001\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"CUS-001\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-001\", \"tool_name\": \"get_ticket_history\"}, {\"source_id\": \"KB-006\", \"tool_name\": \"search_knowledge_base\"}], \"hypotheses\": [{\"label\": \"Current gateway, broad connectivity, or area-outage condition is not supported as the cause of the reported intermittent false alerts.\", \"rationale\": \"The sensor and gateway are currently connected/online, the gateway reports healthy network checks, and no area outage is active. These observations do not establish the state at the time alerts occurred.\"}, {\"label\": \"The false-alert source remains undetermined.\", \"rationale\": \"No alert-event history, sensor state-transition data, physical installation/contact information, or sensor-specific diagnostic output was returned.\"}], \"investigation_summary\": \"Current observable evidence shows an active account, a connected door sensor, a healthy connected gateway, and no active area outage. The available evidence does not identify a cause for historical intermittent false alerts.\", \"missing_information\": [\"Timestamps, frequency, and contents of the reported false alerts.\", \"Sensor event/state-transition history around the alert times.\", \"Physical sensor/contact alignment, mounting condition, and environmental observations.\", \"Battery/power status and any sensor hardware-health telemetry.\", \"Sensor-specific diagnostic capability or logs; the available connectivity diagnostic tool does not support sensors.\"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"ACC-001\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"CUS-001\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-001 is active, provisioned, and current; DEV-001 and DEV-002 are registered to the account.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-002\", \"tool_name\": \"get_device_status\"}], \"statement\": \"DEV-002 is an Alpha Door Sensor and is currently online, connected, locally connected, and reporting good signal health.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-001\", \"tool_name\": \"get_device_status\"}], \"statement\": \"DEV-001 (Alpha Gateway) is currently online and connected, with local connectivity, gateway reachability, WAN connectivity/IP availability, DNS reachability, and good signal health all reported true/good.\"}, {\"evidence_references\": [{\"source_id\": \"CUS-001\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"No active service outage was found for District Aurora.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-001\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"The only prior ticket is a billing/self-service inquiry; no prior sensor-alert issue is present in the returned ticket history.\"}, {\"evidence_references\": [{\"source_id\": null, \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"Connectivity diagnostics cannot be run on DEV-002 because the diagnostic tool does not support sensor targets.\"}, {\"evidence_references\": [{\"source_id\": \"KB-006\", \"tool_name\": \"search_knowledge_base\"}], \"statement\": \"The retrieved sensor troubleshooting article directs investigators to verify paired-gateway availability before troubleshooting an offline sensor.\"}], \"ticket_summary\": \"Sample Household Alpha reports occasional false alerts from DEV-002 (Alpha Door Sensor) although it currently appears connected.\"}, \"ticket\": \"Ticket:\\nSample Household Alpha reports occasional false alerts from its door sensor while the sensor currently appears connected.\\n\\nCustomer ID: CUS-001\\nPrimary device ID: DEV-002\"}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "asserted_claim_ids": [],
+    "confidence": 0.96,
+    "customer_response": "Your door sensor and gateway are currently connected and showing healthy signal status, and there is no active area outage. Because the alerts are intermittent and we do not have the sensor\u2019s event history or diagnostic data from when they occurred, we cannot reliably identify the cause yet. We\u2019re escalating this for additional sensor-event and device-health review.",
+    "escalate": true,
+    "evidence_references": [
+      {
+        "source_id": "DEV-002",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-001",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "CUS-001",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "TKT-001",
+        "tool_name": "get_ticket_history"
+      },
+      {
+        "source_id": "KB-006",
+        "tool_name": "search_knowledge_base"
+      }
+    ],
+    "internal_notes": "Escalate for sensor-specific investigation. Current connectivity is healthy: DEV-002 online/locally connected with good signal; DEV-001 online with healthy WAN and DNS; no Aurora outage. Historical false-alert cause cannot be determined without alert timestamps/content, sensor state-transition history, battery/hardware telemetry, and physical contact/alignment/environment details. Sensor connectivity diagnostics are unsupported.",
+    "recommended_action_id": "escalate_for_more_evidence",
+    "root_cause_id": "INSUFFICIENT_EVIDENCE"
+  },
+  "prompt_id": "resolver-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase4-001",
+  "runtime_metrics": {
+    "latency_ms": 3700.310999993235,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 1825,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 1545,
+    "output_tokens": 280,
+    "reasoning_tokens": 0,
+    "total_tokens": 1825
+  }
+}

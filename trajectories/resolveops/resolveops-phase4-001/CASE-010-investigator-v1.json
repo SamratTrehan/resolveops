@@ -1,0 +1,674 @@
+{
+  "agent_name": "ResolveOps Investigator",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 11451.536799955647,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 3879,
+        "tool_call_count": 6
+      },
+      "status": "completed",
+      "tool_calls": [
+        {
+          "arguments": {
+            "customer_id": "CUS-002"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "display_name": "Sample Household Beta",
+                  "id": "CUS-002",
+                  "service_area": "District Meridian"
+                },
+                "entity_id": "CUS-002",
+                "source": "synthetic_world",
+                "summary": "Synthetic customer record."
+              },
+              {
+                "data": {
+                  "customer_id": "CUS-002",
+                  "id": "ACC-002",
+                  "provisioning_status": "complete",
+                  "service_activation": "active",
+                  "service_plan": "Home Fiber 500",
+                  "standing": "current"
+                },
+                "entity_id": "ACC-002",
+                "source": "synthetic_world",
+                "summary": "Synthetic account status."
+              },
+              {
+                "data": {
+                  "device_ids": [
+                    "DEV-003"
+                  ]
+                },
+                "entity_id": "ACC-002",
+                "source": "synthetic_world",
+                "summary": "Devices registered to the synthetic account."
+              }
+            ],
+            "source_ids": [
+              "CUS-002",
+              "ACC-002"
+            ],
+            "success": true,
+            "summary": "Account ACC-002 is active.",
+            "tool_name": "get_account_status"
+          },
+          "tool_name": "get_account_status"
+        },
+        {
+          "arguments": {
+            "device_id": "DEV-003"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "account_id": "ACC-002",
+                  "device_type": "gateway",
+                  "id": "DEV-003",
+                  "label": "Beta Gateway",
+                  "status": {
+                    "connection_state": "connected",
+                    "dns_reachable": false,
+                    "firmware_version": "FW-3.4.1",
+                    "gateway_reachable": true,
+                    "local_connectivity": true,
+                    "online": true,
+                    "signal_health": "good",
+                    "wan_connected": false,
+                    "wan_ip_available": false
+                  }
+                },
+                "entity_id": "DEV-003",
+                "source": "synthetic_world",
+                "summary": "Synthetic device state."
+              }
+            ],
+            "source_ids": [
+              "DEV-003"
+            ],
+            "success": true,
+            "summary": "Device DEV-003 is online.",
+            "tool_name": "get_device_status"
+          },
+          "tool_name": "get_device_status"
+        },
+        {
+          "arguments": {
+            "device_id": "DEV-003"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "dns_reachable": false,
+                  "gateway_reachable": true,
+                  "local_connectivity": true,
+                  "signal_health": "good",
+                  "wan_connected": false,
+                  "wan_ip_available": false
+                },
+                "entity_id": "DEV-003",
+                "source": "synthetic_diagnostics",
+                "summary": "Deterministic gateway connectivity checks."
+              }
+            ],
+            "source_ids": [
+              "DEV-003"
+            ],
+            "success": true,
+            "summary": "Connectivity diagnostics completed for DEV-003.",
+            "tool_name": "run_connectivity_diagnostics"
+          },
+          "tool_name": "run_connectivity_diagnostics"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-002"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "service_area": "District Meridian"
+                },
+                "entity_id": "CUS-002",
+                "source": "synthetic_world",
+                "summary": "Synthetic service area used for outage lookup."
+              },
+              {
+                "data": {
+                  "affected_areas": [
+                    "District Meridian"
+                  ],
+                  "id": "OUT-001",
+                  "started_at": "2026-08-28T08:15:00Z",
+                  "status": "active",
+                  "summary": "Synthetic upstream service interruption affecting District Meridian."
+                },
+                "entity_id": "OUT-001",
+                "source": "synthetic_outage_feed",
+                "summary": "Synthetic upstream service interruption affecting District Meridian."
+              }
+            ],
+            "source_ids": [
+              "CUS-002",
+              "OUT-001"
+            ],
+            "success": true,
+            "summary": "Active outage found for District Meridian.",
+            "tool_name": "check_service_outages"
+          },
+          "tool_name": "check_service_outages"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-002"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "category": "wifi",
+                  "created_at": "2026-06-18T11:10:00Z",
+                  "customer_id": "CUS-002",
+                  "id": "TKT-002",
+                  "outcome": "Shared placement article.",
+                  "summary": "Requested placement guidance for the gateway."
+                },
+                "entity_id": "TKT-002",
+                "source": "synthetic_ticket_history",
+                "summary": "Requested placement guidance for the gateway."
+              },
+              {
+                "data": {
+                  "category": "connectivity",
+                  "created_at": "2026-08-28T08:20:00Z",
+                  "customer_id": "CUS-002",
+                  "id": "TKT-003",
+                  "outcome": "Investigation open.",
+                  "summary": "Reported no internet access on connected devices."
+                },
+                "entity_id": "TKT-003",
+                "source": "synthetic_ticket_history",
+                "summary": "Reported no internet access on connected devices."
+              }
+            ],
+            "source_ids": [
+              "TKT-002",
+              "TKT-003"
+            ],
+            "success": true,
+            "summary": "Found 2 ticket-history entries.",
+            "tool_name": "get_ticket_history"
+          },
+          "tool_name": "get_ticket_history"
+        },
+        {
+          "arguments": {
+            "limit": 3,
+            "query": "replaced router no internet gateway replacement activation provisioning"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "article_id": "KB-001",
+                  "excerpt": "A replacement gateway must be powered on and connected locally before activation can complete. Confirm the account provisioning status, then guide the customer through the synthetic activation step. Escalate when activat",
+                  "score": 18,
+                  "title": "Activate a replacement gateway"
+                },
+                "entity_id": "KB-001",
+                "source": "synthetic_knowledge_base",
+                "summary": "KB match: Activate a replacement gateway"
+              },
+              {
+                "data": {
+                  "article_id": "KB-002",
+                  "excerpt": "When devices are connected to Wi-Fi but cannot reach the internet, inspect gateway reachability, WAN status, WAN IP availability, and DNS reachability. Check the service-area outage tool before treating the issue as loca",
+                  "score": 7,
+                  "title": "Wi-Fi connected but internet unavailable"
+                },
+                "entity_id": "KB-002",
+                "source": "synthetic_knowledge_base",
+                "summary": "KB match: Wi-Fi connected but internet unavailable"
+              },
+              {
+                "data": {
+                  "article_id": "KB-004",
+                  "excerpt": "For an offline gateway, confirm power and local reachability. If the gateway cannot be reached, collect the observed state and follow the offline-device escalation guidance when standard recovery steps do not help.",
+                  "score": 6,
+                  "title": "Offline gateway troubleshooting"
+                },
+                "entity_id": "KB-004",
+                "source": "synthetic_knowledge_base",
+                "summary": "KB match: Offline gateway troubleshooting"
+              }
+            ],
+            "source_ids": [
+              "KB-001",
+              "KB-002",
+              "KB-004"
+            ],
+            "success": true,
+            "summary": "Found 3 KB matches.",
+            "tool_name": "search_knowledge_base"
+          },
+          "tool_name": "search_knowledge_base"
+        }
+      ],
+      "usage": {
+        "input_tokens": 2776,
+        "output_tokens": 1103,
+        "reasoning_tokens": 128,
+        "total_tokens": 3879
+      }
+    }
+  ],
+  "case_id": "CASE-010",
+  "error": "ValueError: EvidenceBundle contains a reference not returned by an investigator tool.",
+  "input_summary": "Ticket:\nSample Household Beta replaced a router last week and now has no internet. The customer requests a replacement gateway.\n\nCustomer ID: CUS-002\nPrimary device ID: DEV-003",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "contradictions": [
+      "The request attributes the issue to a router replacement, but the available device evidence shows the registered gateway DEV-003 is online and reachable; it does not establish that the replacement caused the loss of service.",
+      "The customer requests a gateway replacement, while diagnostics show a live local gateway and an active service-area upstream outage."
+    ],
+    "evidence_references": [
+      {
+        "source_id": "CUS-002",
+        "tool_name": "functions.get_account_status"
+      },
+      {
+        "source_id": "ACC-002",
+        "tool_name": "functions.get_account_status"
+      },
+      {
+        "source_id": "DEV-003",
+        "tool_name": "functions.get_device_status"
+      },
+      {
+        "source_id": "DEV-003",
+        "tool_name": "functions.run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "OUT-001",
+        "tool_name": "functions.check_service_outages"
+      },
+      {
+        "source_id": "TKT-003",
+        "tool_name": "functions.get_ticket_history"
+      },
+      {
+        "source_id": "KB-002",
+        "tool_name": "functions.search_knowledge_base"
+      }
+    ],
+    "hypotheses": [
+      {
+        "label": "Area upstream outage is the leading explanation for the current no-internet symptom.",
+        "rationale": "The outage is active in the customer\u2019s service area and began five minutes before the recorded no-internet report. The gateway is locally reachable but has no WAN connection or WAN IP."
+      },
+      {
+        "label": "A gateway hardware replacement is not supported by the currently observed evidence.",
+        "rationale": "DEV-003 is online and locally reachable with good signal health. The observed failure is upstream/WAN-related during an active area outage; no hardware fault evidence was returned."
+      },
+      {
+        "label": "The reported router replacement may be relevant but cannot be evaluated from the available evidence.",
+        "rationale": "The account is fully provisioned and DEV-003 is registered, but there is no observed evidence identifying what equipment was replaced, when it was installed, or whether it is DEV-003."
+      }
+    ],
+    "investigation_summary": "Current observable evidence points to an area-wide upstream interruption rather than an offline gateway or incomplete account provisioning. The registered gateway has intact local reachability but no WAN connection, WAN IP, or DNS reachability. The requested replacement is not evidenced as necessary from the returned data.",
+    "missing_information": [
+      "Identity, installation time, and activation status of the router/gateway reportedly replaced last week.",
+      "Whether the affected device is DEV-003 or separate customer-owned routing equipment.",
+      "Whether service recovers after OUT-001 is resolved.",
+      "Any physical-link or optical/ONT status between DEV-003 and the upstream network."
+    ],
+    "observed_facts": [
+      {
+        "evidence_references": [
+          {
+            "source_id": "ACC-002",
+            "tool_name": "functions.get_account_status"
+          },
+          {
+            "source_id": "CUS-002",
+            "tool_name": "functions.get_account_status"
+          }
+        ],
+        "statement": "Account ACC-002 is current, service activation is active, provisioning status is complete, and DEV-003 is the registered device."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "DEV-003",
+            "tool_name": "functions.get_device_status"
+          },
+          {
+            "source_id": "DEV-003",
+            "tool_name": "functions.run_connectivity_diagnostics"
+          }
+        ],
+        "statement": "DEV-003 is an online, reachable gateway with local connectivity and good signal health; it is not WAN-connected, has no WAN IP, and cannot reach DNS."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "CUS-002",
+            "tool_name": "functions.check_service_outages"
+          },
+          {
+            "source_id": "OUT-001",
+            "tool_name": "functions.check_service_outages"
+          }
+        ],
+        "statement": "An active upstream service interruption affects District Meridian, the customer\u2019s service area."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "TKT-003",
+            "tool_name": "functions.get_ticket_history"
+          },
+          {
+            "source_id": "OUT-001",
+            "tool_name": "functions.check_service_outages"
+          }
+        ],
+        "statement": "A connectivity ticket reporting no internet was opened at 2026-08-28T08:20:00Z; the active outage began at 2026-08-28T08:15:00Z."
+      }
+    ],
+    "ticket_summary": "CUS-002 reports no internet after replacing a router and requests a gateway replacement. Investigation identifies an active upstream outage in the customer\u2019s service area while the registered gateway remains reachable locally but lacks WAN connectivity and a WAN IP."
+  },
+  "prompt_id": "investigator-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase4-001",
+  "runtime_metrics": {
+    "latency_ms": 11451.536799955647,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 3879,
+    "tool_call_count": 6
+  },
+  "status": "failed",
+  "tool_calls": [
+    {
+      "arguments": {
+        "customer_id": "CUS-002"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "display_name": "Sample Household Beta",
+              "id": "CUS-002",
+              "service_area": "District Meridian"
+            },
+            "entity_id": "CUS-002",
+            "source": "synthetic_world",
+            "summary": "Synthetic customer record."
+          },
+          {
+            "data": {
+              "customer_id": "CUS-002",
+              "id": "ACC-002",
+              "provisioning_status": "complete",
+              "service_activation": "active",
+              "service_plan": "Home Fiber 500",
+              "standing": "current"
+            },
+            "entity_id": "ACC-002",
+            "source": "synthetic_world",
+            "summary": "Synthetic account status."
+          },
+          {
+            "data": {
+              "device_ids": [
+                "DEV-003"
+              ]
+            },
+            "entity_id": "ACC-002",
+            "source": "synthetic_world",
+            "summary": "Devices registered to the synthetic account."
+          }
+        ],
+        "source_ids": [
+          "CUS-002",
+          "ACC-002"
+        ],
+        "success": true,
+        "summary": "Account ACC-002 is active.",
+        "tool_name": "get_account_status"
+      },
+      "tool_name": "get_account_status"
+    },
+    {
+      "arguments": {
+        "device_id": "DEV-003"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "account_id": "ACC-002",
+              "device_type": "gateway",
+              "id": "DEV-003",
+              "label": "Beta Gateway",
+              "status": {
+                "connection_state": "connected",
+                "dns_reachable": false,
+                "firmware_version": "FW-3.4.1",
+                "gateway_reachable": true,
+                "local_connectivity": true,
+                "online": true,
+                "signal_health": "good",
+                "wan_connected": false,
+                "wan_ip_available": false
+              }
+            },
+            "entity_id": "DEV-003",
+            "source": "synthetic_world",
+            "summary": "Synthetic device state."
+          }
+        ],
+        "source_ids": [
+          "DEV-003"
+        ],
+        "success": true,
+        "summary": "Device DEV-003 is online.",
+        "tool_name": "get_device_status"
+      },
+      "tool_name": "get_device_status"
+    },
+    {
+      "arguments": {
+        "device_id": "DEV-003"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "dns_reachable": false,
+              "gateway_reachable": true,
+              "local_connectivity": true,
+              "signal_health": "good",
+              "wan_connected": false,
+              "wan_ip_available": false
+            },
+            "entity_id": "DEV-003",
+            "source": "synthetic_diagnostics",
+            "summary": "Deterministic gateway connectivity checks."
+          }
+        ],
+        "source_ids": [
+          "DEV-003"
+        ],
+        "success": true,
+        "summary": "Connectivity diagnostics completed for DEV-003.",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      "tool_name": "run_connectivity_diagnostics"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-002"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "service_area": "District Meridian"
+            },
+            "entity_id": "CUS-002",
+            "source": "synthetic_world",
+            "summary": "Synthetic service area used for outage lookup."
+          },
+          {
+            "data": {
+              "affected_areas": [
+                "District Meridian"
+              ],
+              "id": "OUT-001",
+              "started_at": "2026-08-28T08:15:00Z",
+              "status": "active",
+              "summary": "Synthetic upstream service interruption affecting District Meridian."
+            },
+            "entity_id": "OUT-001",
+            "source": "synthetic_outage_feed",
+            "summary": "Synthetic upstream service interruption affecting District Meridian."
+          }
+        ],
+        "source_ids": [
+          "CUS-002",
+          "OUT-001"
+        ],
+        "success": true,
+        "summary": "Active outage found for District Meridian.",
+        "tool_name": "check_service_outages"
+      },
+      "tool_name": "check_service_outages"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-002"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "category": "wifi",
+              "created_at": "2026-06-18T11:10:00Z",
+              "customer_id": "CUS-002",
+              "id": "TKT-002",
+              "outcome": "Shared placement article.",
+              "summary": "Requested placement guidance for the gateway."
+            },
+            "entity_id": "TKT-002",
+            "source": "synthetic_ticket_history",
+            "summary": "Requested placement guidance for the gateway."
+          },
+          {
+            "data": {
+              "category": "connectivity",
+              "created_at": "2026-08-28T08:20:00Z",
+              "customer_id": "CUS-002",
+              "id": "TKT-003",
+              "outcome": "Investigation open.",
+              "summary": "Reported no internet access on connected devices."
+            },
+            "entity_id": "TKT-003",
+            "source": "synthetic_ticket_history",
+            "summary": "Reported no internet access on connected devices."
+          }
+        ],
+        "source_ids": [
+          "TKT-002",
+          "TKT-003"
+        ],
+        "success": true,
+        "summary": "Found 2 ticket-history entries.",
+        "tool_name": "get_ticket_history"
+      },
+      "tool_name": "get_ticket_history"
+    },
+    {
+      "arguments": {
+        "limit": 3,
+        "query": "replaced router no internet gateway replacement activation provisioning"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "article_id": "KB-001",
+              "excerpt": "A replacement gateway must be powered on and connected locally before activation can complete. Confirm the account provisioning status, then guide the customer through the synthetic activation step. Escalate when activat",
+              "score": 18,
+              "title": "Activate a replacement gateway"
+            },
+            "entity_id": "KB-001",
+            "source": "synthetic_knowledge_base",
+            "summary": "KB match: Activate a replacement gateway"
+          },
+          {
+            "data": {
+              "article_id": "KB-002",
+              "excerpt": "When devices are connected to Wi-Fi but cannot reach the internet, inspect gateway reachability, WAN status, WAN IP availability, and DNS reachability. Check the service-area outage tool before treating the issue as loca",
+              "score": 7,
+              "title": "Wi-Fi connected but internet unavailable"
+            },
+            "entity_id": "KB-002",
+            "source": "synthetic_knowledge_base",
+            "summary": "KB match: Wi-Fi connected but internet unavailable"
+          },
+          {
+            "data": {
+              "article_id": "KB-004",
+              "excerpt": "For an offline gateway, confirm power and local reachability. If the gateway cannot be reached, collect the observed state and follow the offline-device escalation guidance when standard recovery steps do not help.",
+              "score": 6,
+              "title": "Offline gateway troubleshooting"
+            },
+            "entity_id": "KB-004",
+            "source": "synthetic_knowledge_base",
+            "summary": "KB match: Offline gateway troubleshooting"
+          }
+        ],
+        "source_ids": [
+          "KB-001",
+          "KB-002",
+          "KB-004"
+        ],
+        "success": true,
+        "summary": "Found 3 KB matches.",
+        "tool_name": "search_knowledge_base"
+      },
+      "tool_name": "search_knowledge_base"
+    }
+  ],
+  "usage": {
+    "input_tokens": 2776,
+    "output_tokens": 1103,
+    "reasoning_tokens": 128,
+    "total_tokens": 3879
+  }
+}

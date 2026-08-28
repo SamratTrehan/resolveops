@@ -1,0 +1,81 @@
+{
+  "agent_name": "ResolveOps Resolver",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 3137.154500000179,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 1718,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 1451,
+        "output_tokens": 267,
+        "reasoning_tokens": 0,
+        "total_tokens": 1718
+      }
+    }
+  ],
+  "case_id": "CASE-006",
+  "error": null,
+  "input_summary": "{\"evidence_bundle\": {\"case_id\": \"CASE-006\", \"contradictions\": [\"No confirmed contradiction. DEV-004 is locally online while DEV-005 reports gateway_unavailable; these states may be compatible with a gateway that is powered/reachable locally but not activated for service or sensor connectivity.\"], \"evidence_references\": [{\"source_id\": \"CUS-003\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"ACC-003\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-005\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-004\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"TKT-004\", \"tool_name\": \"get_ticket_history\"}, {\"source_id\": \"CUS-003\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"KB-001\", \"tool_name\": \"search_knowledge_base\"}, {\"source_id\": \"KB-006\", \"tool_name\": \"search_knowledge_base\"}], \"hypotheses\": [{\"label\": \"Replacement gateway activation is the dependency preventing sensor connectivity.\", \"rationale\": \"The account is awaiting gateway activation, DEV-004 is activation_pending without WAN connectivity, and DEV-005 reports gateway_unavailable. The delivery ticket also remains awaiting customer activation.\"}], \"investigation_summary\": \"Observable evidence points to an incomplete replacement-gateway activation rather than an area outage. Restore/complete the gateway activation dependency before further sensor-specific troubleshooting.\", \"missing_information\": [\"Whether the replacement gateway activation step has been completed successfully.\", \"Whether DEV-005 is paired to DEV-004 after the gateway replacement.\", \"Sensor-level connectivity diagnostics are unavailable because DEV-005 is an unsupported diagnostic target.\", \"Gateway activation failure details or activation logs are not available. \"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"ACC-003\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-003 is current but has service activation pending and provisioning status awaiting_gateway_activation.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-005\", \"tool_name\": \"get_device_status\"}], \"statement\": \"DEV-005 (Gamma Window Sensor) is offline with connection_state gateway_unavailable and no local connectivity.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-004\", \"tool_name\": \"get_device_status\"}], \"statement\": \"DEV-004 is registered as the Gamma Replacement Gateway. It is online and locally reachable, but its connection state is activation_pending; WAN, WAN IP, and DNS are unavailable.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-004\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"Replacement-gateway delivery was confirmed, with the prior ticket outcome recorded as awaiting customer activation.\"}, {\"evidence_references\": [{\"source_id\": \"CUS-003\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"No active service outage was found for District Solstice.\"}, {\"evidence_references\": [{\"source_id\": \"KB-006\", \"tool_name\": \"search_knowledge_base\"}], \"statement\": \"Knowledge-base guidance states that an offline sensor's paired gateway should be restored first when the gateway is pending activation or unavailable.\"}], \"ticket_summary\": \"Gamma Window Sensor (DEV-005) is offline after replacement-gateway delivery; the account and replacement gateway remain in activation-pending states.\"}, \"ticket\": \"Ticket:\\nSample Household Gamma's window sensor is offline following the gateway replacement.\\n\\nCustomer ID: CUS-003\\nPrimary device ID: DEV-005\"}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "asserted_claim_ids": [],
+    "confidence": 0.96,
+    "customer_response": "Your replacement gateway is still awaiting activation, which is preventing the window sensor from connecting. Please complete the gateway activation steps for the replacement gateway first. Once activation finishes and the gateway is connected, the sensor should be able to reconnect; if it remains offline afterward, we can help reconnect it.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "ACC-003",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-004",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-005",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "TKT-004",
+        "tool_name": "get_ticket_history"
+      },
+      {
+        "source_id": "CUS-003",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "KB-006",
+        "tool_name": "search_knowledge_base"
+      }
+    ],
+    "internal_notes": "Account ACC-003 and replacement gateway DEV-004 are activation pending; DEV-004 has no WAN, WAN IP, or DNS availability. Sensor DEV-005 reports gateway_unavailable. Delivery history shows awaiting customer activation, and no District Solstice outage is active. Prioritize gateway activation before sensor-specific troubleshooting.",
+    "recommended_action_id": "guide_gateway_activation",
+    "root_cause_id": "pending_gateway_provisioning"
+  },
+  "prompt_id": "resolver-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase4-001",
+  "runtime_metrics": {
+    "latency_ms": 3137.154500000179,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 1718,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 1451,
+    "output_tokens": 267,
+    "reasoning_tokens": 0,
+    "total_tokens": 1718
+  }
+}

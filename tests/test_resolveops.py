@@ -9,7 +9,7 @@ from agents.exceptions import ModelBehaviorError
 from resolveops.agents.baseline.config import BaselineConfig
 from resolveops.agents.baseline.runner import select_case
 from resolveops.agents.resolveops.factory import create_investigator, create_resolver
-from resolveops.agents.resolveops.evidence import with_authoritative_evidence_case_id
+from resolveops.agents.resolveops.evidence import canonical_tool_name, normalize_evidence_bundle, with_authoritative_evidence_case_id
 from resolveops.agents.resolveops.prompts import INVESTIGATOR_INSTRUCTIONS, RESOLVER_INSTRUCTIONS
 from resolveops.agents.resolveops.runner import run_case
 from resolveops.agents.resolveops.runner import _metrics
@@ -17,6 +17,10 @@ from resolveops.agents.resolveops.records import AgentAttempt
 from resolveops.evaluation.models import RuntimeMetrics
 from resolveops.agents.resolveops.schemas import EvidenceBundle, EvidenceBundleDraft, Hypothesis, ObservedFact
 from resolveops.evaluation.models import CandidateDraft, EvidenceReference
+from resolveops.evaluation.score_resolveops_results import score_saved_run
+from resolveops.agents.resolveops.artifacts import ResolveOpsArtifactStore, ResolveOpsManifest
+from resolveops.agents.baseline.records import RuntimeRecord
+from resolveops.evaluation.models import CandidateOutput, ExecutionFailure
 
 
 def _bundle() -> EvidenceBundleDraft:
@@ -89,3 +93,34 @@ def test_agent_token_aggregation_is_complete_or_null() -> None:
     assert (metrics.token_usage, metrics.retries, metrics.tool_call_count, metrics.latency_ms) == (4947, 1, 0, 5)
     missing = retry + [AgentAttempt(attempt_number=3, status="failed", runtime_metrics=RuntimeMetrics(latency_ms=1, tool_call_count=0))]
     assert _metrics(missing).token_usage is None
+
+
+def test_sdk_qualified_evidence_references_are_canonicalized_narrowly() -> None:
+    tools = ("get_account_status", "get_device_status", "run_connectivity_diagnostics", "check_service_outages", "get_ticket_history", "search_knowledge_base")
+    assert [canonical_tool_name(name) for name in tools] == list(tools)
+    assert [canonical_tool_name(f"functions.{name}") for name in tools] == list(tools)
+    assert canonical_tool_name("fake.get_account_status") == "fake.get_account_status"
+    bundle = EvidenceBundle(case_id="CASE-001", ticket_summary="x", evidence_references=[EvidenceReference(tool_name="functions.get_account_status", source_id="ACC-002")], observed_facts=[ObservedFact(statement="Account observed.", evidence_references=[EvidenceReference(tool_name="functions.get_device_status", source_id="DEV-003")])], investigation_summary="x")
+    normalized = normalize_evidence_bundle(bundle)
+    assert normalized.evidence_references[0].tool_name == "get_account_status"
+    assert normalized.observed_facts[0].evidence_references[0].tool_name == "get_device_status"
+
+
+def test_resolveops_scoring_wrapper_scores_completed_full_artifacts(tmp_path) -> None:
+    store = ResolveOpsArtifactStore("score-wrapper", root=tmp_path)
+    cases = [select_case(f"CASE-{number:03}") for number in range(1, 16)]
+    store.prepare()
+    candidates = {case.case_id: CandidateOutput(case_id=case.case_id, root_cause_id="regional_outage", confidence=0, recommended_action_id="communicate_outage_status", escalate=False, customer_response="x", internal_notes="x") for case in cases[:-1]}
+    failure = ExecutionFailure(case_id=cases[-1].case_id, error_type="ModelBehaviorError", error_message="Invalid JSON", infrastructure_retries=1)
+    store.write_results(candidates, {case.case_id: RuntimeRecord(model="test", reasoning_effort="medium", metrics=RuntimeMetrics()) for case in cases}, {failure.case_id: failure}, ResolveOpsManifest(run_id="score-wrapper", run_kind="official", model="test", reasoning_effort="medium", investigator_prompt_id="investigator-v1", resolver_prompt_id="resolver-v1", case_ids=[case.case_id for case in cases], successful_candidate_count=14, execution_failure_count=1))
+    score_saved_run("score-wrapper", root=tmp_path)
+    assert (store.result_dir / "score_summary.json").exists()
+    assert (store.result_dir / "case_scores.json").exists()
+
+
+def test_resolveops_scoring_wrapper_rejects_failure_marker(tmp_path) -> None:
+    store = ResolveOpsArtifactStore("incomplete-wrapper", root=tmp_path)
+    store.prepare()
+    ResolveOpsArtifactStore._write(store.result_dir / "failure.json", {"status": "failed"})
+    with pytest.raises(RuntimeError, match="incomplete"):
+        score_saved_run("incomplete-wrapper", root=tmp_path)
