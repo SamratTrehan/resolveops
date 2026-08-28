@@ -21,6 +21,7 @@ from resolveops.evaluation.score_resolveops_results import score_saved_run
 from resolveops.agents.resolveops.artifacts import ResolveOpsArtifactStore, ResolveOpsManifest
 from resolveops.agents.baseline.records import RuntimeRecord
 from resolveops.evaluation.models import CandidateOutput, ExecutionFailure
+from resolveops.agents.resolveops.safety import ApprovalStatus, HumanApproval, safety_gate
 
 
 def _bundle() -> EvidenceBundleDraft:
@@ -107,6 +108,16 @@ def test_sdk_qualified_evidence_references_are_canonicalized_narrowly() -> None:
     normalized = normalize_evidence_bundle(bundle)
     assert normalized.evidence_references[0].tool_name == "get_account_status"
     assert normalized.observed_facts[0].evidence_references[0].tool_name == "get_device_status"
+
+
+def test_human_approval_gate_is_explicit_and_synthetic_only() -> None:
+    assert safety_gate("communicate_outage_status").approval_status is ApprovalStatus.NOT_REQUIRED
+    pending = safety_gate("guide_gateway_activation")
+    assert pending.approval_status is ApprovalStatus.PENDING and pending.execution_status == "blocked_pending_approval"
+    approved = safety_gate("guide_gateway_activation", HumanApproval.APPROVE)
+    assert approved.approval_status is ApprovalStatus.APPROVED and approved.simulated and approved.execution_status == "executed"
+    rejected = safety_gate("guide_gateway_activation", HumanApproval.REJECT)
+    assert rejected.approval_status is ApprovalStatus.REJECTED and rejected.execution_status == "blocked_rejected"
 
 
 def test_resolveops_scoring_wrapper_scores_completed_full_artifacts(tmp_path) -> None:

@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 
 from resolveops.agents.baseline.records import RecordedToolCall
 from resolveops.evaluation.models import RuntimeMetrics
+from resolveops.agents.resolveops.safety import SafetyGateRecord
 
 
 class AgentAttempt(BaseModel):
@@ -30,3 +31,4 @@ class AgentTrajectory(BaseModel):
     error: str | None = None
     runtime_metrics: RuntimeMetrics
     usage: dict[str, int] | None = None
+    safety_gate: SafetyGateRecord | None = None

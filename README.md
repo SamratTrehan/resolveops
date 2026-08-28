@@ -21,6 +21,8 @@ Phase 4 implements the first ResolveOps workflow: `Ticket -> Investigator -> Evi
 
 The Phase 4 hypothesis is that separating evidence collection from resolution improves evidence coverage and reduces unsupported conclusions without changing the model or tool surface. `baseline-official-004` is the frozen fair baseline (VRSR 66.67%, evidence coverage 73.33%); Phase 4 has not yet been benchmarked.
 
+Consequential simulated actions are safety-gated: gateway activation requires explicit human approval before any synthetic execution is allowed. Approval is separate from resolution quality and never changes CandidateOutput or scoring; pending and rejected actions remain blocked. No real systems or credentials are used.
+
 ## Setup
 
 Python 3.12 is required.

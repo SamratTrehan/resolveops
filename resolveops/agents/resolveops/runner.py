@@ -20,6 +20,7 @@ from resolveops.agents.resolveops.factory import INVESTIGATOR_NAME, RESOLVER_NAM
 from resolveops.agents.resolveops.prompts import INVESTIGATOR_PROMPT_ID, RESOLVER_PROMPT_ID, RESOLVER_REVISION_PROMPT_ID, VERIFIER_PROMPT_ID
 from resolveops.agents.resolveops.records import AgentAttempt, AgentTrajectory
 from resolveops.agents.resolveops.schemas import EvidenceBundle, EvidenceBundleDraft, VerificationDecision
+from resolveops.agents.resolveops.safety import HumanApproval, safety_gate
 from resolveops.evaluation.benchmark import load_cases
 from resolveops.evaluation.candidate import with_authoritative_case_id
 from resolveops.evaluation.models import CandidateDraft, CandidateOutput, EvaluationCase, ExecutionFailure, RuntimeMetrics
@@ -75,7 +76,7 @@ def _validate_candidate_references(draft: CandidateDraft, bundle: EvidenceBundle
         raise ValueError("CandidateDraft contains a reference not present in the EvidenceBundle.")
 
 
-def run_case(case: EvaluationCase, config: BaselineConfig, run_id: str, run_sync: Callable[..., Any] = Runner.run_sync) -> tuple[CandidateOutput | None, list[AgentTrajectory]]:
+def run_case(case: EvaluationCase, config: BaselineConfig, run_id: str, run_sync: Callable[..., Any] = Runner.run_sync, human_approval: HumanApproval | None = None) -> tuple[CandidateOutput | None, list[AgentTrajectory]]:
     investigator_input = _input(case)
     bundle, investigator = _run_agent(case, config, run_id, INVESTIGATOR_NAME, INVESTIGATOR_PROMPT_ID, create_investigator, investigator_input, True, run_sync)
     if bundle is None:
@@ -111,15 +112,17 @@ def run_case(case: EvaluationCase, config: BaselineConfig, run_id: str, run_sync
     except ValueError as error:
         stages[-1].status = "failed"; stages[-1].error = f"ValueError: {error}"
         return None, stages
-    return with_authoritative_case_id(case, draft), stages
+    final = with_authoritative_case_id(case, draft)
+    stages[-1].safety_gate = safety_gate(final.recommended_action_id, human_approval)
+    return final, stages
 
 
-def run_cases(cases: list[EvaluationCase], config: BaselineConfig, run_id: str, all_cases: bool = False) -> None:
+def run_cases(cases: list[EvaluationCase], config: BaselineConfig, run_id: str, all_cases: bool = False, human_approval: HumanApproval | None = None) -> None:
     store = ResolveOpsArtifactStore(run_id)
     store.prepare()
     candidates: dict[str, CandidateOutput] = {}; failures: dict[str, ExecutionFailure] = {}; runtime: dict[str, RuntimeRecord] = {}
     for case in cases:
-        candidate, stages = run_case(case, config, run_id)
+        candidate, stages = run_case(case, config, run_id, human_approval=human_approval)
         for stage in stages: store.write_trajectory(stage)
         stage_tokens = [stage.runtime_metrics.token_usage for stage in stages]
         metrics = RuntimeMetrics(latency_ms=sum(stage.runtime_metrics.latency_ms or 0 for stage in stages), token_usage=sum(stage_tokens) if all(value is not None for value in stage_tokens) else None, retries=sum(stage.runtime_metrics.retries or 0 for stage in stages), tool_call_count=sum(stage.runtime_metrics.tool_call_count or 0 for stage in stages))
@@ -133,10 +136,10 @@ def run_cases(cases: list[EvaluationCase], config: BaselineConfig, run_id: str, 
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(); group = parser.add_mutually_exclusive_group(required=True); group.add_argument("--case-id"); group.add_argument("--all", action="store_true"); parser.add_argument("--run-id", required=True); args = parser.parse_args()
+    parser = argparse.ArgumentParser(); group = parser.add_mutually_exclusive_group(required=True); group.add_argument("--case-id"); group.add_argument("--all", action="store_true"); parser.add_argument("--run-id", required=True); parser.add_argument("--human-approval", choices=[item.value for item in HumanApproval]); args = parser.parse_args()
     if not os.environ.get("OPENAI_API_KEY"): parser.error("OPENAI_API_KEY must be set for a live ResolveOps run.")
     cases = load_cases() if args.all else [select_case(args.case_id)]
-    run_cases(cases, BaselineConfig.from_environment(), args.run_id, all_cases=args.all)
+    run_cases(cases, BaselineConfig.from_environment(), args.run_id, all_cases=args.all, human_approval=HumanApproval(args.human_approval) if args.human_approval else None)
 
 
 if __name__ == "__main__": main()
