@@ -17,7 +17,9 @@ The repository keeps Python code under the `resolveops/` namespace: the future a
 
 ## Current phase
 
-Phase 3 adds one general-purpose OpenAI Agents SDK baseline agent. It receives observable ticket inputs, has the six Phase 1 tools, and emits the fixed `CandidateOutput` contract. It has no access to evaluator-only truth. The final ResolveOps Investigator/Resolver/Verifier workflow is not implemented.
+Phase 4 implements the first ResolveOps workflow: `Ticket -> Investigator -> EvidenceBundle -> Resolver -> CandidateOutput`. The Investigator has the six deterministic tools; the Resolver has no diagnostic tools and decides only from the ticket, public ontology, and structured evidence handoff. The independent Verifier is not implemented.
+
+The Phase 4 hypothesis is that separating evidence collection from resolution improves evidence coverage and reduces unsupported conclusions without changing the model or tool surface. `baseline-official-004` is the frozen fair baseline (VRSR 66.67%, evidence coverage 73.33%); Phase 4 has not yet been benchmarked.
 
 ## Setup
 
@@ -116,6 +118,13 @@ The future official baseline run is explicit and is not run automatically:
 ```bash
 python -m resolveops.agents.baseline.runner --all --run-id baseline-official-001 --official
 python -m resolveops.evaluation.score_baseline_results --run-id baseline-official-001
+```
+
+Phase 4 commands are also explicit and make live API calls only when manually run with an API key:
+
+```bash
+python -m resolveops.agents.resolveops.runner --case-id CASE-001 --run-id phase4-smoke-001
+python -m resolveops.agents.resolveops.runner --all --run-id resolveops-official-001
 ```
 
 The benchmark-default runtime lock is `gpt-5.6-terra` with reasoning effort `medium`. Supported effort values in the installed SDK are `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Generation artifacts record the actual model and effort in `manifest.json` and `runtime.json`; trajectories record both per case. Existing run IDs are rejected rather than overwritten. The scoring command is deliberately separate because it is the only step that loads evaluator-only truth.
