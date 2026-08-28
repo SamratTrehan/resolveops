@@ -1,0 +1,44 @@
+{
+  "customers": [
+    {"id": "CUS-001", "display_name": "Sample Household Alpha", "service_area": "District Aurora"},
+    {"id": "CUS-002", "display_name": "Sample Household Beta", "service_area": "District Meridian"},
+    {"id": "CUS-003", "display_name": "Sample Household Gamma", "service_area": "District Solstice"},
+    {"id": "CUS-004", "display_name": "Sample Household Delta", "service_area": "District Aurora"},
+    {"id": "CUS-005", "display_name": "Sample Household Epsilon", "service_area": "District Harbor"},
+    {"id": "CUS-006", "display_name": "Sample Household Zeta", "service_area": "District Solstice"}
+  ],
+  "accounts": [
+    {"id": "ACC-001", "customer_id": "CUS-001", "standing": "current", "service_activation": "active", "provisioning_status": "complete", "service_plan": "Home Fiber 500"},
+    {"id": "ACC-002", "customer_id": "CUS-002", "standing": "current", "service_activation": "active", "provisioning_status": "complete", "service_plan": "Home Fiber 500"},
+    {"id": "ACC-003", "customer_id": "CUS-003", "standing": "current", "service_activation": "pending", "provisioning_status": "awaiting_gateway_activation", "service_plan": "Home Fiber 300"},
+    {"id": "ACC-004", "customer_id": "CUS-004", "standing": "current", "service_activation": "active", "provisioning_status": "complete", "service_plan": "Home Fiber 500"},
+    {"id": "ACC-005", "customer_id": "CUS-005", "standing": "current", "service_activation": "active", "provisioning_status": "complete", "service_plan": "Home Fiber 1G"},
+    {"id": "ACC-006", "customer_id": "CUS-006", "standing": "past_due", "service_activation": "active", "provisioning_status": "complete", "service_plan": "Home Fiber 300"}
+  ],
+  "devices": [
+    {"id": "DEV-001", "account_id": "ACC-001", "device_type": "gateway", "label": "Alpha Gateway", "status": {"online": true, "connection_state": "connected", "firmware_version": "FW-3.4.1", "local_connectivity": true, "gateway_reachable": true, "wan_connected": true, "wan_ip_available": true, "dns_reachable": true, "signal_health": "good"}},
+    {"id": "DEV-002", "account_id": "ACC-001", "device_type": "sensor", "label": "Alpha Door Sensor", "status": {"online": true, "connection_state": "connected", "firmware_version": "FW-1.8.0", "local_connectivity": true, "signal_health": "good"}},
+    {"id": "DEV-003", "account_id": "ACC-002", "device_type": "gateway", "label": "Beta Gateway", "status": {"online": true, "connection_state": "connected", "firmware_version": "FW-3.4.1", "local_connectivity": true, "gateway_reachable": true, "wan_connected": false, "wan_ip_available": false, "dns_reachable": false, "signal_health": "good"}},
+    {"id": "DEV-004", "account_id": "ACC-003", "device_type": "gateway", "label": "Gamma Replacement Gateway", "status": {"online": true, "connection_state": "activation_pending", "firmware_version": "FW-3.4.1", "local_connectivity": true, "gateway_reachable": true, "wan_connected": false, "wan_ip_available": false, "dns_reachable": false, "signal_health": "good"}},
+    {"id": "DEV-005", "account_id": "ACC-003", "device_type": "sensor", "label": "Gamma Window Sensor", "status": {"online": false, "connection_state": "gateway_unavailable", "firmware_version": "FW-1.8.0", "local_connectivity": false, "signal_health": "unknown"}},
+    {"id": "DEV-006", "account_id": "ACC-004", "device_type": "gateway", "label": "Delta Gateway", "status": {"online": true, "connection_state": "connected", "firmware_version": "FW-3.4.0", "local_connectivity": true, "gateway_reachable": true, "wan_connected": true, "wan_ip_available": true, "dns_reachable": true, "signal_health": "good"}},
+    {"id": "DEV-007", "account_id": "ACC-004", "device_type": "camera", "label": "Delta Porch Camera", "status": {"online": false, "connection_state": "offline", "firmware_version": "FW-2.2.3", "local_connectivity": false, "signal_health": "unknown"}},
+    {"id": "DEV-008", "account_id": "ACC-005", "device_type": "gateway", "label": "Epsilon Gateway", "status": {"online": true, "connection_state": "connected", "firmware_version": "FW-3.4.1", "local_connectivity": true, "gateway_reachable": true, "wan_connected": true, "wan_ip_available": true, "dns_reachable": false, "signal_health": "degraded"}},
+    {"id": "DEV-009", "account_id": "ACC-005", "device_type": "camera", "label": "Epsilon Garage Camera", "status": {"online": true, "connection_state": "connected", "firmware_version": "FW-2.2.3", "local_connectivity": true, "signal_health": "fair"}},
+    {"id": "DEV-010", "account_id": "ACC-006", "device_type": "gateway", "label": "Zeta Gateway", "status": {"online": true, "connection_state": "connected", "firmware_version": "FW-3.4.1", "local_connectivity": true, "gateway_reachable": true, "wan_connected": true, "wan_ip_available": true, "dns_reachable": true, "signal_health": "good"}},
+    {"id": "DEV-011", "account_id": "ACC-006", "device_type": "sensor", "label": "Zeta Leak Sensor", "status": {"online": true, "connection_state": "connected", "firmware_version": "FW-1.8.0", "local_connectivity": true, "signal_health": "good"}}
+  ],
+  "outages": [
+    {"id": "OUT-001", "affected_areas": ["District Meridian"], "status": "active", "started_at": "2026-08-28T08:15:00Z", "summary": "Synthetic upstream service interruption affecting District Meridian."},
+    {"id": "OUT-002", "affected_areas": ["District Harbor"], "status": "resolved", "started_at": "2026-08-26T14:00:00Z", "summary": "Synthetic maintenance event; service restored."}
+  ],
+  "ticket_history": [
+    {"id": "TKT-001", "customer_id": "CUS-001", "created_at": "2026-07-04T09:30:00Z", "category": "billing", "summary": "Asked how to view the synthetic monthly statement.", "outcome": "Provided self-service instructions."},
+    {"id": "TKT-002", "customer_id": "CUS-002", "created_at": "2026-06-18T11:10:00Z", "category": "wifi", "summary": "Requested placement guidance for the gateway.", "outcome": "Shared placement article."},
+    {"id": "TKT-003", "customer_id": "CUS-002", "created_at": "2026-08-28T08:20:00Z", "category": "connectivity", "summary": "Reported no internet access on connected devices.", "outcome": "Investigation open."},
+    {"id": "TKT-004", "customer_id": "CUS-003", "created_at": "2026-08-27T16:45:00Z", "category": "activation", "summary": "Replacement gateway delivery confirmed.", "outcome": "Awaiting customer activation."},
+    {"id": "TKT-005", "customer_id": "CUS-004", "created_at": "2026-08-16T13:00:00Z", "category": "camera", "summary": "Porch camera stopped reporting after a power interruption.", "outcome": "Investigation open."},
+    {"id": "TKT-006", "customer_id": "CUS-005", "created_at": "2026-08-21T10:25:00Z", "category": "connectivity", "summary": "Some websites fail to load while Wi-Fi remains connected.", "outcome": "Investigation open."},
+    {"id": "TKT-007", "customer_id": "CUS-006", "created_at": "2026-08-12T15:40:00Z", "category": "account", "summary": "Asked about a service reminder on the synthetic account.", "outcome": "Provided account-access article."}
+  ]
+}

@@ -1,0 +1,17 @@
+[
+  {"case_id": "CASE-001", "ticket_text": "All devices at Sample Household Beta lost internet this morning. The gateway lights are normal.", "customer_id": "CUS-002", "primary_device_id": "DEV-003"},
+  {"case_id": "CASE-002", "ticket_text": "Sample Household Gamma received a replacement gateway and can join its Wi-Fi, but internet setup never completes.", "customer_id": "CUS-003", "primary_device_id": "DEV-004"},
+  {"case_id": "CASE-003", "ticket_text": "Sample Household Delta's porch camera stopped reporting after a power interruption. Other home devices are working.", "customer_id": "CUS-004", "primary_device_id": "DEV-007"},
+  {"case_id": "CASE-004", "ticket_text": "Sample Household Epsilon stays connected to Wi-Fi but several websites fail to load.", "customer_id": "CUS-005", "primary_device_id": "DEV-008"},
+  {"case_id": "CASE-005", "ticket_text": "One phone at Sample Household Alpha cannot join the home Wi-Fi, while other connected-home devices still work.", "customer_id": "CUS-001", "primary_device_id": "DEV-001"},
+  {"case_id": "CASE-006", "ticket_text": "Sample Household Gamma's window sensor is offline following the gateway replacement.", "customer_id": "CUS-003", "primary_device_id": "DEV-005"},
+  {"case_id": "CASE-007", "ticket_text": "Sample Household Zeta asks whether a service reminder in the account portal affects current connectivity.", "customer_id": "CUS-006", "primary_device_id": "DEV-010"},
+  {"case_id": "CASE-008", "ticket_text": "Sample Household Delta says the porch camera remains offline even though the home Wi-Fi is available.", "customer_id": "CUS-004", "primary_device_id": "DEV-007"},
+  {"case_id": "CASE-009", "ticket_text": "Sample Household Epsilon recently moved the router. The customer thinks the new hardware failed because websites no longer load.", "customer_id": "CUS-005", "primary_device_id": "DEV-008"},
+  {"case_id": "CASE-010", "ticket_text": "Sample Household Beta replaced a router last week and now has no internet. The customer requests a replacement gateway.", "customer_id": "CUS-002", "primary_device_id": "DEV-003"},
+  {"case_id": "CASE-011", "ticket_text": "Sample Household Alpha reports brief evening drops, but service is currently working and no exact times or affected devices were captured.", "customer_id": "CUS-001", "primary_device_id": "DEV-001"},
+  {"case_id": "CASE-012", "ticket_text": "Sample Household Delta reports that a camera app says connected, while the camera has not sent an image since the power interruption.", "customer_id": "CUS-004", "primary_device_id": "DEV-007"},
+  {"case_id": "CASE-013", "ticket_text": "Sample Household Zeta reports no internet despite a service reminder, but gives no affected-device details.", "customer_id": "CUS-006", "primary_device_id": "DEV-010"},
+  {"case_id": "CASE-014", "ticket_text": "Sample Household Alpha reports occasional false alerts from its door sensor while the sensor currently appears connected.", "customer_id": "CUS-001", "primary_device_id": "DEV-002"},
+  {"case_id": "CASE-015", "ticket_text": "Sample Household Gamma says a neighbour mentioned an outage, but this household's newly delivered gateway has never reached internet setup.", "customer_id": "CUS-003", "primary_device_id": "DEV-004"}
+]

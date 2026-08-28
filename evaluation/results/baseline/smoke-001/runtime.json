@@ -1,0 +1,13 @@
+{
+  "CASE-001": {
+    "metrics": {
+      "latency_ms": 11530.334900016896,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 2820,
+      "tool_call_count": 5
+    },
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "medium"
+  }
+}

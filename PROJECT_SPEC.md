@@ -1,0 +1,52 @@
+# ResolveOps Project Specification
+
+## User and problem
+
+- **Intended user:** Tier-1 and Tier-2 technical-support agents.
+- **Problem:** evidence needed to diagnose a support case is fragmented across account state, device diagnostics, outages, ticket history, and knowledge articles.
+- **Product promise:** ResolveOps investigates through tools, builds an evidence-backed resolution, verifies its conclusion, and escalates rather than guesses when evidence is insufficient.
+
+## Proposed workflow
+
+```text
+Ticket -> Investigator -> evidence/tools -> Resolver -> Verifier
+       -> human approval when required -> final Resolution Packet
+```
+
+Each stage will have a distinct responsibility. The Investigator gathers relevant evidence through deterministic simulated tools. The Resolver proposes a diagnosis and next steps grounded in that evidence. The Verifier independently checks the proposal. Any simulated consequential action requires explicit human approval before execution.
+
+## Baseline and evaluation
+
+The baseline will be one general-purpose tool-using agent operating with the same underlying model, tool environment, and evaluation cases as the final system, but without specialized orchestration or independent verification.
+
+The primary metric is **Verified Resolution Success Rate**: the share of cases with a correct, evidence-grounded resolution that passes verification and handles any required escalation or approval correctly.
+
+Secondary metrics are:
+
+- diagnosis accuracy;
+- evidence grounding;
+- correct tool use;
+- action correctness;
+- escalation correctness;
+- unsupported claims;
+- latency; and
+- cost.
+
+Baseline and final approaches will be evaluated on the same synthetic cases with the same scoring definitions. Representative trajectories and an improvement changelog will record how design changes affect results.
+
+The benchmark is fixed before any agent implementation. Observable cases contain only ticket text and investigation identifiers; evaluator-only truth is stored separately. Future systems submit normalized structured outputs containing a root cause (or `INSUFFICIENT_EVIDENCE`), action, escalation decision, evidence references, and non-primary prose. Verified Resolution Success Rate is a strict case pass: diagnosis or justified abstention, action, escalation decision, required evidence coverage, and no forbidden critical claim must all pass. Component diagnosis, action, escalation, evidence, and forbidden-claim metrics are reported separately; runtime metrics are populated only by future runners.
+
+The initial comparison system is one general-purpose tool-using baseline agent with a configurable runtime model and the same observable environment/tool surface as the future workflow. Its frozen prompt and local trajectories are recorded per run. Candidate generation is separated from evaluator-only scoring so baseline runtime code cannot load benchmark truth; no official benchmark result is recorded until an explicitly requested all-case run.
+
+## Safety boundary
+
+All customer, device, and account information is synthetic. Consequential actions are simulations and require human approval. ResolveOps will not connect to or modify real customer systems.
+
+## Non-goals
+
+- production integrations;
+- authentication;
+- real customer systems;
+- autonomous real-world account or device changes;
+- production deployment infrastructure; and
+- agent, simulator, or evaluation implementation during Phase 0.

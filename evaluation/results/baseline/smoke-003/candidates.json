@@ -1,0 +1,31 @@
+{
+  "CASE-001": {
+    "asserted_claim_ids": [
+      "active_service_outage",
+      "gateway_reachable",
+      "wan_not_connected",
+      "account_service_active"
+    ],
+    "case_id": "CASE-001",
+    "confidence": 0.98,
+    "customer_response": "We\u2019ve confirmed an active upstream service interruption affecting District Meridian. Your gateway is reachable, but its internet/WAN connection is currently unavailable, which matches the outage. Your service is active; no action is needed from you right now. Please monitor the connection while the outage is resolved.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "OUT-001",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "DEV-003",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "ACC-002",
+        "tool_name": "get_account_status"
+      }
+    ],
+    "internal_notes": "OUT-001 is active for District Meridian. DEV-003 is reachable with good local signal but has no WAN connection/IP or DNS. Account ACC-002 is active and fully provisioned.",
+    "recommended_action_id": "monitor_outage_resolution",
+    "root_cause_id": "active_service_outage"
+  }
+}
