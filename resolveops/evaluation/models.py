@@ -4,6 +4,8 @@ import re
 
 from pydantic import BaseModel, Field, field_validator
 
+from resolveops.domain.support_ontology import ActionId, RootCauseId
+
 
 NORMALIZED_ID_PATTERN = r"^(?:[a-z][a-z0-9_]*|INSUFFICIENT_EVIDENCE)$"
 
@@ -42,9 +44,9 @@ class EvidenceReference(BaseModel):
 
 
 class CandidateDraft(BaseModel):
-    root_cause_id: str = Field(pattern=NORMALIZED_ID_PATTERN)
+    root_cause_id: RootCauseId
     confidence: float = Field(ge=0, le=1)
-    recommended_action_id: str = Field(pattern=NORMALIZED_ID_PATTERN)
+    recommended_action_id: ActionId
     escalate: bool
     evidence_references: list[EvidenceReference] = Field(default_factory=list)
     asserted_claim_ids: list[str] = Field(default_factory=list)

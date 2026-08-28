@@ -1,0 +1,545 @@
+{
+  "agent_name": "ResolveOps Baseline",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "model": "gpt-5.6-terra",
+      "prompt_id": "baseline-v1",
+      "reasoning_effort": "medium",
+      "runtime_metrics": {
+        "latency_ms": 13471.682200033683,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 4957,
+        "tool_call_count": 6
+      },
+      "status": "completed",
+      "tool_calls": [
+        {
+          "arguments": {
+            "customer_id": "CUS-005"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "display_name": "Sample Household Epsilon",
+                  "id": "CUS-005",
+                  "service_area": "District Harbor"
+                },
+                "entity_id": "CUS-005",
+                "source": "synthetic_world",
+                "summary": "Synthetic customer record."
+              },
+              {
+                "data": {
+                  "customer_id": "CUS-005",
+                  "id": "ACC-005",
+                  "provisioning_status": "complete",
+                  "service_activation": "active",
+                  "service_plan": "Home Fiber 1G",
+                  "standing": "current"
+                },
+                "entity_id": "ACC-005",
+                "source": "synthetic_world",
+                "summary": "Synthetic account status."
+              },
+              {
+                "data": {
+                  "device_ids": [
+                    "DEV-008",
+                    "DEV-009"
+                  ]
+                },
+                "entity_id": "ACC-005",
+                "source": "synthetic_world",
+                "summary": "Devices registered to the synthetic account."
+              }
+            ],
+            "source_ids": [
+              "CUS-005",
+              "ACC-005"
+            ],
+            "success": true,
+            "summary": "Account ACC-005 is active.",
+            "tool_name": "get_account_status"
+          },
+          "tool_name": "get_account_status"
+        },
+        {
+          "arguments": {
+            "device_id": "DEV-008"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "account_id": "ACC-005",
+                  "device_type": "gateway",
+                  "id": "DEV-008",
+                  "label": "Epsilon Gateway",
+                  "status": {
+                    "connection_state": "connected",
+                    "dns_reachable": false,
+                    "firmware_version": "FW-3.4.1",
+                    "gateway_reachable": true,
+                    "local_connectivity": true,
+                    "online": true,
+                    "signal_health": "degraded",
+                    "wan_connected": true,
+                    "wan_ip_available": true
+                  }
+                },
+                "entity_id": "DEV-008",
+                "source": "synthetic_world",
+                "summary": "Synthetic device state."
+              }
+            ],
+            "source_ids": [
+              "DEV-008"
+            ],
+            "success": true,
+            "summary": "Device DEV-008 is online.",
+            "tool_name": "get_device_status"
+          },
+          "tool_name": "get_device_status"
+        },
+        {
+          "arguments": {
+            "device_id": "DEV-008"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "dns_reachable": false,
+                  "gateway_reachable": true,
+                  "local_connectivity": true,
+                  "signal_health": "degraded",
+                  "wan_connected": true,
+                  "wan_ip_available": true
+                },
+                "entity_id": "DEV-008",
+                "source": "synthetic_diagnostics",
+                "summary": "Deterministic gateway connectivity checks."
+              }
+            ],
+            "source_ids": [
+              "DEV-008"
+            ],
+            "success": true,
+            "summary": "Connectivity diagnostics completed for DEV-008.",
+            "tool_name": "run_connectivity_diagnostics"
+          },
+          "tool_name": "run_connectivity_diagnostics"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-005"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "service_area": "District Harbor"
+                },
+                "entity_id": "CUS-005",
+                "source": "synthetic_world",
+                "summary": "Synthetic service area used for outage lookup."
+              }
+            ],
+            "source_ids": [
+              "CUS-005"
+            ],
+            "success": true,
+            "summary": "No active outage found for District Harbor.",
+            "tool_name": "check_service_outages"
+          },
+          "tool_name": "check_service_outages"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-005"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "category": "connectivity",
+                  "created_at": "2026-08-21T10:25:00Z",
+                  "customer_id": "CUS-005",
+                  "id": "TKT-006",
+                  "outcome": "Investigation open.",
+                  "summary": "Some websites fail to load while Wi-Fi remains connected."
+                },
+                "entity_id": "TKT-006",
+                "source": "synthetic_ticket_history",
+                "summary": "Some websites fail to load while Wi-Fi remains connected."
+              }
+            ],
+            "source_ids": [
+              "TKT-006"
+            ],
+            "success": true,
+            "summary": "Found 1 ticket-history entries.",
+            "tool_name": "get_ticket_history"
+          },
+          "tool_name": "get_ticket_history"
+        },
+        {
+          "arguments": {
+            "limit": 3,
+            "query": "websites do not load DNS unreachable gateway WAN connected troubleshooting"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "article_id": "KB-006",
+                  "excerpt": "Check whether the paired gateway is available before troubleshooting an offline sensor. If the gateway is pending activation or unavailable, restore that dependency first.",
+                  "score": 12,
+                  "title": "Connected-home sensor troubleshooting"
+                },
+                "entity_id": "KB-006",
+                "source": "synthetic_knowledge_base",
+                "summary": "KB match: Connected-home sensor troubleshooting"
+              },
+              {
+                "data": {
+                  "article_id": "KB-002",
+                  "excerpt": "When devices are connected to Wi-Fi but cannot reach the internet, inspect gateway reachability, WAN status, WAN IP availability, and DNS reachability. Check the service-area outage tool before treating the issue as loca",
+                  "score": 11,
+                  "title": "Wi-Fi connected but internet unavailable"
+                },
+                "entity_id": "KB-002",
+                "source": "synthetic_knowledge_base",
+                "summary": "KB match: Wi-Fi connected but internet unavailable"
+              },
+              {
+                "data": {
+                  "article_id": "KB-004",
+                  "excerpt": "For an offline gateway, confirm power and local reachability. If the gateway cannot be reached, collect the observed state and follow the offline-device escalation guidance when standard recovery steps do not help.",
+                  "score": 11,
+                  "title": "Offline gateway troubleshooting"
+                },
+                "entity_id": "KB-004",
+                "source": "synthetic_knowledge_base",
+                "summary": "KB match: Offline gateway troubleshooting"
+              }
+            ],
+            "source_ids": [
+              "KB-006",
+              "KB-002",
+              "KB-004"
+            ],
+            "success": true,
+            "summary": "Found 3 KB matches.",
+            "tool_name": "search_knowledge_base"
+          },
+          "tool_name": "search_knowledge_base"
+        }
+      ],
+      "usage": {
+        "input_tokens": 4051,
+        "output_tokens": 906,
+        "reasoning_tokens": 463,
+        "total_tokens": 4957
+      }
+    }
+  ],
+  "case_id": "CASE-009",
+  "error": null,
+  "final_output": {
+    "asserted_claim_ids": [
+      "account_active",
+      "gateway_online",
+      "wan_connected",
+      "wan_ip_available",
+      "dns_unreachable",
+      "no_active_area_outage",
+      "signal_health_degraded"
+    ],
+    "case_id": "CASE-009",
+    "confidence": 0.92,
+    "customer_response": "Your gateway is online and connected to the service, and there is no outage in your area. The check found that DNS\u2014the service used to translate website names\u2014is not reachable, which can prevent websites from loading even while Wi-Fi remains connected. Please make sure the cables were fully reseated after moving the router, then power it off for 30 seconds and turn it back on. Once it reconnects, try loading a website again.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "DEV-008",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-008",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-005",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "KB-002",
+        "tool_name": "search_knowledge_base"
+      }
+    ],
+    "internal_notes": "DEV-008 has local/WAN connectivity and a WAN IP, but DNS reachability is false; diagnostics also report degraded signal health. No District Harbor outage. Advise reseating connections after move and rebooting gateway; escalate if DNS remains unreachable after restart.",
+    "recommended_action_id": "restart_gateway_and_retest_dns",
+    "root_cause_id": "dns_reachability_failure"
+  },
+  "infrastructure_retries": 0,
+  "model": "gpt-5.6-terra",
+  "prompt_id": "baseline-v1",
+  "reasoning_effort": "medium",
+  "run_id": "baseline-official-003",
+  "runtime_metrics": {
+    "latency_ms": 13471.682200033683,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 4957,
+    "tool_call_count": 6
+  },
+  "status": "completed",
+  "tool_calls": [
+    {
+      "arguments": {
+        "customer_id": "CUS-005"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "display_name": "Sample Household Epsilon",
+              "id": "CUS-005",
+              "service_area": "District Harbor"
+            },
+            "entity_id": "CUS-005",
+            "source": "synthetic_world",
+            "summary": "Synthetic customer record."
+          },
+          {
+            "data": {
+              "customer_id": "CUS-005",
+              "id": "ACC-005",
+              "provisioning_status": "complete",
+              "service_activation": "active",
+              "service_plan": "Home Fiber 1G",
+              "standing": "current"
+            },
+            "entity_id": "ACC-005",
+            "source": "synthetic_world",
+            "summary": "Synthetic account status."
+          },
+          {
+            "data": {
+              "device_ids": [
+                "DEV-008",
+                "DEV-009"
+              ]
+            },
+            "entity_id": "ACC-005",
+            "source": "synthetic_world",
+            "summary": "Devices registered to the synthetic account."
+          }
+        ],
+        "source_ids": [
+          "CUS-005",
+          "ACC-005"
+        ],
+        "success": true,
+        "summary": "Account ACC-005 is active.",
+        "tool_name": "get_account_status"
+      },
+      "tool_name": "get_account_status"
+    },
+    {
+      "arguments": {
+        "device_id": "DEV-008"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "account_id": "ACC-005",
+              "device_type": "gateway",
+              "id": "DEV-008",
+              "label": "Epsilon Gateway",
+              "status": {
+                "connection_state": "connected",
+                "dns_reachable": false,
+                "firmware_version": "FW-3.4.1",
+                "gateway_reachable": true,
+                "local_connectivity": true,
+                "online": true,
+                "signal_health": "degraded",
+                "wan_connected": true,
+                "wan_ip_available": true
+              }
+            },
+            "entity_id": "DEV-008",
+            "source": "synthetic_world",
+            "summary": "Synthetic device state."
+          }
+        ],
+        "source_ids": [
+          "DEV-008"
+        ],
+        "success": true,
+        "summary": "Device DEV-008 is online.",
+        "tool_name": "get_device_status"
+      },
+      "tool_name": "get_device_status"
+    },
+    {
+      "arguments": {
+        "device_id": "DEV-008"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "dns_reachable": false,
+              "gateway_reachable": true,
+              "local_connectivity": true,
+              "signal_health": "degraded",
+              "wan_connected": true,
+              "wan_ip_available": true
+            },
+            "entity_id": "DEV-008",
+            "source": "synthetic_diagnostics",
+            "summary": "Deterministic gateway connectivity checks."
+          }
+        ],
+        "source_ids": [
+          "DEV-008"
+        ],
+        "success": true,
+        "summary": "Connectivity diagnostics completed for DEV-008.",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      "tool_name": "run_connectivity_diagnostics"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-005"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "service_area": "District Harbor"
+            },
+            "entity_id": "CUS-005",
+            "source": "synthetic_world",
+            "summary": "Synthetic service area used for outage lookup."
+          }
+        ],
+        "source_ids": [
+          "CUS-005"
+        ],
+        "success": true,
+        "summary": "No active outage found for District Harbor.",
+        "tool_name": "check_service_outages"
+      },
+      "tool_name": "check_service_outages"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-005"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "category": "connectivity",
+              "created_at": "2026-08-21T10:25:00Z",
+              "customer_id": "CUS-005",
+              "id": "TKT-006",
+              "outcome": "Investigation open.",
+              "summary": "Some websites fail to load while Wi-Fi remains connected."
+            },
+            "entity_id": "TKT-006",
+            "source": "synthetic_ticket_history",
+            "summary": "Some websites fail to load while Wi-Fi remains connected."
+          }
+        ],
+        "source_ids": [
+          "TKT-006"
+        ],
+        "success": true,
+        "summary": "Found 1 ticket-history entries.",
+        "tool_name": "get_ticket_history"
+      },
+      "tool_name": "get_ticket_history"
+    },
+    {
+      "arguments": {
+        "limit": 3,
+        "query": "websites do not load DNS unreachable gateway WAN connected troubleshooting"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "article_id": "KB-006",
+              "excerpt": "Check whether the paired gateway is available before troubleshooting an offline sensor. If the gateway is pending activation or unavailable, restore that dependency first.",
+              "score": 12,
+              "title": "Connected-home sensor troubleshooting"
+            },
+            "entity_id": "KB-006",
+            "source": "synthetic_knowledge_base",
+            "summary": "KB match: Connected-home sensor troubleshooting"
+          },
+          {
+            "data": {
+              "article_id": "KB-002",
+              "excerpt": "When devices are connected to Wi-Fi but cannot reach the internet, inspect gateway reachability, WAN status, WAN IP availability, and DNS reachability. Check the service-area outage tool before treating the issue as loca",
+              "score": 11,
+              "title": "Wi-Fi connected but internet unavailable"
+            },
+            "entity_id": "KB-002",
+            "source": "synthetic_knowledge_base",
+            "summary": "KB match: Wi-Fi connected but internet unavailable"
+          },
+          {
+            "data": {
+              "article_id": "KB-004",
+              "excerpt": "For an offline gateway, confirm power and local reachability. If the gateway cannot be reached, collect the observed state and follow the offline-device escalation guidance when standard recovery steps do not help.",
+              "score": 11,
+              "title": "Offline gateway troubleshooting"
+            },
+            "entity_id": "KB-004",
+            "source": "synthetic_knowledge_base",
+            "summary": "KB match: Offline gateway troubleshooting"
+          }
+        ],
+        "source_ids": [
+          "KB-006",
+          "KB-002",
+          "KB-004"
+        ],
+        "success": true,
+        "summary": "Found 3 KB matches.",
+        "tool_name": "search_knowledge_base"
+      },
+      "tool_name": "search_knowledge_base"
+    }
+  ],
+  "usage": {
+    "input_tokens": 4051,
+    "output_tokens": 906,
+    "reasoning_tokens": 463,
+    "total_tokens": 4957
+  }
+}

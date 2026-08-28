@@ -12,7 +12,6 @@ from agents.exceptions import ModelBehaviorError
 from resolveops.agents.baseline.artifacts import ArtifactStore, FailedRunRecord, RunManifest
 from resolveops.agents.baseline.config import BaselineConfig
 from resolveops.agents.baseline.factory import BASELINE_AGENT_NAME, create_baseline_agent
-from resolveops.agents.baseline.prompt import BASELINE_PROMPT_ID
 from resolveops.agents.baseline.records import BaselineAttempt, BaselineTrajectory, RuntimeRecord
 from resolveops.agents.baseline.tools import BaselineRunContext
 from resolveops.evaluation.benchmark import load_cases
@@ -93,7 +92,7 @@ def run_case(
                 status="completed",
                 model=config.model,
                 reasoning_effort=config.reasoning_effort,
-                prompt_id=BASELINE_PROMPT_ID,
+                prompt_id=config.prompt_id,
                 tool_calls=context.tool_calls,
                 runtime_metrics=RuntimeMetrics(
                     latency_ms=(time.perf_counter() - started) * 1000,
@@ -108,7 +107,7 @@ def run_case(
             return candidate, BaselineTrajectory(
                 run_id=run_id, case_id=case.case_id, model=config.model,
                 reasoning_effort=config.reasoning_effort, agent_name=BASELINE_AGENT_NAME,
-                prompt_id=BASELINE_PROMPT_ID, status="completed", infrastructure_retries=retries,
+                prompt_id=config.prompt_id, status="completed", infrastructure_retries=retries,
                 attempts=attempts, tool_calls=[call for item in attempts for call in item.tool_calls],
                 final_output=candidate, runtime_metrics=_aggregate_metrics(attempts, retries),
                 usage=_aggregate_usage(attempts),
@@ -116,7 +115,7 @@ def run_case(
         except Exception as error:
             attempt = BaselineAttempt(
                 attempt_number=attempt_number, status="failed", model=config.model,
-                reasoning_effort=config.reasoning_effort, prompt_id=BASELINE_PROMPT_ID,
+                reasoning_effort=config.reasoning_effort, prompt_id=config.prompt_id,
                 tool_calls=context.tool_calls, error=f"{type(error).__name__}: {error}",
                 runtime_metrics=RuntimeMetrics(
                     latency_ms=(time.perf_counter() - started) * 1000,
@@ -130,7 +129,7 @@ def run_case(
             trajectory = BaselineTrajectory(
                 run_id=run_id, case_id=case.case_id, model=config.model,
                 reasoning_effort=config.reasoning_effort, agent_name=BASELINE_AGENT_NAME,
-                prompt_id=BASELINE_PROMPT_ID, status="failed", infrastructure_retries=retries,
+                prompt_id=config.prompt_id, status="failed", infrastructure_retries=retries,
                 attempts=attempts, tool_calls=[call for item in attempts for call in item.tool_calls],
                 error=attempt.error, runtime_metrics=_aggregate_metrics(attempts, retries),
                 usage=_aggregate_usage(attempts),
@@ -180,7 +179,7 @@ def run_cases(
                     model=config.model,
                     reasoning_effort=config.reasoning_effort,
                     agent_name=BASELINE_AGENT_NAME,
-                    prompt_id=BASELINE_PROMPT_ID,
+                    prompt_id=config.prompt_id,
                     requested_case_ids=[item.case_id for item in cases],
                     completed_case_ids=list(candidates),
                     failed_case_id=case.case_id,
@@ -206,7 +205,7 @@ def run_cases(
             model=config.model,
             reasoning_effort=config.reasoning_effort,
             agent_name=BASELINE_AGENT_NAME,
-            prompt_id=BASELINE_PROMPT_ID,
+            prompt_id=config.prompt_id,
             case_ids=[case.case_id for case in cases],
             successful_candidate_count=len(candidates),
             execution_failure_count=len(execution_failures),

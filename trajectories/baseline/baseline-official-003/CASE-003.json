@@ -1,0 +1,515 @@
+{
+  "agent_name": "ResolveOps Baseline",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "model": "gpt-5.6-terra",
+      "prompt_id": "baseline-v1",
+      "reasoning_effort": "medium",
+      "runtime_metrics": {
+        "latency_ms": 13887.88310001837,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 4648,
+        "tool_call_count": 6
+      },
+      "status": "completed",
+      "tool_calls": [
+        {
+          "arguments": {
+            "customer_id": "CUS-004"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "display_name": "Sample Household Delta",
+                  "id": "CUS-004",
+                  "service_area": "District Aurora"
+                },
+                "entity_id": "CUS-004",
+                "source": "synthetic_world",
+                "summary": "Synthetic customer record."
+              },
+              {
+                "data": {
+                  "customer_id": "CUS-004",
+                  "id": "ACC-004",
+                  "provisioning_status": "complete",
+                  "service_activation": "active",
+                  "service_plan": "Home Fiber 500",
+                  "standing": "current"
+                },
+                "entity_id": "ACC-004",
+                "source": "synthetic_world",
+                "summary": "Synthetic account status."
+              },
+              {
+                "data": {
+                  "device_ids": [
+                    "DEV-006",
+                    "DEV-007"
+                  ]
+                },
+                "entity_id": "ACC-004",
+                "source": "synthetic_world",
+                "summary": "Devices registered to the synthetic account."
+              }
+            ],
+            "source_ids": [
+              "CUS-004",
+              "ACC-004"
+            ],
+            "success": true,
+            "summary": "Account ACC-004 is active.",
+            "tool_name": "get_account_status"
+          },
+          "tool_name": "get_account_status"
+        },
+        {
+          "arguments": {
+            "device_id": "DEV-007"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "account_id": "ACC-004",
+                  "device_type": "camera",
+                  "id": "DEV-007",
+                  "label": "Delta Porch Camera",
+                  "status": {
+                    "connection_state": "offline",
+                    "dns_reachable": null,
+                    "firmware_version": "FW-2.2.3",
+                    "gateway_reachable": null,
+                    "local_connectivity": false,
+                    "online": false,
+                    "signal_health": "unknown",
+                    "wan_connected": null,
+                    "wan_ip_available": null
+                  }
+                },
+                "entity_id": "DEV-007",
+                "source": "synthetic_world",
+                "summary": "Synthetic device state."
+              }
+            ],
+            "source_ids": [
+              "DEV-007"
+            ],
+            "success": true,
+            "summary": "Device DEV-007 is offline.",
+            "tool_name": "get_device_status"
+          },
+          "tool_name": "get_device_status"
+        },
+        {
+          "arguments": {
+            "device_id": "DEV-007"
+          },
+          "result": {
+            "error": "Unsupported diagnostic target: DEV-007 (camera)",
+            "evidence": [],
+            "source_ids": [],
+            "success": false,
+            "summary": "Unsupported diagnostic target: DEV-007 (camera)",
+            "tool_name": "run_connectivity_diagnostics"
+          },
+          "tool_name": "run_connectivity_diagnostics"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-004"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "service_area": "District Aurora"
+                },
+                "entity_id": "CUS-004",
+                "source": "synthetic_world",
+                "summary": "Synthetic service area used for outage lookup."
+              }
+            ],
+            "source_ids": [
+              "CUS-004"
+            ],
+            "success": true,
+            "summary": "No active outage found for District Aurora.",
+            "tool_name": "check_service_outages"
+          },
+          "tool_name": "check_service_outages"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-004"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "category": "camera",
+                  "created_at": "2026-08-16T13:00:00Z",
+                  "customer_id": "CUS-004",
+                  "id": "TKT-005",
+                  "outcome": "Investigation open.",
+                  "summary": "Porch camera stopped reporting after a power interruption."
+                },
+                "entity_id": "TKT-005",
+                "source": "synthetic_ticket_history",
+                "summary": "Porch camera stopped reporting after a power interruption."
+              }
+            ],
+            "source_ids": [
+              "TKT-005"
+            ],
+            "success": true,
+            "summary": "Found 1 ticket-history entries.",
+            "tool_name": "get_ticket_history"
+          },
+          "tool_name": "get_ticket_history"
+        },
+        {
+          "arguments": {
+            "limit": 3,
+            "query": "camera offline after power interruption restart power cycle"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "article_id": "KB-005",
+                  "excerpt": "After a network change, verify that the gateway is available, then reconnect the camera using the current network details. An offline camera does not establish a regional service outage by itself.",
+                  "score": 13,
+                  "title": "Reconnect a camera after a network change"
+                },
+                "entity_id": "KB-005",
+                "source": "synthetic_knowledge_base",
+                "summary": "KB match: Reconnect a camera after a network change"
+              },
+              {
+                "data": {
+                  "article_id": "KB-004",
+                  "excerpt": "For an offline gateway, confirm power and local reachability. If the gateway cannot be reached, collect the observed state and follow the offline-device escalation guidance when standard recovery steps do not help.",
+                  "score": 9,
+                  "title": "Offline gateway troubleshooting"
+                },
+                "entity_id": "KB-004",
+                "source": "synthetic_knowledge_base",
+                "summary": "KB match: Offline gateway troubleshooting"
+              },
+              {
+                "data": {
+                  "article_id": "KB-006",
+                  "excerpt": "Check whether the paired gateway is available before troubleshooting an offline sensor. If the gateway is pending activation or unavailable, restore that dependency first.",
+                  "score": 3,
+                  "title": "Connected-home sensor troubleshooting"
+                },
+                "entity_id": "KB-006",
+                "source": "synthetic_knowledge_base",
+                "summary": "KB match: Connected-home sensor troubleshooting"
+              }
+            ],
+            "source_ids": [
+              "KB-005",
+              "KB-004",
+              "KB-006"
+            ],
+            "success": true,
+            "summary": "Found 3 KB matches.",
+            "tool_name": "search_knowledge_base"
+          },
+          "tool_name": "search_knowledge_base"
+        }
+      ],
+      "usage": {
+        "input_tokens": 3864,
+        "output_tokens": 784,
+        "reasoning_tokens": 351,
+        "total_tokens": 4648
+      }
+    }
+  ],
+  "case_id": "CASE-003",
+  "error": null,
+  "final_output": {
+    "asserted_claim_ids": [
+      "claim_account_service_active",
+      "claim_camera_dev_007_offline",
+      "claim_no_active_district_aurora_outage",
+      "claim_power_interruption_preceded_camera_failure",
+      "claim_camera_diagnostics_unsupported"
+    ],
+    "case_id": "CASE-003",
+    "confidence": 0.88,
+    "customer_response": "Your porch camera is currently offline, while your account service is active and there is no reported area outage. Because camera-level connectivity diagnostics are not available, we\u2019re escalating this for further device troubleshooting. Please ensure the camera has power and remains connected to the home network while the team investigates.",
+    "escalate": true,
+    "evidence_references": [
+      {
+        "source_id": "ACC-004",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-007",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "CUS-004",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "TKT-005",
+        "tool_name": "get_ticket_history"
+      },
+      {
+        "source_id": "KB-005",
+        "tool_name": "search_knowledge_base"
+      }
+    ],
+    "internal_notes": "DEV-007 is offline with no local connectivity. ACC-004 is active; no District Aurora outage. The reported power interruption preceded the failure. Camera diagnostics are unsupported, so a specific device or network cause cannot be confirmed.",
+    "recommended_action_id": "escalate_offline_camera_diagnostics",
+    "root_cause_id": "INSUFFICIENT_EVIDENCE"
+  },
+  "infrastructure_retries": 0,
+  "model": "gpt-5.6-terra",
+  "prompt_id": "baseline-v1",
+  "reasoning_effort": "medium",
+  "run_id": "baseline-official-003",
+  "runtime_metrics": {
+    "latency_ms": 13887.88310001837,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 4648,
+    "tool_call_count": 6
+  },
+  "status": "completed",
+  "tool_calls": [
+    {
+      "arguments": {
+        "customer_id": "CUS-004"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "display_name": "Sample Household Delta",
+              "id": "CUS-004",
+              "service_area": "District Aurora"
+            },
+            "entity_id": "CUS-004",
+            "source": "synthetic_world",
+            "summary": "Synthetic customer record."
+          },
+          {
+            "data": {
+              "customer_id": "CUS-004",
+              "id": "ACC-004",
+              "provisioning_status": "complete",
+              "service_activation": "active",
+              "service_plan": "Home Fiber 500",
+              "standing": "current"
+            },
+            "entity_id": "ACC-004",
+            "source": "synthetic_world",
+            "summary": "Synthetic account status."
+          },
+          {
+            "data": {
+              "device_ids": [
+                "DEV-006",
+                "DEV-007"
+              ]
+            },
+            "entity_id": "ACC-004",
+            "source": "synthetic_world",
+            "summary": "Devices registered to the synthetic account."
+          }
+        ],
+        "source_ids": [
+          "CUS-004",
+          "ACC-004"
+        ],
+        "success": true,
+        "summary": "Account ACC-004 is active.",
+        "tool_name": "get_account_status"
+      },
+      "tool_name": "get_account_status"
+    },
+    {
+      "arguments": {
+        "device_id": "DEV-007"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "account_id": "ACC-004",
+              "device_type": "camera",
+              "id": "DEV-007",
+              "label": "Delta Porch Camera",
+              "status": {
+                "connection_state": "offline",
+                "dns_reachable": null,
+                "firmware_version": "FW-2.2.3",
+                "gateway_reachable": null,
+                "local_connectivity": false,
+                "online": false,
+                "signal_health": "unknown",
+                "wan_connected": null,
+                "wan_ip_available": null
+              }
+            },
+            "entity_id": "DEV-007",
+            "source": "synthetic_world",
+            "summary": "Synthetic device state."
+          }
+        ],
+        "source_ids": [
+          "DEV-007"
+        ],
+        "success": true,
+        "summary": "Device DEV-007 is offline.",
+        "tool_name": "get_device_status"
+      },
+      "tool_name": "get_device_status"
+    },
+    {
+      "arguments": {
+        "device_id": "DEV-007"
+      },
+      "result": {
+        "error": "Unsupported diagnostic target: DEV-007 (camera)",
+        "evidence": [],
+        "source_ids": [],
+        "success": false,
+        "summary": "Unsupported diagnostic target: DEV-007 (camera)",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      "tool_name": "run_connectivity_diagnostics"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-004"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "service_area": "District Aurora"
+            },
+            "entity_id": "CUS-004",
+            "source": "synthetic_world",
+            "summary": "Synthetic service area used for outage lookup."
+          }
+        ],
+        "source_ids": [
+          "CUS-004"
+        ],
+        "success": true,
+        "summary": "No active outage found for District Aurora.",
+        "tool_name": "check_service_outages"
+      },
+      "tool_name": "check_service_outages"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-004"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "category": "camera",
+              "created_at": "2026-08-16T13:00:00Z",
+              "customer_id": "CUS-004",
+              "id": "TKT-005",
+              "outcome": "Investigation open.",
+              "summary": "Porch camera stopped reporting after a power interruption."
+            },
+            "entity_id": "TKT-005",
+            "source": "synthetic_ticket_history",
+            "summary": "Porch camera stopped reporting after a power interruption."
+          }
+        ],
+        "source_ids": [
+          "TKT-005"
+        ],
+        "success": true,
+        "summary": "Found 1 ticket-history entries.",
+        "tool_name": "get_ticket_history"
+      },
+      "tool_name": "get_ticket_history"
+    },
+    {
+      "arguments": {
+        "limit": 3,
+        "query": "camera offline after power interruption restart power cycle"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "article_id": "KB-005",
+              "excerpt": "After a network change, verify that the gateway is available, then reconnect the camera using the current network details. An offline camera does not establish a regional service outage by itself.",
+              "score": 13,
+              "title": "Reconnect a camera after a network change"
+            },
+            "entity_id": "KB-005",
+            "source": "synthetic_knowledge_base",
+            "summary": "KB match: Reconnect a camera after a network change"
+          },
+          {
+            "data": {
+              "article_id": "KB-004",
+              "excerpt": "For an offline gateway, confirm power and local reachability. If the gateway cannot be reached, collect the observed state and follow the offline-device escalation guidance when standard recovery steps do not help.",
+              "score": 9,
+              "title": "Offline gateway troubleshooting"
+            },
+            "entity_id": "KB-004",
+            "source": "synthetic_knowledge_base",
+            "summary": "KB match: Offline gateway troubleshooting"
+          },
+          {
+            "data": {
+              "article_id": "KB-006",
+              "excerpt": "Check whether the paired gateway is available before troubleshooting an offline sensor. If the gateway is pending activation or unavailable, restore that dependency first.",
+              "score": 3,
+              "title": "Connected-home sensor troubleshooting"
+            },
+            "entity_id": "KB-006",
+            "source": "synthetic_knowledge_base",
+            "summary": "KB match: Connected-home sensor troubleshooting"
+          }
+        ],
+        "source_ids": [
+          "KB-005",
+          "KB-004",
+          "KB-006"
+        ],
+        "success": true,
+        "summary": "Found 3 KB matches.",
+        "tool_name": "search_knowledge_base"
+      },
+      "tool_name": "search_knowledge_base"
+    }
+  ],
+  "usage": {
+    "input_tokens": 3864,
+    "output_tokens": 784,
+    "reasoning_tokens": 351,
+    "total_tokens": 4648
+  }
+}

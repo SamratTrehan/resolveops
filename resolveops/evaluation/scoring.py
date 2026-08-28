@@ -104,7 +104,7 @@ def score_benchmark(
                     case_id=case.case_id,
                     root_cause_id="INSUFFICIENT_EVIDENCE",
                     confidence=0,
-                    recommended_action_id="INSUFFICIENT_EVIDENCE",
+                    recommended_action_id="escalate_for_more_evidence",
                     escalate=False,
                     customer_response="No candidate supplied.",
                     internal_notes="No candidate supplied.",

@@ -14,11 +14,17 @@ from resolveops.agents.baseline.config import (
     BaselineConfig,
 )
 from resolveops.agents.baseline.factory import create_baseline_agent
-from resolveops.agents.baseline.prompt import BASELINE_PROMPT_ID
+from resolveops.agents.baseline.prompt import (
+    BASELINE_INSTRUCTIONS,
+    BASELINE_PROMPT_ID,
+    BASELINE_V2_INSTRUCTIONS,
+    BASELINE_V2_PROMPT_ID,
+)
 from resolveops.agents.baseline.records import BaselineAttempt, BaselineTrajectory, RecordedToolCall, RuntimeRecord
 from resolveops.agents.baseline.runner import CaseRunError, run_case, run_cases, select_case
 from resolveops.agents.baseline.tools import BASELINE_TOOLS, DIRECT_TOOL_WRAPPERS
 from resolveops.domain import ToolResult
+from resolveops.domain.support_ontology import ActionId, RootCauseId
 from resolveops.evaluation.candidate import with_authoritative_case_id
 from resolveops.evaluation.models import CandidateDraft, EvaluationCase
 from resolveops.evaluation.models import CandidateOutput, EvidenceReference, ExecutionFailure, RuntimeMetrics
@@ -68,6 +74,65 @@ def test_baseline_agent_uses_existing_candidate_output_contract() -> None:
     assert agent.output_type is CandidateDraft
     assert agent.model == "configured-model"
     assert agent.model_settings.reasoning.effort == "medium"
+    assert agent.instructions == BASELINE_V2_INSTRUCTIONS
+
+
+def test_public_ontology_ids_are_exact_and_candidate_schema_enforces_them() -> None:
+    assert [item.value for item in RootCauseId] == [
+        "regional_outage", "pending_gateway_provisioning", "camera_reconnect_needed",
+        "dns_resolution_failure", "local_wifi_configuration", "account_standing_question",
+        "INSUFFICIENT_EVIDENCE",
+    ]
+    assert [item.value for item in ActionId] == [
+        "communicate_outage_status", "guide_gateway_activation", "guide_camera_reconnect",
+        "guide_dns_recovery", "guide_wifi_reconnect", "review_account_notice",
+        "escalate_for_more_evidence",
+    ]
+    for root_cause_id in RootCauseId:
+        for recommended_action_id in ActionId:
+            draft = CandidateDraft(
+                root_cause_id=root_cause_id, confidence=0.5, recommended_action_id=recommended_action_id,
+                escalate=False, customer_response="Synthetic response.", internal_notes="Synthetic note.",
+            )
+            assert draft.model_dump(mode="json")["root_cause_id"] == root_cause_id.value
+            assert draft.model_dump(mode="json")["recommended_action_id"] == recommended_action_id.value
+
+
+def test_candidate_schema_rejects_arbitrary_root_and_action_ids() -> None:
+    with pytest.raises(ValueError):
+        CandidateDraft(
+            root_cause_id="invented_root", confidence=0.5, recommended_action_id="guide_dns_recovery",
+            escalate=False, customer_response="Synthetic response.", internal_notes="Synthetic note.",
+        )
+    with pytest.raises(ValueError):
+        CandidateDraft(
+            root_cause_id="regional_outage", confidence=0.5, recommended_action_id="invented_action",
+            escalate=False, customer_response="Synthetic response.", internal_notes="Synthetic note.",
+        )
+
+
+def test_public_ontology_and_baseline_v2_expose_contract_without_case_truth() -> None:
+    ontology = Path("resolveops/domain/support_ontology.py").read_text(encoding="utf-8")
+    for forbidden in ("CASE-", "acceptable_", "forbidden_claim", "required_tool", "required_source"):
+        assert forbidden not in ontology
+    assert BASELINE_INSTRUCTIONS == """You are the single general-purpose ResolveOps baseline support agent.
+You are resolving a synthetic technical-support ticket. Use the available read-only
+diagnostic and knowledge-base tools when they help establish a reliable answer.
+
+Return the required structured CandidateOutput. Ground root_cause_id,
+recommended_action_id, escalate, and asserted_claim_ids in the ticket and actual
+tool results. Evidence references must name only tools you actually called and
+source IDs returned by those tools. Do not invent unavailable facts or source IDs.
+When the available evidence cannot support a reliable resolution, use
+INSUFFICIENT_EVIDENCE, recommend an escalation action, and set escalate to true.
+Keep customer_response clear and internal_notes concise.
+"""
+    assert BASELINE_V2_PROMPT_ID == "baseline-v2"
+    assert BASELINE_V2_INSTRUCTIONS.startswith(BASELINE_INSTRUCTIONS)
+    for item in (*RootCauseId, *ActionId):
+        assert item.value in BASELINE_V2_INSTRUCTIONS
+    for forbidden in ("CASE-", "acceptable_", "forbidden_claim", "required_tool", "required_source"):
+        assert forbidden not in BASELINE_V2_INSTRUCTIONS
 
 
 def test_model_configuration_uses_environment(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -218,6 +283,8 @@ def test_invalid_json_retries_once_with_identical_execution_inputs() -> None:
     assert trajectory.infrastructure_retries == trajectory.runtime_metrics.retries == 1
     assert [item.status for item in trajectory.attempts] == ["failed", "completed"]
     assert [item.error for item in trajectory.attempts] == ["ModelBehaviorError: Invalid JSON when parsing model output", None]
+    assert trajectory.prompt_id == BASELINE_V2_PROMPT_ID
+    assert all(item.prompt_id == BASELINE_V2_PROMPT_ID for item in trajectory.attempts)
     assert calls[0][1:] == calls[1][1:]
     assert calls[0][0].model == calls[1][0].model == "gpt-5.6-terra"
     assert calls[0][0].model_settings.reasoning.effort == calls[1][0].model_settings.reasoning.effort == "medium"
@@ -259,7 +326,7 @@ def test_valid_candidate_is_not_retried_even_if_it_would_score_poorly() -> None:
         nonlocal calls
         calls += 1
         draft = _draft()
-        draft.root_cause_id = "INSUFFICIENT_EVIDENCE"
+        draft.root_cause_id = RootCauseId.INSUFFICIENT_EVIDENCE
         return _Result(draft)
 
     _, trajectory = run_case(select_case("CASE-001"), BaselineConfig(), "no-retry", run_sync=fake_run)
@@ -356,6 +423,7 @@ def test_all_case_runner_continues_after_execution_failure(
     manifest = (store.result_dir / "manifest.json").read_text(encoding="utf-8")
     assert '"status": "completed"' in manifest
     assert '"execution_failure_count": 1' in manifest
+    assert '"prompt_id": "baseline-v2"' in manifest
     assert not (store.result_dir / "failure.json").exists()
 
 

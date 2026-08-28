@@ -1,0 +1,801 @@
+{
+  "agent_name": "ResolveOps Baseline",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": "ModelBehaviorError: Invalid JSON when parsing model output",
+      "model": "gpt-5.6-terra",
+      "prompt_id": "baseline-v1",
+      "reasoning_effort": "medium",
+      "runtime_metrics": {
+        "latency_ms": 9298.47510001855,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": null,
+        "tool_call_count": 5
+      },
+      "status": "failed",
+      "tool_calls": [
+        {
+          "arguments": {
+            "customer_id": "CUS-001"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "display_name": "Sample Household Alpha",
+                  "id": "CUS-001",
+                  "service_area": "District Aurora"
+                },
+                "entity_id": "CUS-001",
+                "source": "synthetic_world",
+                "summary": "Synthetic customer record."
+              },
+              {
+                "data": {
+                  "customer_id": "CUS-001",
+                  "id": "ACC-001",
+                  "provisioning_status": "complete",
+                  "service_activation": "active",
+                  "service_plan": "Home Fiber 500",
+                  "standing": "current"
+                },
+                "entity_id": "ACC-001",
+                "source": "synthetic_world",
+                "summary": "Synthetic account status."
+              },
+              {
+                "data": {
+                  "device_ids": [
+                    "DEV-001",
+                    "DEV-002"
+                  ]
+                },
+                "entity_id": "ACC-001",
+                "source": "synthetic_world",
+                "summary": "Devices registered to the synthetic account."
+              }
+            ],
+            "source_ids": [
+              "CUS-001",
+              "ACC-001"
+            ],
+            "success": true,
+            "summary": "Account ACC-001 is active.",
+            "tool_name": "get_account_status"
+          },
+          "tool_name": "get_account_status"
+        },
+        {
+          "arguments": {
+            "device_id": "DEV-001"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "account_id": "ACC-001",
+                  "device_type": "gateway",
+                  "id": "DEV-001",
+                  "label": "Alpha Gateway",
+                  "status": {
+                    "connection_state": "connected",
+                    "dns_reachable": true,
+                    "firmware_version": "FW-3.4.1",
+                    "gateway_reachable": true,
+                    "local_connectivity": true,
+                    "online": true,
+                    "signal_health": "good",
+                    "wan_connected": true,
+                    "wan_ip_available": true
+                  }
+                },
+                "entity_id": "DEV-001",
+                "source": "synthetic_world",
+                "summary": "Synthetic device state."
+              }
+            ],
+            "source_ids": [
+              "DEV-001"
+            ],
+            "success": true,
+            "summary": "Device DEV-001 is online.",
+            "tool_name": "get_device_status"
+          },
+          "tool_name": "get_device_status"
+        },
+        {
+          "arguments": {
+            "device_id": "DEV-001"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "dns_reachable": true,
+                  "gateway_reachable": true,
+                  "local_connectivity": true,
+                  "signal_health": "good",
+                  "wan_connected": true,
+                  "wan_ip_available": true
+                },
+                "entity_id": "DEV-001",
+                "source": "synthetic_diagnostics",
+                "summary": "Deterministic gateway connectivity checks."
+              }
+            ],
+            "source_ids": [
+              "DEV-001"
+            ],
+            "success": true,
+            "summary": "Connectivity diagnostics completed for DEV-001.",
+            "tool_name": "run_connectivity_diagnostics"
+          },
+          "tool_name": "run_connectivity_diagnostics"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-001"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "service_area": "District Aurora"
+                },
+                "entity_id": "CUS-001",
+                "source": "synthetic_world",
+                "summary": "Synthetic service area used for outage lookup."
+              }
+            ],
+            "source_ids": [
+              "CUS-001"
+            ],
+            "success": true,
+            "summary": "No active outage found for District Aurora.",
+            "tool_name": "check_service_outages"
+          },
+          "tool_name": "check_service_outages"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-001"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "category": "billing",
+                  "created_at": "2026-07-04T09:30:00Z",
+                  "customer_id": "CUS-001",
+                  "id": "TKT-001",
+                  "outcome": "Provided self-service instructions.",
+                  "summary": "Asked how to view the synthetic monthly statement."
+                },
+                "entity_id": "TKT-001",
+                "source": "synthetic_ticket_history",
+                "summary": "Asked how to view the synthetic monthly statement."
+              }
+            ],
+            "source_ids": [
+              "TKT-001"
+            ],
+            "success": true,
+            "summary": "Found 1 ticket-history entries.",
+            "tool_name": "get_ticket_history"
+          },
+          "tool_name": "get_ticket_history"
+        }
+      ],
+      "usage": null
+    },
+    {
+      "attempt_number": 2,
+      "error": null,
+      "model": "gpt-5.6-terra",
+      "prompt_id": "baseline-v1",
+      "reasoning_effort": "medium",
+      "runtime_metrics": {
+        "latency_ms": 9566.19340000907,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 2794,
+        "tool_call_count": 5
+      },
+      "status": "completed",
+      "tool_calls": [
+        {
+          "arguments": {
+            "customer_id": "CUS-001"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "display_name": "Sample Household Alpha",
+                  "id": "CUS-001",
+                  "service_area": "District Aurora"
+                },
+                "entity_id": "CUS-001",
+                "source": "synthetic_world",
+                "summary": "Synthetic customer record."
+              },
+              {
+                "data": {
+                  "customer_id": "CUS-001",
+                  "id": "ACC-001",
+                  "provisioning_status": "complete",
+                  "service_activation": "active",
+                  "service_plan": "Home Fiber 500",
+                  "standing": "current"
+                },
+                "entity_id": "ACC-001",
+                "source": "synthetic_world",
+                "summary": "Synthetic account status."
+              },
+              {
+                "data": {
+                  "device_ids": [
+                    "DEV-001",
+                    "DEV-002"
+                  ]
+                },
+                "entity_id": "ACC-001",
+                "source": "synthetic_world",
+                "summary": "Devices registered to the synthetic account."
+              }
+            ],
+            "source_ids": [
+              "CUS-001",
+              "ACC-001"
+            ],
+            "success": true,
+            "summary": "Account ACC-001 is active.",
+            "tool_name": "get_account_status"
+          },
+          "tool_name": "get_account_status"
+        },
+        {
+          "arguments": {
+            "device_id": "DEV-001"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "account_id": "ACC-001",
+                  "device_type": "gateway",
+                  "id": "DEV-001",
+                  "label": "Alpha Gateway",
+                  "status": {
+                    "connection_state": "connected",
+                    "dns_reachable": true,
+                    "firmware_version": "FW-3.4.1",
+                    "gateway_reachable": true,
+                    "local_connectivity": true,
+                    "online": true,
+                    "signal_health": "good",
+                    "wan_connected": true,
+                    "wan_ip_available": true
+                  }
+                },
+                "entity_id": "DEV-001",
+                "source": "synthetic_world",
+                "summary": "Synthetic device state."
+              }
+            ],
+            "source_ids": [
+              "DEV-001"
+            ],
+            "success": true,
+            "summary": "Device DEV-001 is online.",
+            "tool_name": "get_device_status"
+          },
+          "tool_name": "get_device_status"
+        },
+        {
+          "arguments": {
+            "device_id": "DEV-001"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "dns_reachable": true,
+                  "gateway_reachable": true,
+                  "local_connectivity": true,
+                  "signal_health": "good",
+                  "wan_connected": true,
+                  "wan_ip_available": true
+                },
+                "entity_id": "DEV-001",
+                "source": "synthetic_diagnostics",
+                "summary": "Deterministic gateway connectivity checks."
+              }
+            ],
+            "source_ids": [
+              "DEV-001"
+            ],
+            "success": true,
+            "summary": "Connectivity diagnostics completed for DEV-001.",
+            "tool_name": "run_connectivity_diagnostics"
+          },
+          "tool_name": "run_connectivity_diagnostics"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-001"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "service_area": "District Aurora"
+                },
+                "entity_id": "CUS-001",
+                "source": "synthetic_world",
+                "summary": "Synthetic service area used for outage lookup."
+              }
+            ],
+            "source_ids": [
+              "CUS-001"
+            ],
+            "success": true,
+            "summary": "No active outage found for District Aurora.",
+            "tool_name": "check_service_outages"
+          },
+          "tool_name": "check_service_outages"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-001"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "category": "billing",
+                  "created_at": "2026-07-04T09:30:00Z",
+                  "customer_id": "CUS-001",
+                  "id": "TKT-001",
+                  "outcome": "Provided self-service instructions.",
+                  "summary": "Asked how to view the synthetic monthly statement."
+                },
+                "entity_id": "TKT-001",
+                "source": "synthetic_ticket_history",
+                "summary": "Asked how to view the synthetic monthly statement."
+              }
+            ],
+            "source_ids": [
+              "TKT-001"
+            ],
+            "success": true,
+            "summary": "Found 1 ticket-history entries.",
+            "tool_name": "get_ticket_history"
+          },
+          "tool_name": "get_ticket_history"
+        }
+      ],
+      "usage": {
+        "input_tokens": 2135,
+        "output_tokens": 659,
+        "reasoning_tokens": 252,
+        "total_tokens": 2794
+      }
+    }
+  ],
+  "case_id": "CASE-011",
+  "error": null,
+  "final_output": {
+    "asserted_claim_ids": [
+      "device_currently_online",
+      "connectivity_diagnostics_currently_healthy",
+      "no_active_area_outage",
+      "intermittent_issue_lacks_time_and_device_details"
+    ],
+    "case_id": "CASE-011",
+    "confidence": 0.92,
+    "customer_response": "Your gateway is currently online and our connectivity checks are healthy, with no active outage reported in your area. Because the brief evening drops were not captured with times or affected devices, we cannot confirm the cause yet. We\u2019re escalating this for intermittent-connectivity investigation. If the issue happens again, please note the date/time, which devices are affected, and whether the gateway status light changes.",
+    "escalate": true,
+    "evidence_references": [
+      {
+        "source_id": "DEV-001",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-001",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-001",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "ACC-001",
+        "tool_name": "get_account_status"
+      }
+    ],
+    "internal_notes": "Account is active and DEV-001 is connected with healthy WAN, DNS, local connectivity, and signal health at time of check. No active District Aurora outage. Intermittent evening symptom cannot be isolated without occurrence details or historical telemetry; escalate for investigation.",
+    "recommended_action_id": "escalate_for_intermittent_connectivity_investigation",
+    "root_cause_id": "INSUFFICIENT_EVIDENCE"
+  },
+  "infrastructure_retries": 1,
+  "model": "gpt-5.6-terra",
+  "prompt_id": "baseline-v1",
+  "reasoning_effort": "medium",
+  "run_id": "baseline-official-003",
+  "runtime_metrics": {
+    "latency_ms": 18864.66850002762,
+    "model_cost_usd": null,
+    "retries": 1,
+    "token_usage": null,
+    "tool_call_count": 10
+  },
+  "status": "completed",
+  "tool_calls": [
+    {
+      "arguments": {
+        "customer_id": "CUS-001"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "display_name": "Sample Household Alpha",
+              "id": "CUS-001",
+              "service_area": "District Aurora"
+            },
+            "entity_id": "CUS-001",
+            "source": "synthetic_world",
+            "summary": "Synthetic customer record."
+          },
+          {
+            "data": {
+              "customer_id": "CUS-001",
+              "id": "ACC-001",
+              "provisioning_status": "complete",
+              "service_activation": "active",
+              "service_plan": "Home Fiber 500",
+              "standing": "current"
+            },
+            "entity_id": "ACC-001",
+            "source": "synthetic_world",
+            "summary": "Synthetic account status."
+          },
+          {
+            "data": {
+              "device_ids": [
+                "DEV-001",
+                "DEV-002"
+              ]
+            },
+            "entity_id": "ACC-001",
+            "source": "synthetic_world",
+            "summary": "Devices registered to the synthetic account."
+          }
+        ],
+        "source_ids": [
+          "CUS-001",
+          "ACC-001"
+        ],
+        "success": true,
+        "summary": "Account ACC-001 is active.",
+        "tool_name": "get_account_status"
+      },
+      "tool_name": "get_account_status"
+    },
+    {
+      "arguments": {
+        "device_id": "DEV-001"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "account_id": "ACC-001",
+              "device_type": "gateway",
+              "id": "DEV-001",
+              "label": "Alpha Gateway",
+              "status": {
+                "connection_state": "connected",
+                "dns_reachable": true,
+                "firmware_version": "FW-3.4.1",
+                "gateway_reachable": true,
+                "local_connectivity": true,
+                "online": true,
+                "signal_health": "good",
+                "wan_connected": true,
+                "wan_ip_available": true
+              }
+            },
+            "entity_id": "DEV-001",
+            "source": "synthetic_world",
+            "summary": "Synthetic device state."
+          }
+        ],
+        "source_ids": [
+          "DEV-001"
+        ],
+        "success": true,
+        "summary": "Device DEV-001 is online.",
+        "tool_name": "get_device_status"
+      },
+      "tool_name": "get_device_status"
+    },
+    {
+      "arguments": {
+        "device_id": "DEV-001"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "dns_reachable": true,
+              "gateway_reachable": true,
+              "local_connectivity": true,
+              "signal_health": "good",
+              "wan_connected": true,
+              "wan_ip_available": true
+            },
+            "entity_id": "DEV-001",
+            "source": "synthetic_diagnostics",
+            "summary": "Deterministic gateway connectivity checks."
+          }
+        ],
+        "source_ids": [
+          "DEV-001"
+        ],
+        "success": true,
+        "summary": "Connectivity diagnostics completed for DEV-001.",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      "tool_name": "run_connectivity_diagnostics"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-001"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "service_area": "District Aurora"
+            },
+            "entity_id": "CUS-001",
+            "source": "synthetic_world",
+            "summary": "Synthetic service area used for outage lookup."
+          }
+        ],
+        "source_ids": [
+          "CUS-001"
+        ],
+        "success": true,
+        "summary": "No active outage found for District Aurora.",
+        "tool_name": "check_service_outages"
+      },
+      "tool_name": "check_service_outages"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-001"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "category": "billing",
+              "created_at": "2026-07-04T09:30:00Z",
+              "customer_id": "CUS-001",
+              "id": "TKT-001",
+              "outcome": "Provided self-service instructions.",
+              "summary": "Asked how to view the synthetic monthly statement."
+            },
+            "entity_id": "TKT-001",
+            "source": "synthetic_ticket_history",
+            "summary": "Asked how to view the synthetic monthly statement."
+          }
+        ],
+        "source_ids": [
+          "TKT-001"
+        ],
+        "success": true,
+        "summary": "Found 1 ticket-history entries.",
+        "tool_name": "get_ticket_history"
+      },
+      "tool_name": "get_ticket_history"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-001"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "display_name": "Sample Household Alpha",
+              "id": "CUS-001",
+              "service_area": "District Aurora"
+            },
+            "entity_id": "CUS-001",
+            "source": "synthetic_world",
+            "summary": "Synthetic customer record."
+          },
+          {
+            "data": {
+              "customer_id": "CUS-001",
+              "id": "ACC-001",
+              "provisioning_status": "complete",
+              "service_activation": "active",
+              "service_plan": "Home Fiber 500",
+              "standing": "current"
+            },
+            "entity_id": "ACC-001",
+            "source": "synthetic_world",
+            "summary": "Synthetic account status."
+          },
+          {
+            "data": {
+              "device_ids": [
+                "DEV-001",
+                "DEV-002"
+              ]
+            },
+            "entity_id": "ACC-001",
+            "source": "synthetic_world",
+            "summary": "Devices registered to the synthetic account."
+          }
+        ],
+        "source_ids": [
+          "CUS-001",
+          "ACC-001"
+        ],
+        "success": true,
+        "summary": "Account ACC-001 is active.",
+        "tool_name": "get_account_status"
+      },
+      "tool_name": "get_account_status"
+    },
+    {
+      "arguments": {
+        "device_id": "DEV-001"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "account_id": "ACC-001",
+              "device_type": "gateway",
+              "id": "DEV-001",
+              "label": "Alpha Gateway",
+              "status": {
+                "connection_state": "connected",
+                "dns_reachable": true,
+                "firmware_version": "FW-3.4.1",
+                "gateway_reachable": true,
+                "local_connectivity": true,
+                "online": true,
+                "signal_health": "good",
+                "wan_connected": true,
+                "wan_ip_available": true
+              }
+            },
+            "entity_id": "DEV-001",
+            "source": "synthetic_world",
+            "summary": "Synthetic device state."
+          }
+        ],
+        "source_ids": [
+          "DEV-001"
+        ],
+        "success": true,
+        "summary": "Device DEV-001 is online.",
+        "tool_name": "get_device_status"
+      },
+      "tool_name": "get_device_status"
+    },
+    {
+      "arguments": {
+        "device_id": "DEV-001"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "dns_reachable": true,
+              "gateway_reachable": true,
+              "local_connectivity": true,
+              "signal_health": "good",
+              "wan_connected": true,
+              "wan_ip_available": true
+            },
+            "entity_id": "DEV-001",
+            "source": "synthetic_diagnostics",
+            "summary": "Deterministic gateway connectivity checks."
+          }
+        ],
+        "source_ids": [
+          "DEV-001"
+        ],
+        "success": true,
+        "summary": "Connectivity diagnostics completed for DEV-001.",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      "tool_name": "run_connectivity_diagnostics"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-001"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "service_area": "District Aurora"
+            },
+            "entity_id": "CUS-001",
+            "source": "synthetic_world",
+            "summary": "Synthetic service area used for outage lookup."
+          }
+        ],
+        "source_ids": [
+          "CUS-001"
+        ],
+        "success": true,
+        "summary": "No active outage found for District Aurora.",
+        "tool_name": "check_service_outages"
+      },
+      "tool_name": "check_service_outages"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-001"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "category": "billing",
+              "created_at": "2026-07-04T09:30:00Z",
+              "customer_id": "CUS-001",
+              "id": "TKT-001",
+              "outcome": "Provided self-service instructions.",
+              "summary": "Asked how to view the synthetic monthly statement."
+            },
+            "entity_id": "TKT-001",
+            "source": "synthetic_ticket_history",
+            "summary": "Asked how to view the synthetic monthly statement."
+          }
+        ],
+        "source_ids": [
+          "TKT-001"
+        ],
+        "success": true,
+        "summary": "Found 1 ticket-history entries.",
+        "tool_name": "get_ticket_history"
+      },
+      "tool_name": "get_ticket_history"
+    }
+  ],
+  "usage": null
+}

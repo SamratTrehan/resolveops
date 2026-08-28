@@ -71,7 +71,31 @@ This prints only observable benchmark inputs. `--show-truth` is an explicitly de
 
 ## Baseline agent
 
-The frozen baseline prompt is `baseline-v1` in `resolveops/agents/baseline/prompt.py`. It is one general-purpose agent with the same six simulator capabilities intended for the later workflow. It produces the Phase 2 `CandidateOutput` schema and records local JSON trajectories without loading hidden truth.
+`baseline-v1` in `resolveops/agents/baseline/prompt.py` is preserved unchanged for historical reproducibility. New runs default to `baseline-v2`: the same one-agent baseline and ordinary troubleshooting instructions, plus the public output vocabulary below. It produces the Phase 2 `CandidateOutput` schema and records local JSON trajectories without loading hidden truth.
+
+### Public support ontology
+
+This public, case-agnostic contract lives in `resolveops/domain/support_ontology.py` and is shared by the baseline and future ResolveOps workflow. **Public ontology != case answer key.** It defines valid output labels; it does not reveal which label applies to any benchmark case.
+
+| Root-cause ID | Generic description |
+|---|---|
+| `regional_outage` | Service interruption affecting the customer's area. |
+| `pending_gateway_provisioning` | Replacement or new gateway activation/provisioning is incomplete. |
+| `camera_reconnect_needed` | Camera needs reconnection or reconfiguration rather than being proven defective. |
+| `dns_resolution_failure` | Connectivity exists but DNS/name resolution is unavailable. |
+| `local_wifi_configuration` | Issue is local to Wi-Fi/client configuration rather than upstream service. |
+| `account_standing_question` | Concern relates to an account notice without evidence of service suspension. |
+| `INSUFFICIENT_EVIDENCE` | Available evidence does not support a reliable root cause. |
+
+| Action ID | Generic description |
+|---|---|
+| `communicate_outage_status` | Communicate known outage status and next step. |
+| `guide_gateway_activation` | Guide gateway activation or provisioning completion. |
+| `guide_camera_reconnect` | Guide camera reconnection to the available network. |
+| `guide_dns_recovery` | Guide standard DNS recovery and retest steps. |
+| `guide_wifi_reconnect` | Guide local Wi-Fi/client reconnection recovery. |
+| `review_account_notice` | Explain and direct review of an account-standing notice. |
+| `escalate_for_more_evidence` | Escalate because evidence is insufficient for a reliable resolution. |
 
 Configure a live model explicitly:
 
@@ -95,6 +119,8 @@ python -m resolveops.evaluation.score_baseline_results --run-id baseline-officia
 ```
 
 The benchmark-default runtime lock is `gpt-5.6-terra` with reasoning effort `medium`. Supported effort values in the installed SDK are `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Generation artifacts record the actual model and effort in `manifest.json` and `runtime.json`; trajectories record both per case. Existing run IDs are rejected rather than overwritten. The scoring command is deliberately separate because it is the only step that loads evaluator-only truth.
+
+`baseline-official-001` and `baseline-official-002` are incomplete historical runner attempts. `baseline-official-003` completed but is a diagnostic, non-comparable run because the baseline was not given the canonical output vocabulary. The next explicit official run using `baseline-v2` is the fair baseline comparison; no result is implied here.
 
 Each case receives at most one infrastructure retry, only for the recorded malformed structured-output `ModelBehaviorError`. A valid candidate is never retried based on its diagnosis, evidence, confidence, or evaluator outcome. In an `--all` run, an exhausted retry becomes a distinct `ExecutionFailure`: its trajectory and runtime record are retained, the runner continues with later cases, and it counts as a VRSR failure in the full 15-case denominator. It is not a model abstention (`INSUFFICIENT_EVIDENCE`) and does not fabricate a candidate. A run that attempted every requested case is completed even if it contains execution failures; `failure.json` is reserved for catastrophic/incomplete runs that cannot be scored.
 
