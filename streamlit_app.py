@@ -4,7 +4,7 @@ import os
 
 import streamlit as st
 
-from resolveops.app.demo_data import comparison_report, display_label, evidence_groups, judge_demo_case, playback, playback_cases, revision_diff
+from resolveops.app.demo_data import chart_data, comparison_report, comparison_rows, display_label, evidence_cards, judge_demo_case, playback, playback_cases, workflow_stages
 from resolveops.agents.resolveops.safety import HumanApproval, safety_gate
 
 
@@ -37,7 +37,7 @@ with improvement:
         cols = st.columns(3)
         for col, run in zip(cols, runs):
             col.metric(run["architecture"], f"{run['vrsr_percent']:.2f}%", f"Evidence {run['evidence_coverage']:.2f}%")
-        st.bar_chart({run["architecture"]: run["vrsr_percent"] for run in runs})
+        st.vega_lite_chart({"data": {"values": chart_data(report)}, "mark": "bar", "encoding": {"x": {"field": "stage", "type": "nominal", "axis": {"labelAngle": 0}}, "y": {"field": "vrsr", "type": "quantitative", "scale": {"domain": [0, 100]}}, "tooltip": [{"field": "vrsr", "type": "quantitative"}]}}, use_container_width=True)
         st.metric("Baseline → final VRSR", f"+{runs[-1]['vrsr_percent']-runs[0]['vrsr_percent']:.1f} pp")
         st.metric("Phase 4 → verifier VRSR", f"+{runs[-1]['vrsr_percent']-runs[1]['vrsr_percent']:.1f} pp")
         st.caption("Reliability came at a cost: latency and recorded tokens increased. Additional agents must earn their cost.")
@@ -52,20 +52,25 @@ with recorded:
         stages = playback("resolveops-phase5a-001", case)
         inv = stages.get("investigator-v1", {}).get("output", {})
         st.subheader("Evidence Trail")
-        for group, refs in evidence_groups(inv).items():
-            if refs: st.markdown(f"**{group}** · " + ", ".join(f"{r.get('source_id')} ({r.get('tool_name')})" for r in refs))
+        for group, cards in evidence_cards(inv).items():
+            if cards:
+                st.markdown(f"**{group.upper()}**")
+                for card in cards: st.markdown(f"<div class='card'><b>{card['statement']}</b><br><span class='muted'>{card['source_id']} · {card['tool_name']}</span></div>", unsafe_allow_html=True)
         st.caption("OBSERVED FACTS are distinct from Investigator hypotheses.")
-        for name, data in stages.items():
+        for name, data in workflow_stages(stages):
             with st.expander(name.replace("-", " ").title(), expanded=name == "investigator-v1"):
                 output = data.get("output") or {}
-                st.write(output.get("investigation_summary") or output.get("customer_response") or data.get("error") or "Recorded stage.")
+                if name == "verifier-v1":
+                    st.success("✓ APPROVED") if output.get("approved") else st.warning("⚠ REVISION REQUESTED")
+                    if output.get("issues"): st.caption(" · ".join(display_label(item.get("category")) for item in output["issues"]))
+                st.write(output.get("investigation_summary") or output.get("customer_response") or output.get("feedback") or data.get("error") or "Recorded stage.")
                 with st.expander("Raw recorded JSON"): st.json(output)
         final = stages.get("resolver-revision-v1") or stages.get("resolver-v1")
         if final and final.get("output"):
             answer = final["output"]
             st.subheader("Resolution Packet")
             cols = st.columns(4)
-            for col, key in zip(cols, ("root_cause_id", "recommended_action_id", "escalate", "confidence")): col.metric(key.replace("_", " ").upper(), display_label(str(answer.get(key))) if key != "confidence" else str(answer.get(key)))
+            for col, key in zip(cols, ("root_cause_id", "recommended_action_id", "escalate", "confidence")): col.markdown(f"<div class='card'><b>{key.replace('_', ' ').upper()}</b><br>{display_label(str(answer.get(key))) if key != 'confidence' else answer.get(key)}</div>", unsafe_allow_html=True)
             st.write(answer.get("customer_response"))
             gate = safety_gate(answer.get("recommended_action_id"))
             st.caption("SIMULATED — NO REAL SYSTEM CHANGES")
@@ -76,8 +81,10 @@ with recorded:
                     st.success(safety_gate(answer.get("recommended_action_id"), HumanApproval.APPROVE).summary)
                 if right.button("Reject simulated action"):
                     st.error(safety_gate(answer.get("recommended_action_id"), HumanApproval.REJECT).summary)
-        diff = revision_diff(stages)
-        if diff:
+        rows = comparison_rows(stages)
+        if any(row["changed"] for row in rows):
             st.subheader("Verifier before vs after")
-            for key, (before, after) in diff.items(): st.write(f"**{display_label(key)}:** {before} → {after}")
+            st.dataframe(rows, hide_index=True, use_container_width=True)
+            changed = [row["label"] for row in rows if row["changed"]]
+            st.write("**What the verifier changed:** " + ", ".join(changed))
         if case == "CASE-003": st.info("Known limitation: shared conservative bias. Independent verification reduces error, but does not guarantee independent judgment.")

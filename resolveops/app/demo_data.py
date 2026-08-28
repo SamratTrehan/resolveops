@@ -30,6 +30,31 @@ def evidence_groups(bundle: dict[str, object]) -> dict[str, list[dict[str, objec
     return groups
 
 
+def workflow_stages(stages: dict[str, dict[str, object]]) -> list[tuple[str, dict[str, object]]]:
+    order = ("investigator-v1", "resolver-v1", "verifier-v1", "resolver-revision-v1")
+    return [(name, stages[name]) for name in order if name in stages]
+
+
+def evidence_cards(bundle: dict[str, object]) -> dict[str, list[dict[str, str]]]:
+    groups = evidence_groups(bundle)
+    facts = bundle.get("observed_facts", [])
+    statements = {ref.get("source_id"): fact.get("statement", "Observed evidence.") for fact in facts for ref in fact.get("evidence_references", [])}
+    return {group: [{"source_id": item.get("source_id", ""), "tool_name": item.get("tool_name", ""), "statement": statements.get(item.get("source_id"), "Observed evidence.")} for item in refs] for group, refs in groups.items()}
+
+
+def comparison_rows(stages: dict[str, dict[str, object]]) -> list[dict[str, object]]:
+    before = stages.get("resolver-v1", {}).get("output", {}); after = stages.get("resolver-revision-v1", {}).get("output", before)
+    keys = ("root_cause_id", "recommended_action_id", "escalate", "confidence")
+    rows = [{"label": display_label(key), "before": before.get(key), "after": after.get(key), "changed": before.get(key) != after.get(key)} for key in keys]
+    rows.append({"label": "Evidence Count", "before": len(before.get("evidence_references", [])), "after": len(after.get("evidence_references", [])), "changed": len(before.get("evidence_references", [])) != len(after.get("evidence_references", []))})
+    return rows
+
+
+def chart_data(report: dict[str, object]) -> list[dict[str, object]]:
+    labels = ("Baseline", "Investigator", "Verifier")
+    return [{"stage": label, "vrsr": run["vrsr_percent"], "evidence": run["evidence_coverage"]} for label, run in zip(labels, report["runs"])]
+
+
 def comparison_report() -> dict[str, object] | None:
     path = ROOT / "evaluation/reports/final_comparison.json"
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
