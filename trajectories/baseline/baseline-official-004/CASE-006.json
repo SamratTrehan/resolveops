@@ -1,0 +1,399 @@
+{
+  "agent_name": "ResolveOps Baseline",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "model": "gpt-5.6-terra",
+      "prompt_id": "baseline-v2",
+      "reasoning_effort": "medium",
+      "runtime_metrics": {
+        "latency_ms": 5879.768000042532,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 3276,
+        "tool_call_count": 5
+      },
+      "status": "completed",
+      "tool_calls": [
+        {
+          "arguments": {
+            "customer_id": "CUS-003"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "display_name": "Sample Household Gamma",
+                  "id": "CUS-003",
+                  "service_area": "District Solstice"
+                },
+                "entity_id": "CUS-003",
+                "source": "synthetic_world",
+                "summary": "Synthetic customer record."
+              },
+              {
+                "data": {
+                  "customer_id": "CUS-003",
+                  "id": "ACC-003",
+                  "provisioning_status": "awaiting_gateway_activation",
+                  "service_activation": "pending",
+                  "service_plan": "Home Fiber 300",
+                  "standing": "current"
+                },
+                "entity_id": "ACC-003",
+                "source": "synthetic_world",
+                "summary": "Synthetic account status."
+              },
+              {
+                "data": {
+                  "device_ids": [
+                    "DEV-004",
+                    "DEV-005"
+                  ]
+                },
+                "entity_id": "ACC-003",
+                "source": "synthetic_world",
+                "summary": "Devices registered to the synthetic account."
+              }
+            ],
+            "source_ids": [
+              "CUS-003",
+              "ACC-003"
+            ],
+            "success": true,
+            "summary": "Account ACC-003 is pending.",
+            "tool_name": "get_account_status"
+          },
+          "tool_name": "get_account_status"
+        },
+        {
+          "arguments": {
+            "device_id": "DEV-005"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "account_id": "ACC-003",
+                  "device_type": "sensor",
+                  "id": "DEV-005",
+                  "label": "Gamma Window Sensor",
+                  "status": {
+                    "connection_state": "gateway_unavailable",
+                    "dns_reachable": null,
+                    "firmware_version": "FW-1.8.0",
+                    "gateway_reachable": null,
+                    "local_connectivity": false,
+                    "online": false,
+                    "signal_health": "unknown",
+                    "wan_connected": null,
+                    "wan_ip_available": null
+                  }
+                },
+                "entity_id": "DEV-005",
+                "source": "synthetic_world",
+                "summary": "Synthetic device state."
+              }
+            ],
+            "source_ids": [
+              "DEV-005"
+            ],
+            "success": true,
+            "summary": "Device DEV-005 is offline.",
+            "tool_name": "get_device_status"
+          },
+          "tool_name": "get_device_status"
+        },
+        {
+          "arguments": {
+            "device_id": "DEV-005"
+          },
+          "result": {
+            "error": "Unsupported diagnostic target: DEV-005 (sensor)",
+            "evidence": [],
+            "source_ids": [],
+            "success": false,
+            "summary": "Unsupported diagnostic target: DEV-005 (sensor)",
+            "tool_name": "run_connectivity_diagnostics"
+          },
+          "tool_name": "run_connectivity_diagnostics"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-003"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "service_area": "District Solstice"
+                },
+                "entity_id": "CUS-003",
+                "source": "synthetic_world",
+                "summary": "Synthetic service area used for outage lookup."
+              }
+            ],
+            "source_ids": [
+              "CUS-003"
+            ],
+            "success": true,
+            "summary": "No active outage found for District Solstice.",
+            "tool_name": "check_service_outages"
+          },
+          "tool_name": "check_service_outages"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-003"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "category": "activation",
+                  "created_at": "2026-08-27T16:45:00Z",
+                  "customer_id": "CUS-003",
+                  "id": "TKT-004",
+                  "outcome": "Awaiting customer activation.",
+                  "summary": "Replacement gateway delivery confirmed."
+                },
+                "entity_id": "TKT-004",
+                "source": "synthetic_ticket_history",
+                "summary": "Replacement gateway delivery confirmed."
+              }
+            ],
+            "source_ids": [
+              "TKT-004"
+            ],
+            "success": true,
+            "summary": "Found 1 ticket-history entries.",
+            "tool_name": "get_ticket_history"
+          },
+          "tool_name": "get_ticket_history"
+        }
+      ],
+      "usage": {
+        "input_tokens": 2864,
+        "output_tokens": 412,
+        "reasoning_tokens": 98,
+        "total_tokens": 3276
+      }
+    }
+  ],
+  "case_id": "CASE-006",
+  "error": null,
+  "final_output": {
+    "asserted_claim_ids": [],
+    "case_id": "CASE-006",
+    "confidence": 0.98,
+    "customer_response": "Your replacement gateway is still awaiting activation, which is why the window sensor cannot reach it. Please complete the gateway activation process; once the gateway is active, the sensor should reconnect. There is no active area outage reported.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "ACC-003",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-005",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "TKT-004",
+        "tool_name": "get_ticket_history"
+      },
+      {
+        "source_id": "CUS-003",
+        "tool_name": "check_service_outages"
+      }
+    ],
+    "internal_notes": "ACC-003 provisioning is awaiting gateway activation; DEV-005 is offline with gateway_unavailable. Replacement gateway delivery was confirmed and activation remains pending. No District Solstice outage.",
+    "recommended_action_id": "guide_gateway_activation",
+    "root_cause_id": "pending_gateway_provisioning"
+  },
+  "infrastructure_retries": 0,
+  "model": "gpt-5.6-terra",
+  "prompt_id": "baseline-v2",
+  "reasoning_effort": "medium",
+  "run_id": "baseline-official-004",
+  "runtime_metrics": {
+    "latency_ms": 5879.768000042532,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 3276,
+    "tool_call_count": 5
+  },
+  "status": "completed",
+  "tool_calls": [
+    {
+      "arguments": {
+        "customer_id": "CUS-003"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "display_name": "Sample Household Gamma",
+              "id": "CUS-003",
+              "service_area": "District Solstice"
+            },
+            "entity_id": "CUS-003",
+            "source": "synthetic_world",
+            "summary": "Synthetic customer record."
+          },
+          {
+            "data": {
+              "customer_id": "CUS-003",
+              "id": "ACC-003",
+              "provisioning_status": "awaiting_gateway_activation",
+              "service_activation": "pending",
+              "service_plan": "Home Fiber 300",
+              "standing": "current"
+            },
+            "entity_id": "ACC-003",
+            "source": "synthetic_world",
+            "summary": "Synthetic account status."
+          },
+          {
+            "data": {
+              "device_ids": [
+                "DEV-004",
+                "DEV-005"
+              ]
+            },
+            "entity_id": "ACC-003",
+            "source": "synthetic_world",
+            "summary": "Devices registered to the synthetic account."
+          }
+        ],
+        "source_ids": [
+          "CUS-003",
+          "ACC-003"
+        ],
+        "success": true,
+        "summary": "Account ACC-003 is pending.",
+        "tool_name": "get_account_status"
+      },
+      "tool_name": "get_account_status"
+    },
+    {
+      "arguments": {
+        "device_id": "DEV-005"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "account_id": "ACC-003",
+              "device_type": "sensor",
+              "id": "DEV-005",
+              "label": "Gamma Window Sensor",
+              "status": {
+                "connection_state": "gateway_unavailable",
+                "dns_reachable": null,
+                "firmware_version": "FW-1.8.0",
+                "gateway_reachable": null,
+                "local_connectivity": false,
+                "online": false,
+                "signal_health": "unknown",
+                "wan_connected": null,
+                "wan_ip_available": null
+              }
+            },
+            "entity_id": "DEV-005",
+            "source": "synthetic_world",
+            "summary": "Synthetic device state."
+          }
+        ],
+        "source_ids": [
+          "DEV-005"
+        ],
+        "success": true,
+        "summary": "Device DEV-005 is offline.",
+        "tool_name": "get_device_status"
+      },
+      "tool_name": "get_device_status"
+    },
+    {
+      "arguments": {
+        "device_id": "DEV-005"
+      },
+      "result": {
+        "error": "Unsupported diagnostic target: DEV-005 (sensor)",
+        "evidence": [],
+        "source_ids": [],
+        "success": false,
+        "summary": "Unsupported diagnostic target: DEV-005 (sensor)",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      "tool_name": "run_connectivity_diagnostics"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-003"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "service_area": "District Solstice"
+            },
+            "entity_id": "CUS-003",
+            "source": "synthetic_world",
+            "summary": "Synthetic service area used for outage lookup."
+          }
+        ],
+        "source_ids": [
+          "CUS-003"
+        ],
+        "success": true,
+        "summary": "No active outage found for District Solstice.",
+        "tool_name": "check_service_outages"
+      },
+      "tool_name": "check_service_outages"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-003"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "category": "activation",
+              "created_at": "2026-08-27T16:45:00Z",
+              "customer_id": "CUS-003",
+              "id": "TKT-004",
+              "outcome": "Awaiting customer activation.",
+              "summary": "Replacement gateway delivery confirmed."
+            },
+            "entity_id": "TKT-004",
+            "source": "synthetic_ticket_history",
+            "summary": "Replacement gateway delivery confirmed."
+          }
+        ],
+        "source_ids": [
+          "TKT-004"
+        ],
+        "success": true,
+        "summary": "Found 1 ticket-history entries.",
+        "tool_name": "get_ticket_history"
+      },
+      "tool_name": "get_ticket_history"
+    }
+  ],
+  "usage": {
+    "input_tokens": 2864,
+    "output_tokens": 412,
+    "reasoning_tokens": 98,
+    "total_tokens": 3276
+  }
+}

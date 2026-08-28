@@ -1,0 +1,28 @@
+{
+  "agent_name": "ResolveOps Baseline",
+  "case_ids": [
+    "CASE-001",
+    "CASE-002",
+    "CASE-003",
+    "CASE-004",
+    "CASE-005",
+    "CASE-006",
+    "CASE-007",
+    "CASE-008",
+    "CASE-009",
+    "CASE-010",
+    "CASE-011",
+    "CASE-012",
+    "CASE-013",
+    "CASE-014",
+    "CASE-015"
+  ],
+  "execution_failure_count": 1,
+  "model": "gpt-5.6-terra",
+  "prompt_id": "baseline-v2",
+  "reasoning_effort": "medium",
+  "run_id": "baseline-official-004",
+  "run_kind": "official",
+  "status": "completed",
+  "successful_candidate_count": 14
+}

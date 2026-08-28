@@ -1,0 +1,14 @@
+{
+  "agent_name": "ResolveOps Baseline",
+  "case_ids": [
+    "CASE-001"
+  ],
+  "execution_failure_count": 0,
+  "model": "gpt-5.6-terra",
+  "prompt_id": "baseline-v2",
+  "reasoning_effort": "medium",
+  "run_id": "smoke-v2-001",
+  "run_kind": "development",
+  "status": "completed",
+  "successful_candidate_count": 1
+}

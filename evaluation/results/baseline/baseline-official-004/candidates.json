@@ -1,0 +1,410 @@
+{
+  "CASE-001": {
+    "asserted_claim_ids": [],
+    "case_id": "CASE-001",
+    "confidence": 0.98,
+    "customer_response": "We confirmed an active service interruption affecting District Meridian. Your gateway is reachable locally, but its upstream/WAN connection is unavailable, which matches the outage. Your account and gateway provisioning are active, so no action is needed on your equipment at this time. Please monitor for service restoration.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "OUT-001",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "DEV-003",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-003",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "ACC-002",
+        "tool_name": "get_account_status"
+      }
+    ],
+    "internal_notes": "Active District Meridian outage OUT-001. Gateway has good local connectivity but no WAN/IP; account is current, active, and fully provisioned.",
+    "recommended_action_id": "communicate_outage_status",
+    "root_cause_id": "regional_outage"
+  },
+  "CASE-002": {
+    "asserted_claim_ids": [],
+    "case_id": "CASE-002",
+    "confidence": 0.98,
+    "customer_response": "Your replacement gateway is connected locally, but its internet activation has not yet completed. Please complete the gateway activation process for the replacement device. Once activation finishes, the gateway should receive its internet connection; there is no active area outage reported.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "ACC-003",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-004",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-004",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-003",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "TKT-004",
+        "tool_name": "get_ticket_history"
+      }
+    ],
+    "internal_notes": "Account ACC-003 is current but awaiting gateway activation. DEV-004 is reachable with good local signal, while WAN/IP connectivity is unavailable. No outage found; ticket history confirms replacement delivery and awaiting activation.",
+    "recommended_action_id": "guide_gateway_activation",
+    "root_cause_id": "pending_gateway_provisioning"
+  },
+  "CASE-004": {
+    "asserted_claim_ids": [],
+    "case_id": "CASE-004",
+    "confidence": 0.97,
+    "customer_response": "Your Wi-Fi and internet connection are active, but the gateway is currently unable to reach DNS services, which can prevent websites from loading. Please restart the gateway, then reconnect your device to Wi-Fi and try the affected websites again. If the issue continues after the restart, contact support for further DNS troubleshooting.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "DEV-008",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-008",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-005",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "ACC-005",
+        "tool_name": "get_account_status"
+      }
+    ],
+    "internal_notes": "DEV-008 is online with WAN/IP connectivity and local connectivity, but DNS is unreachable. Account is active and provisioned; no District Harbor outage is active.",
+    "recommended_action_id": "guide_dns_recovery",
+    "root_cause_id": "dns_resolution_failure"
+  },
+  "CASE-005": {
+    "asserted_claim_ids": [],
+    "case_id": "CASE-005",
+    "confidence": 0.9,
+    "customer_response": "Your home gateway and internet connection are working normally, and there is no area outage. Since other connected-home devices still work, this appears limited to the phone\u2019s Wi-Fi connection. On the phone, forget the home Wi-Fi network, restart the phone, then reconnect and re-enter the Wi-Fi password. If it still cannot join, restart the gateway and try again.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "DEV-001",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-001",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-001",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "ACC-001",
+        "tool_name": "get_account_status"
+      }
+    ],
+    "internal_notes": "Gateway DEV-001 is online with healthy local, WAN, and DNS connectivity; account is active and provisioning is complete. No outage in District Aurora. Ticket symptoms support a phone-local Wi-Fi reconnection/configuration issue.",
+    "recommended_action_id": "guide_wifi_reconnect",
+    "root_cause_id": "local_wifi_configuration"
+  },
+  "CASE-006": {
+    "asserted_claim_ids": [],
+    "case_id": "CASE-006",
+    "confidence": 0.98,
+    "customer_response": "Your replacement gateway is still awaiting activation, which is why the window sensor cannot reach it. Please complete the gateway activation process; once the gateway is active, the sensor should reconnect. There is no active area outage reported.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "ACC-003",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-005",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "TKT-004",
+        "tool_name": "get_ticket_history"
+      },
+      {
+        "source_id": "CUS-003",
+        "tool_name": "check_service_outages"
+      }
+    ],
+    "internal_notes": "ACC-003 provisioning is awaiting gateway activation; DEV-005 is offline with gateway_unavailable. Replacement gateway delivery was confirmed and activation remains pending. No District Solstice outage.",
+    "recommended_action_id": "guide_gateway_activation",
+    "root_cause_id": "pending_gateway_provisioning"
+  },
+  "CASE-007": {
+    "asserted_claim_ids": [],
+    "case_id": "CASE-007",
+    "confidence": 0.97,
+    "customer_response": "The portal reminder does not appear to be affecting your current connectivity. Your service is active and your gateway is online with a healthy connection; there is also no reported area outage. The account does show a past-due standing, so please review the reminder in the account portal and address it to avoid any future service impact.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "ACC-006",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-010",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "CUS-006",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "TKT-007",
+        "tool_name": "get_ticket_history"
+      }
+    ],
+    "internal_notes": "ACC-006 is active with complete provisioning; DEV-010 is online, WAN and DNS are reachable, and signal health is good. No District Solstice outage. Account standing is past_due.",
+    "recommended_action_id": "review_account_notice",
+    "root_cause_id": "account_standing_question"
+  },
+  "CASE-008": {
+    "asserted_claim_ids": [],
+    "case_id": "CASE-008",
+    "confidence": 0.94,
+    "customer_response": "Your home gateway and internet connection are online, but the porch camera is offline. Please reconnect the camera to the current home Wi-Fi using its setup process, then check whether it comes back online. This is consistent with the camera needing to reconnect after the earlier power interruption, rather than an area outage.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "DEV-007",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-006",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-006",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-004",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "TKT-005",
+        "tool_name": "get_ticket_history"
+      },
+      {
+        "source_id": "KB-005",
+        "tool_name": "search_knowledge_base"
+      }
+    ],
+    "internal_notes": "DEV-006 gateway is connected with healthy local, WAN, and DNS checks; no District Aurora outage. DEV-007 camera is offline with no local connectivity. History records camera reporting stopped after a power interruption.",
+    "recommended_action_id": "guide_camera_reconnect",
+    "root_cause_id": "camera_reconnect_needed"
+  },
+  "CASE-009": {
+    "asserted_claim_ids": [],
+    "case_id": "CASE-009",
+    "confidence": 0.96,
+    "customer_response": "Your gateway is online and connected to the internet, so the moved hardware is not showing as failed. The current issue is that DNS lookup is unavailable, which can prevent websites from loading even while Wi-Fi remains connected. Please restart the gateway, wait for it to fully reconnect, then retry loading a website. There is no active area outage reported.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "DEV-008",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-008",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-005",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "ACC-005",
+        "tool_name": "get_account_status"
+      }
+    ],
+    "internal_notes": "DEV-008 has WAN connectivity and a WAN IP, but DNS is unreachable. Account is active/provisioning complete; no District Harbor outage found.",
+    "recommended_action_id": "guide_dns_recovery",
+    "root_cause_id": "dns_resolution_failure"
+  },
+  "CASE-010": {
+    "asserted_claim_ids": [],
+    "case_id": "CASE-010",
+    "confidence": 0.97,
+    "customer_response": "We found an active service interruption affecting District Meridian. Your gateway is online locally, but the upstream connection is unavailable, so a replacement gateway is not indicated at this time. Service should return when the area interruption is resolved.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "OUT-001",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "DEV-003",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "ACC-002",
+        "tool_name": "get_account_status"
+      }
+    ],
+    "internal_notes": "Active District Meridian outage (OUT-001). Gateway is reachable with good local signal, but WAN and WAN IP are unavailable. Account activation and provisioning are complete.",
+    "recommended_action_id": "communicate_outage_status",
+    "root_cause_id": "regional_outage"
+  },
+  "CASE-011": {
+    "asserted_claim_ids": [],
+    "case_id": "CASE-011",
+    "confidence": 0.97,
+    "customer_response": "Your gateway is currently online and testing normally, and there is no active outage reported in your area. Because the brief evening drops were not captured with times or affected devices, we cannot reliably identify the cause yet. Please note the next occurrence time, which devices are affected, and whether the gateway\u2019s connection light changes; we\u2019ll use that information to investigate further.",
+    "escalate": true,
+    "evidence_references": [
+      {
+        "source_id": "DEV-001",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-001",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-001",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "ACC-001",
+        "tool_name": "get_account_status"
+      }
+    ],
+    "internal_notes": "Gateway is online with healthy WAN, DNS, local connectivity, and signal. Account is active and provisioning is complete; no Aurora outage is active. Intermittent evening drops cannot be diagnosed without occurrence details or affected-device evidence.",
+    "recommended_action_id": "escalate_for_more_evidence",
+    "root_cause_id": "INSUFFICIENT_EVIDENCE"
+  },
+  "CASE-012": {
+    "asserted_claim_ids": [],
+    "case_id": "CASE-012",
+    "confidence": 0.95,
+    "customer_response": "Your porch camera is currently offline, while your gateway and internet service are online. Since this began after the power interruption, please power-cycle the camera, then reconnect it to the Delta Gateway Wi-Fi in the camera app. If it does not rejoin after the app\u2019s reconnection steps, use the app\u2019s camera reset/re-add process.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "DEV-007",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-006",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "ACC-004",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "CUS-004",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "TKT-005",
+        "tool_name": "get_ticket_history"
+      }
+    ],
+    "internal_notes": "DEV-007 is offline with no local connectivity. DEV-006 gateway is online with WAN and DNS healthy; account is active and complete, and no District Aurora outage is active. History ties the camera failure to the power interruption.",
+    "recommended_action_id": "guide_camera_reconnect",
+    "root_cause_id": "camera_reconnect_needed"
+  },
+  "CASE-013": {
+    "asserted_claim_ids": [],
+    "case_id": "CASE-013",
+    "confidence": 0.88,
+    "customer_response": "Your service is currently active, and the primary gateway is online with a healthy internet connection. There is no active outage in your area. The service reminder appears to be an account-standing notice rather than a confirmed service suspension; please review the notice and your account details for any required action.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "ACC-006",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-010",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-010",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-006",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "TKT-007",
+        "tool_name": "get_ticket_history"
+      }
+    ],
+    "internal_notes": "ACC-006 is past due but service activation is active and provisioning complete. DEV-010 has WAN, DNS, and local connectivity; no District Solstice outage. Prior ticket also concerned a service reminder.",
+    "recommended_action_id": "review_account_notice",
+    "root_cause_id": "account_standing_question"
+  },
+  "CASE-014": {
+    "asserted_claim_ids": [],
+    "case_id": "CASE-014",
+    "confidence": 0.95,
+    "customer_response": "Your door sensor is currently connected and shows good signal health. We do not have enough evidence from its current status to determine what is causing the occasional false alerts, so we\u2019re escalating this for further review.",
+    "escalate": true,
+    "evidence_references": [
+      {
+        "source_id": "ACC-001",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-002",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "TKT-001",
+        "tool_name": "get_ticket_history"
+      }
+    ],
+    "internal_notes": "DEV-002 is online, connected, locally reachable, and has good signal health. Account is active and provisioning is complete. No diagnostic evidence of the historical false-alert events is available.",
+    "recommended_action_id": "escalate_for_more_evidence",
+    "root_cause_id": "INSUFFICIENT_EVIDENCE"
+  },
+  "CASE-015": {
+    "asserted_claim_ids": [],
+    "case_id": "CASE-015",
+    "confidence": 0.99,
+    "customer_response": "There is no active outage reported for District Solstice. Your replacement gateway is reachable locally, but its activation is still pending, so it has not received a WAN connection yet. Please complete the gateway activation/setup steps; once activation finishes, retest the internet connection.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "ACC-003",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-004",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-004",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-003",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "TKT-004",
+        "tool_name": "get_ticket_history"
+      }
+    ],
+    "internal_notes": "ACC-003 is current but awaiting gateway activation. DEV-004 is online locally with good signal, but WAN and WAN IP are unavailable. No area outage found; history confirms replacement gateway delivery and awaiting customer activation.",
+    "recommended_action_id": "guide_gateway_activation",
+    "root_cause_id": "pending_gateway_provisioning"
+  }
+}

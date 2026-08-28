@@ -1,0 +1,8 @@
+{
+  "CASE-003": {
+    "case_id": "CASE-003",
+    "error_message": "Invalid JSON when parsing model output",
+    "error_type": "ModelBehaviorError",
+    "infrastructure_retries": 1
+  }
+}

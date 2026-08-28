@@ -1,0 +1,317 @@
+{
+  "agent_name": "ResolveOps Baseline",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "model": "gpt-5.6-terra",
+      "prompt_id": "baseline-v2",
+      "reasoning_effort": "medium",
+      "runtime_metrics": {
+        "latency_ms": 5926.88869999256,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 3041,
+        "tool_call_count": 3
+      },
+      "status": "completed",
+      "tool_calls": [
+        {
+          "arguments": {
+            "customer_id": "CUS-001"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "display_name": "Sample Household Alpha",
+                  "id": "CUS-001",
+                  "service_area": "District Aurora"
+                },
+                "entity_id": "CUS-001",
+                "source": "synthetic_world",
+                "summary": "Synthetic customer record."
+              },
+              {
+                "data": {
+                  "customer_id": "CUS-001",
+                  "id": "ACC-001",
+                  "provisioning_status": "complete",
+                  "service_activation": "active",
+                  "service_plan": "Home Fiber 500",
+                  "standing": "current"
+                },
+                "entity_id": "ACC-001",
+                "source": "synthetic_world",
+                "summary": "Synthetic account status."
+              },
+              {
+                "data": {
+                  "device_ids": [
+                    "DEV-001",
+                    "DEV-002"
+                  ]
+                },
+                "entity_id": "ACC-001",
+                "source": "synthetic_world",
+                "summary": "Devices registered to the synthetic account."
+              }
+            ],
+            "source_ids": [
+              "CUS-001",
+              "ACC-001"
+            ],
+            "success": true,
+            "summary": "Account ACC-001 is active.",
+            "tool_name": "get_account_status"
+          },
+          "tool_name": "get_account_status"
+        },
+        {
+          "arguments": {
+            "device_id": "DEV-002"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "account_id": "ACC-001",
+                  "device_type": "sensor",
+                  "id": "DEV-002",
+                  "label": "Alpha Door Sensor",
+                  "status": {
+                    "connection_state": "connected",
+                    "dns_reachable": null,
+                    "firmware_version": "FW-1.8.0",
+                    "gateway_reachable": null,
+                    "local_connectivity": true,
+                    "online": true,
+                    "signal_health": "good",
+                    "wan_connected": null,
+                    "wan_ip_available": null
+                  }
+                },
+                "entity_id": "DEV-002",
+                "source": "synthetic_world",
+                "summary": "Synthetic device state."
+              }
+            ],
+            "source_ids": [
+              "DEV-002"
+            ],
+            "success": true,
+            "summary": "Device DEV-002 is online.",
+            "tool_name": "get_device_status"
+          },
+          "tool_name": "get_device_status"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-001"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "category": "billing",
+                  "created_at": "2026-07-04T09:30:00Z",
+                  "customer_id": "CUS-001",
+                  "id": "TKT-001",
+                  "outcome": "Provided self-service instructions.",
+                  "summary": "Asked how to view the synthetic monthly statement."
+                },
+                "entity_id": "TKT-001",
+                "source": "synthetic_ticket_history",
+                "summary": "Asked how to view the synthetic monthly statement."
+              }
+            ],
+            "source_ids": [
+              "TKT-001"
+            ],
+            "success": true,
+            "summary": "Found 1 ticket-history entries.",
+            "tool_name": "get_ticket_history"
+          },
+          "tool_name": "get_ticket_history"
+        }
+      ],
+      "usage": {
+        "input_tokens": 2695,
+        "output_tokens": 346,
+        "reasoning_tokens": 81,
+        "total_tokens": 3041
+      }
+    }
+  ],
+  "case_id": "CASE-014",
+  "error": null,
+  "final_output": {
+    "asserted_claim_ids": [],
+    "case_id": "CASE-014",
+    "confidence": 0.95,
+    "customer_response": "Your door sensor is currently connected and shows good signal health. We do not have enough evidence from its current status to determine what is causing the occasional false alerts, so we\u2019re escalating this for further review.",
+    "escalate": true,
+    "evidence_references": [
+      {
+        "source_id": "ACC-001",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-002",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "TKT-001",
+        "tool_name": "get_ticket_history"
+      }
+    ],
+    "internal_notes": "DEV-002 is online, connected, locally reachable, and has good signal health. Account is active and provisioning is complete. No diagnostic evidence of the historical false-alert events is available.",
+    "recommended_action_id": "escalate_for_more_evidence",
+    "root_cause_id": "INSUFFICIENT_EVIDENCE"
+  },
+  "infrastructure_retries": 0,
+  "model": "gpt-5.6-terra",
+  "prompt_id": "baseline-v2",
+  "reasoning_effort": "medium",
+  "run_id": "baseline-official-004",
+  "runtime_metrics": {
+    "latency_ms": 5926.88869999256,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 3041,
+    "tool_call_count": 3
+  },
+  "status": "completed",
+  "tool_calls": [
+    {
+      "arguments": {
+        "customer_id": "CUS-001"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "display_name": "Sample Household Alpha",
+              "id": "CUS-001",
+              "service_area": "District Aurora"
+            },
+            "entity_id": "CUS-001",
+            "source": "synthetic_world",
+            "summary": "Synthetic customer record."
+          },
+          {
+            "data": {
+              "customer_id": "CUS-001",
+              "id": "ACC-001",
+              "provisioning_status": "complete",
+              "service_activation": "active",
+              "service_plan": "Home Fiber 500",
+              "standing": "current"
+            },
+            "entity_id": "ACC-001",
+            "source": "synthetic_world",
+            "summary": "Synthetic account status."
+          },
+          {
+            "data": {
+              "device_ids": [
+                "DEV-001",
+                "DEV-002"
+              ]
+            },
+            "entity_id": "ACC-001",
+            "source": "synthetic_world",
+            "summary": "Devices registered to the synthetic account."
+          }
+        ],
+        "source_ids": [
+          "CUS-001",
+          "ACC-001"
+        ],
+        "success": true,
+        "summary": "Account ACC-001 is active.",
+        "tool_name": "get_account_status"
+      },
+      "tool_name": "get_account_status"
+    },
+    {
+      "arguments": {
+        "device_id": "DEV-002"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "account_id": "ACC-001",
+              "device_type": "sensor",
+              "id": "DEV-002",
+              "label": "Alpha Door Sensor",
+              "status": {
+                "connection_state": "connected",
+                "dns_reachable": null,
+                "firmware_version": "FW-1.8.0",
+                "gateway_reachable": null,
+                "local_connectivity": true,
+                "online": true,
+                "signal_health": "good",
+                "wan_connected": null,
+                "wan_ip_available": null
+              }
+            },
+            "entity_id": "DEV-002",
+            "source": "synthetic_world",
+            "summary": "Synthetic device state."
+          }
+        ],
+        "source_ids": [
+          "DEV-002"
+        ],
+        "success": true,
+        "summary": "Device DEV-002 is online.",
+        "tool_name": "get_device_status"
+      },
+      "tool_name": "get_device_status"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-001"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "category": "billing",
+              "created_at": "2026-07-04T09:30:00Z",
+              "customer_id": "CUS-001",
+              "id": "TKT-001",
+              "outcome": "Provided self-service instructions.",
+              "summary": "Asked how to view the synthetic monthly statement."
+            },
+            "entity_id": "TKT-001",
+            "source": "synthetic_ticket_history",
+            "summary": "Asked how to view the synthetic monthly statement."
+          }
+        ],
+        "source_ids": [
+          "TKT-001"
+        ],
+        "success": true,
+        "summary": "Found 1 ticket-history entries.",
+        "tool_name": "get_ticket_history"
+      },
+      "tool_name": "get_ticket_history"
+    }
+  ],
+  "usage": {
+    "input_tokens": 2695,
+    "output_tokens": 346,
+    "reasoning_tokens": 81,
+    "total_tokens": 3041
+  }
+}
