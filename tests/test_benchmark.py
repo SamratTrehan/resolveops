@@ -7,6 +7,7 @@ from pathlib import Path
 from resolveops.evaluation import (
     CandidateOutput,
     EvidenceReference,
+    ExecutionFailure,
     RuntimeMetrics,
     load_cases,
     score_benchmark,
@@ -175,3 +176,45 @@ def test_runtime_metrics_are_summarized_only_when_supplied() -> None:
         "total_retries": 1,
         "total_tool_call_count": 3,
     }
+
+
+def test_execution_failure_is_a_distinct_full_denominator_vrsr_failure() -> None:
+    cases = load_cases()
+    failed_case = cases[0]
+    candidates = {case.case_id: _perfect_candidate(case.case_id) for case in cases[1:]}
+    result = score_benchmark(
+        cases,
+        load_hidden_truths(),
+        candidates,
+        execution_failures={
+            failed_case.case_id: ExecutionFailure(
+                case_id=failed_case.case_id,
+                error_type="ModelBehaviorError",
+                error_message="Invalid JSON when parsing model output",
+                infrastructure_retries=1,
+            )
+        },
+    )
+    failed_score = next(score for score in result.case_scores if score.case_id == failed_case.case_id)
+    assert failed_score.execution_failure and not failed_score.passed
+    assert not any((failed_score.diagnosis_correct, failed_score.action_correct, failed_score.escalation_correct, failed_score.evidence_coverage))
+    assert result.summary.total_cases == 15
+    assert result.summary.passed_cases == 14
+    assert result.summary.vrsr_percent == 100 * 14 / 15
+    assert result.summary.diagnosis_accuracy == 100 * 14 / 15
+
+
+def test_execution_failure_cannot_share_a_case_with_a_candidate() -> None:
+    case = load_cases()[0]
+    failure = ExecutionFailure(
+        case_id=case.case_id,
+        error_type="ModelBehaviorError",
+        error_message="Invalid JSON when parsing model output",
+        infrastructure_retries=1,
+    )
+    try:
+        score_benchmark([case], [load_hidden_truths()[0]], {case.case_id: _perfect_candidate(case.case_id)}, execution_failures={case.case_id: failure})
+    except ValueError as error:
+        assert "both a candidate" in str(error)
+    else:
+        raise AssertionError("candidate/execution failure overlap must fail")

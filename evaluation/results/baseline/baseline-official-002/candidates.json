@@ -1,0 +1,149 @@
+{
+  "CASE-001": {
+    "asserted_claim_ids": [
+      "active_service_area_outage",
+      "gateway_reachable_with_local_connectivity",
+      "wan_connection_and_ip_unavailable",
+      "account_service_active"
+    ],
+    "case_id": "CASE-001",
+    "confidence": 0.99,
+    "customer_response": "We\u2019ve confirmed an active upstream service interruption affecting District Meridian. Your gateway is reachable and its local connection appears normal, but it is not receiving a WAN connection or internet IP address. This is consistent with the area outage, so no changes are needed in your home right now. Service should return once the interruption is resolved.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "OUT-001",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "DEV-003",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-003",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "ACC-002",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "KB-003",
+        "tool_name": "search_knowledge_base"
+      }
+    ],
+    "internal_notes": "OUT-001 is active for District Meridian. DEV-003 is online/reachable with good signal and local connectivity, but WAN, WAN IP, and DNS are unavailable. Account ACC-002 is active and fully provisioned. No local remediation or escalation indicated while the area outage is active.",
+    "recommended_action_id": "wait_for_outage_restoration",
+    "root_cause_id": "active_service_area_outage"
+  },
+  "CASE-002": {
+    "asserted_claim_ids": [
+      "account_provisioning_awaiting_gateway_activation",
+      "gateway_connection_state_activation_pending",
+      "gateway_local_connectivity_available",
+      "gateway_wan_not_connected",
+      "no_active_service_outage"
+    ],
+    "case_id": "CASE-002",
+    "confidence": 0.98,
+    "customer_response": "Your replacement gateway is connected to your local Wi-Fi, but it is still waiting to be activated on your account. Please complete the replacement-gateway activation step; once activation completes, the gateway should obtain its internet connection automatically. There is no active outage in your area.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "ACC-003",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-004",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-004",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-003",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "KB-001",
+        "tool_name": "search_knowledge_base"
+      }
+    ],
+    "internal_notes": "ACC-003 provisioning is awaiting gateway activation; DEV-004 is reachable with good local signal but has no WAN connection, WAN IP, or DNS. No District Solstice outage. Follow KB-001 activation guidance; escalate only if activation cannot be completed or remains pending afterward.",
+    "recommended_action_id": "complete_replacement_gateway_activation",
+    "root_cause_id": "gateway_activation_pending"
+  },
+  "CASE-003": {
+    "asserted_claim_ids": [
+      "camera_offline",
+      "camera_local_connectivity_unavailable",
+      "gateway_online_with_healthy_wan_and_dns",
+      "no_active_area_outage",
+      "power_interruption_preceded_camera_failure"
+    ],
+    "case_id": "CASE-003",
+    "confidence": 0.9,
+    "customer_response": "Your porch camera is offline, while your home gateway is online and there is no outage in your area. The power interruption likely left the camera disconnected locally. Please confirm the camera has power, power-cycle it, then reconnect it to your current home network in the camera setup flow. If it still does not reconnect after that, please contact us for further assistance.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "DEV-007",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-006",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "CUS-004",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "TKT-005",
+        "tool_name": "get_ticket_history"
+      },
+      {
+        "source_id": "KB-005",
+        "tool_name": "search_knowledge_base"
+      }
+    ],
+    "internal_notes": "DEV-007 is offline with local connectivity false. DEV-006 gateway is online with healthy WAN/DNS; no District Aurora outage. Direct connectivity diagnostics are unsupported for camera devices. KB-005 supports reconnecting the camera after a connectivity change.",
+    "recommended_action_id": "power_cycle_and_reconnect_camera",
+    "root_cause_id": "camera_local_connectivity_lost_after_power_interruption"
+  },
+  "CASE-004": {
+    "asserted_claim_ids": [
+      "gateway_online",
+      "wan_connected",
+      "wan_ip_available",
+      "dns_unreachable",
+      "no_active_area_outage"
+    ],
+    "case_id": "CASE-004",
+    "confidence": 0.98,
+    "customer_response": "Your Wi-Fi gateway is connected and has an internet WAN connection, but it cannot reach DNS services. This can prevent websites from loading even while Wi-Fi remains connected. There is no active outage in your area. We\u2019re escalating the DNS connectivity issue for further investigation.",
+    "escalate": true,
+    "evidence_references": [
+      {
+        "source_id": "DEV-008",
+        "tool_name": "functions.get_device_status"
+      },
+      {
+        "source_id": "DEV-008",
+        "tool_name": "functions.run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-005",
+        "tool_name": "functions.check_service_outages"
+      },
+      {
+        "source_id": "KB-002",
+        "tool_name": "functions.search_knowledge_base"
+      }
+    ],
+    "internal_notes": "DEV-008 is reachable with WAN connected and an IP address available, but DNS reachability is false in both current status and diagnostics. District Harbor has no active outage. Escalate DNS-path failure; signal health is also reported degraded.",
+    "recommended_action_id": "escalate_dns_reachability_failure",
+    "root_cause_id": "dns_unreachable"
+  }
+}

@@ -12,6 +12,20 @@ class RecordedToolCall(BaseModel):
     result: ToolResult
 
 
+class BaselineAttempt(BaseModel):
+    """One model execution within a case, including retryable failures."""
+
+    attempt_number: int = Field(ge=1)
+    status: str
+    model: str
+    reasoning_effort: str
+    prompt_id: str
+    tool_calls: list[RecordedToolCall] = Field(default_factory=list)
+    error: str | None = None
+    runtime_metrics: RuntimeMetrics
+    usage: dict[str, int] | None = None
+
+
 class BaselineTrajectory(BaseModel):
     run_id: str
     case_id: str
@@ -20,6 +34,8 @@ class BaselineTrajectory(BaseModel):
     agent_name: str
     prompt_id: str
     status: str
+    infrastructure_retries: int = Field(default=0, ge=0)
+    attempts: list[BaselineAttempt] = Field(default_factory=list)
     tool_calls: list[RecordedToolCall] = Field(default_factory=list)
     final_output: CandidateOutput | None = None
     error: str | None = None

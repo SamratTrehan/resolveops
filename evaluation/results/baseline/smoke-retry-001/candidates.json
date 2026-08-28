@@ -1,0 +1,35 @@
+{
+  "CASE-005": {
+    "asserted_claim_ids": [
+      "gateway_online_and_healthy",
+      "wan_and_dns_available",
+      "no_area_outage",
+      "issue_isolated_to_phone"
+    ],
+    "case_id": "CASE-005",
+    "confidence": 0.9,
+    "customer_response": "Your home gateway and internet connection are operating normally, and there is no outage in your area. Because the issue affects only one phone, please forget the home Wi-Fi network on that phone, restart the phone, and join the network again using the current Wi-Fi password. If it still cannot join, let us know the exact error message shown on the phone.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "DEV-001",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-001",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-001",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "ACC-001",
+        "tool_name": "get_account_status"
+      }
+    ],
+    "internal_notes": "DEV-001 is online with good signal, local/WAN/DNS connectivity, and active service. No District Aurora outage. Symptoms support a phone-specific Wi-Fi join issue rather than a gateway or regional-service fault.",
+    "recommended_action_id": "forget_and_rejoin_wifi_on_phone",
+    "root_cause_id": "wifi_client_device_join_issue"
+  }
+}

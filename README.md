@@ -96,6 +96,8 @@ python -m resolveops.evaluation.score_baseline_results --run-id baseline-officia
 
 The benchmark-default runtime lock is `gpt-5.6-terra` with reasoning effort `medium`. Supported effort values in the installed SDK are `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Generation artifacts record the actual model and effort in `manifest.json` and `runtime.json`; trajectories record both per case. Existing run IDs are rejected rather than overwritten. The scoring command is deliberately separate because it is the only step that loads evaluator-only truth.
 
+Each case receives at most one infrastructure retry, only for the recorded malformed structured-output `ModelBehaviorError`. A valid candidate is never retried based on its diagnosis, evidence, confidence, or evaluator outcome. In an `--all` run, an exhausted retry becomes a distinct `ExecutionFailure`: its trajectory and runtime record are retained, the runner continues with later cases, and it counts as a VRSR failure in the full 15-case denominator. It is not a model abstention (`INSUFFICIENT_EVIDENCE`) and does not fabricate a candidate. A run that attempted every requested case is completed even if it contains execution failures; `failure.json` is reserved for catastrophic/incomplete runs that cannot be scored.
+
 ## Planned run command
 
 The placeholder Streamlit entry point can be started with:

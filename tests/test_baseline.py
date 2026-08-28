@@ -1,10 +1,13 @@
 """Offline contract tests for the fair single-agent baseline infrastructure."""
 
+import json
 from pathlib import Path
 
 import pytest
 
-from resolveops.agents.baseline.artifacts import ArtifactStore, RunManifest
+from agents.exceptions import ModelBehaviorError
+
+from resolveops.agents.baseline.artifacts import ArtifactStore, FailedRunRecord, RunManifest
 from resolveops.agents.baseline.config import (
     DEFAULT_MODEL,
     DEFAULT_REASONING_EFFORT,
@@ -12,13 +15,14 @@ from resolveops.agents.baseline.config import (
 )
 from resolveops.agents.baseline.factory import create_baseline_agent
 from resolveops.agents.baseline.prompt import BASELINE_PROMPT_ID
-from resolveops.agents.baseline.records import BaselineTrajectory, RecordedToolCall, RuntimeRecord
-from resolveops.agents.baseline.runner import select_case
+from resolveops.agents.baseline.records import BaselineAttempt, BaselineTrajectory, RecordedToolCall, RuntimeRecord
+from resolveops.agents.baseline.runner import CaseRunError, run_case, run_cases, select_case
 from resolveops.agents.baseline.tools import BASELINE_TOOLS, DIRECT_TOOL_WRAPPERS
 from resolveops.domain import ToolResult
 from resolveops.evaluation.candidate import with_authoritative_case_id
 from resolveops.evaluation.models import CandidateDraft, EvaluationCase
-from resolveops.evaluation.models import CandidateOutput, EvidenceReference, RuntimeMetrics
+from resolveops.evaluation.models import CandidateOutput, EvidenceReference, ExecutionFailure, RuntimeMetrics
+from resolveops.evaluation.score_baseline_results import score_saved_run
 
 
 def _candidate(case_id: str = "CASE-001") -> CandidateOutput:
@@ -146,6 +150,7 @@ def test_artifact_paths_are_deterministic_and_non_overwriting(tmp_path: Path) ->
     store.write_results(
         {"CASE-001": final_candidate},
         {"CASE-001": RuntimeRecord(model="test-model", reasoning_effort="medium", metrics=RuntimeMetrics(latency_ms=12, retries=0, tool_call_count=1))},
+        {},
         RunManifest(
             run_id="smoke-001",
             run_kind="development",
@@ -185,6 +190,207 @@ def test_partial_collision_does_not_create_or_delete_artifacts(tmp_path: Path) -
 def test_invalid_benchmark_case_id_fails_clearly() -> None:
     with pytest.raises(ValueError, match="Unknown benchmark case ID"):
         select_case("CASE-999")
+
+
+class _Result:
+    def __init__(self, final_output: CandidateDraft) -> None:
+        self.final_output = final_output
+        self.context_wrapper = None
+
+
+def _draft() -> CandidateDraft:
+    return CandidateDraft.model_validate(_candidate().model_dump())
+
+
+def test_invalid_json_retries_once_with_identical_execution_inputs() -> None:
+    case = select_case("CASE-001")
+    calls: list[tuple[object, str, object, int]] = []
+
+    def fake_run(agent: object, user_input: str, **kwargs: object) -> _Result:
+        calls.append((agent, user_input, kwargs["context"], kwargs["max_turns"]))
+        if len(calls) == 1:
+            raise ModelBehaviorError("Invalid JSON when parsing model output")
+        return _Result(_draft())
+
+    candidate, trajectory = run_case(case, BaselineConfig(), "retry-test", run_sync=fake_run)
+    assert candidate.case_id == case.case_id
+    assert trajectory.status == "completed"
+    assert trajectory.infrastructure_retries == trajectory.runtime_metrics.retries == 1
+    assert [item.status for item in trajectory.attempts] == ["failed", "completed"]
+    assert [item.error for item in trajectory.attempts] == ["ModelBehaviorError: Invalid JSON when parsing model output", None]
+    assert calls[0][1:] == calls[1][1:]
+    assert calls[0][0].model == calls[1][0].model == "gpt-5.6-terra"
+    assert calls[0][0].model_settings.reasoning.effort == calls[1][0].model_settings.reasoning.effort == "medium"
+    assert calls[0][0].instructions == calls[1][0].instructions
+
+
+def test_two_invalid_json_failures_stop_after_one_retry() -> None:
+    attempts = 0
+
+    def fake_run(*args: object, **kwargs: object) -> _Result:
+        nonlocal attempts
+        attempts += 1
+        raise ModelBehaviorError("Invalid JSON when parsing model output")
+
+    with pytest.raises(CaseRunError) as error:
+        run_case(select_case("CASE-001"), BaselineConfig(), "retry-stop", run_sync=fake_run)
+    assert attempts == 2
+    assert error.value.trajectory.infrastructure_retries == 1
+    assert len(error.value.trajectory.attempts) == 2
+
+
+def test_other_model_behavior_errors_are_not_retried() -> None:
+    attempts = 0
+
+    def fake_run(*args: object, **kwargs: object) -> _Result:
+        nonlocal attempts
+        attempts += 1
+        raise ModelBehaviorError("Model called an unavailable tool")
+
+    with pytest.raises(CaseRunError):
+        run_case(select_case("CASE-001"), BaselineConfig(), "no-tool-retry", run_sync=fake_run)
+    assert attempts == 1
+
+
+def test_valid_candidate_is_not_retried_even_if_it_would_score_poorly() -> None:
+    calls = 0
+
+    def fake_run(*args: object, **kwargs: object) -> _Result:
+        nonlocal calls
+        calls += 1
+        draft = _draft()
+        draft.root_cause_id = "INSUFFICIENT_EVIDENCE"
+        return _Result(draft)
+
+    _, trajectory = run_case(select_case("CASE-001"), BaselineConfig(), "no-retry", run_sync=fake_run)
+    assert calls == 1
+    assert trajectory.infrastructure_retries == 0
+
+
+def test_failure_artifact_preserves_partial_run_and_blocks_scoring(tmp_path: Path) -> None:
+    store = ArtifactStore("failed-run", root=tmp_path)
+    store.prepare()
+    store.write_failure(
+        {},
+        {},
+        FailedRunRecord(
+            run_id="failed-run", run_kind="official", model="test-model", reasoning_effort="medium",
+            agent_name="ResolveOps Baseline", prompt_id=BASELINE_PROMPT_ID,
+            requested_case_ids=["CASE-001"], completed_case_ids=[], failed_case_id="CASE-001",
+            error_type="ModelBehaviorError", error_message="Invalid JSON when parsing model output",
+        ),
+    )
+    with pytest.raises(RuntimeError, match="incomplete"):
+        score_saved_run("failed-run", root=tmp_path)
+    assert (store.result_dir / "failure.json").exists()
+    assert '"status": "failed"' in (store.result_dir / "failure.json").read_text(encoding="utf-8")
+
+
+def test_runner_writes_failed_run_record_without_overwriting_partial_results(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    store = ArtifactStore("failed-runner", root=tmp_path)
+    first_case, failed_case = [select_case(case_id) for case_id in ("CASE-001", "CASE-002")]
+
+    def trajectory(case: EvaluationCase, status: str) -> BaselineTrajectory:
+        return BaselineTrajectory(
+            run_id="failed-runner", case_id=case.case_id, model="test-model", reasoning_effort="medium",
+            agent_name="ResolveOps Baseline", prompt_id=BASELINE_PROMPT_ID, status=status,
+            runtime_metrics=RuntimeMetrics(latency_ms=1, retries=0, tool_call_count=0),
+        )
+
+    def fake_run_case(case: EvaluationCase, *args: object) -> tuple[CandidateOutput, BaselineTrajectory]:
+        if case.case_id == first_case.case_id:
+            return _candidate(case.case_id), trajectory(case, "completed")
+        raise CaseRunError(trajectory(case, "failed"))
+
+    monkeypatch.setattr("resolveops.agents.baseline.runner.ArtifactStore", lambda run_id: store)
+    monkeypatch.setattr("resolveops.agents.baseline.runner.run_case", fake_run_case)
+    with pytest.raises(CaseRunError):
+        run_cases([first_case, failed_case], BaselineConfig(model="test-model", reasoning_effort="medium"), "failed-runner")
+
+    failure = (store.result_dir / "failure.json").read_text(encoding="utf-8")
+    candidates = (store.result_dir / "candidates.json").read_text(encoding="utf-8")
+    assert '"completed_case_ids": [\n    "CASE-001"\n  ]' in failure
+    assert '"failed_case_id": "CASE-002"' in failure
+    assert '"CASE-001"' in candidates
+    with pytest.raises(FileExistsError):
+        store.write_failure({}, {}, FailedRunRecord(
+            run_id="failed-runner", run_kind="development", model="test-model", reasoning_effort="medium",
+            agent_name="ResolveOps Baseline", prompt_id=BASELINE_PROMPT_ID,
+            requested_case_ids=[], completed_case_ids=[], failed_case_id="CASE-002",
+            error_type="CaseRunError", error_message="already present",
+        ))
+    assert (store.result_dir / "candidates.json").read_text(encoding="utf-8") == candidates
+
+
+def test_all_case_runner_continues_after_execution_failure(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    store = ArtifactStore("continue-run", root=tmp_path)
+    cases = [select_case(case_id) for case_id in ("CASE-001", "CASE-002", "CASE-003")]
+    attempted: list[str] = []
+
+    def trajectory(case: EvaluationCase, status: str) -> BaselineTrajectory:
+        return BaselineTrajectory(
+            run_id="continue-run", case_id=case.case_id, model="test-model", reasoning_effort="medium",
+            agent_name="ResolveOps Baseline", prompt_id=BASELINE_PROMPT_ID, status=status,
+            infrastructure_retries=1 if status == "failed" else 0,
+            runtime_metrics=RuntimeMetrics(latency_ms=1, retries=1 if status == "failed" else 0, tool_call_count=0),
+        )
+
+    def fake_run_case(case: EvaluationCase, *args: object) -> tuple[CandidateOutput, BaselineTrajectory]:
+        attempted.append(case.case_id)
+        if case.case_id == "CASE-002":
+            raise CaseRunError(trajectory(case, "failed")) from ModelBehaviorError("Invalid JSON when parsing model output")
+        return _candidate(case.case_id), trajectory(case, "completed")
+
+    monkeypatch.setattr("resolveops.agents.baseline.runner.ArtifactStore", lambda run_id: store)
+    monkeypatch.setattr("resolveops.agents.baseline.runner.run_case", fake_run_case)
+    run_cases(cases, BaselineConfig(model="test-model", reasoning_effort="medium"), "continue-run", continue_on_execution_failure=True)
+
+    assert attempted == ["CASE-001", "CASE-002", "CASE-003"]
+    assert (store.trajectory_dir / "CASE-002.json").exists()
+    failures = (store.result_dir / "execution_failures.json").read_text(encoding="utf-8")
+    assert '"CASE-002"' in failures and '"INSUFFICIENT_EVIDENCE"' not in failures
+    manifest = (store.result_dir / "manifest.json").read_text(encoding="utf-8")
+    assert '"status": "completed"' in manifest
+    assert '"execution_failure_count": 1' in manifest
+    assert not (store.result_dir / "failure.json").exists()
+
+
+def test_completed_all_case_artifacts_with_execution_failure_are_scoreable(tmp_path: Path) -> None:
+    store = ArtifactStore("scoreable-run", root=tmp_path)
+    cases = [select_case(f"CASE-{number:03}") for number in range(1, 16)]
+    failed_case = cases[-1]
+    store.prepare()
+    store.write_results(
+        {case.case_id: _candidate(case.case_id) for case in cases[:-1]},
+        {
+            case.case_id: RuntimeRecord(
+                model="test-model", reasoning_effort="medium",
+                metrics=RuntimeMetrics(latency_ms=1, retries=0, tool_call_count=0),
+            )
+            for case in cases
+        },
+        {
+            failed_case.case_id: ExecutionFailure(
+                case_id=failed_case.case_id,
+                error_type="ModelBehaviorError",
+                error_message="Invalid JSON when parsing model output",
+                infrastructure_retries=1,
+            )
+        },
+        RunManifest(
+            run_id="scoreable-run", run_kind="official", model="test-model", reasoning_effort="medium",
+            agent_name="ResolveOps Baseline", prompt_id=BASELINE_PROMPT_ID,
+            case_ids=[case.case_id for case in cases], successful_candidate_count=14, execution_failure_count=1,
+        ),
+    )
+    score_saved_run("scoreable-run", root=tmp_path)
+    scores = json.loads((store.result_dir / "case_scores.json").read_text(encoding="utf-8"))
+    failed_score = next(score for score in scores if score["case_id"] == failed_case.case_id)
+    assert failed_score["execution_failure"] and not failed_score["passed"]
 
 
 def test_baseline_runtime_has_no_truth_or_scoring_imports() -> None:

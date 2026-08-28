@@ -7,13 +7,14 @@ from pathlib import Path
 from pydantic import BaseModel
 
 from resolveops.agents.baseline.records import BaselineTrajectory, RuntimeRecord
-from resolveops.evaluation.models import CandidateOutput
+from resolveops.evaluation.models import CandidateOutput, ExecutionFailure
 
 
 RUN_ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9_-]{0,63}$")
 
 
 class RunManifest(BaseModel):
+    status: str = "completed"
     run_id: str
     run_kind: str
     model: str
@@ -21,6 +22,23 @@ class RunManifest(BaseModel):
     agent_name: str
     prompt_id: str
     case_ids: list[str]
+    successful_candidate_count: int = 0
+    execution_failure_count: int = 0
+
+
+class FailedRunRecord(BaseModel):
+    status: str = "failed"
+    run_id: str
+    run_kind: str
+    model: str
+    reasoning_effort: str
+    agent_name: str
+    prompt_id: str
+    requested_case_ids: list[str]
+    completed_case_ids: list[str]
+    failed_case_id: str
+    error_type: str
+    error_message: str
 
 
 def repository_root() -> Path:
@@ -58,6 +76,7 @@ class ArtifactStore:
         self,
         candidates: dict[str, CandidateOutput],
         runtime_metadata: dict[str, RuntimeRecord],
+        execution_failures: dict[str, ExecutionFailure],
         manifest: RunManifest,
     ) -> None:
         self._write_json(
@@ -68,4 +87,25 @@ class ArtifactStore:
             self.result_dir / "runtime.json",
             {case_id: record.model_dump(mode="json") for case_id, record in runtime_metadata.items()},
         )
+        self._write_json(
+            self.result_dir / "execution_failures.json",
+            {case_id: failure.model_dump(mode="json") for case_id, failure in execution_failures.items()},
+        )
         self._write_json(self.result_dir / "manifest.json", manifest.model_dump(mode="json"))
+
+    def write_failure(
+        self,
+        candidates: dict[str, CandidateOutput],
+        runtime_metadata: dict[str, RuntimeRecord],
+        failure: FailedRunRecord,
+    ) -> None:
+        """Persist partial output without making the run appear scoreable."""
+        self._write_json(
+            self.result_dir / "candidates.json",
+            {case_id: candidate.model_dump(mode="json") for case_id, candidate in candidates.items()},
+        )
+        self._write_json(
+            self.result_dir / "runtime.json",
+            {case_id: record.model_dump(mode="json") for case_id, record in runtime_metadata.items()},
+        )
+        self._write_json(self.result_dir / "failure.json", failure.model_dump(mode="json"))

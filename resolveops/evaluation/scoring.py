@@ -8,6 +8,7 @@ from resolveops.evaluation.models import (
     CandidateOutput,
     CaseScore,
     EvaluationCase,
+    ExecutionFailure,
     HiddenTruth,
     RuntimeMetrics,
     RuntimeSummary,
@@ -46,6 +47,20 @@ def score_case(
     )
 
 
+def score_execution_failure(case: EvaluationCase, runtime_metrics: RuntimeMetrics | None = None) -> CaseScore:
+    """Score an exhausted runtime failure without inventing a candidate."""
+    return CaseScore(
+        case_id=case.case_id,
+        execution_failure=True,
+        diagnosis_correct=False,
+        action_correct=False,
+        escalation_correct=False,
+        evidence_coverage=False,
+        passed=False,
+        runtime_metrics=runtime_metrics,
+    )
+
+
 def _runtime_summary(metrics: list[RuntimeMetrics]) -> RuntimeSummary | None:
     if not metrics:
         return None
@@ -72,25 +87,30 @@ def score_benchmark(
     truths: list[HiddenTruth],
     candidates: Mapping[str, CandidateOutput],
     runtime_metrics: Mapping[str, RuntimeMetrics] | None = None,
+    execution_failures: Mapping[str, ExecutionFailure] | None = None,
 ) -> BenchmarkScore:
     truths_by_id = {truth.case_id: truth for truth in truths}
     if {case.case_id for case in cases} != set(truths_by_id):
         raise ValueError("Cases and truths must have identical case IDs before scoring.")
+    execution_failures = execution_failures or {}
+    if set(candidates) & set(execution_failures):
+        raise ValueError("A case cannot have both a candidate and an execution failure.")
     scores = [
-        score_case(
-            case,
-            truths_by_id[case.case_id],
-            candidates.get(case.case_id, CandidateOutput(
-                case_id=case.case_id,
-                root_cause_id="INSUFFICIENT_EVIDENCE",
-                confidence=0,
-                recommended_action_id="INSUFFICIENT_EVIDENCE",
-                escalate=False,
-                customer_response="No candidate supplied.",
-                internal_notes="No candidate supplied.",
-            )),
-            runtime_metrics.get(case.case_id) if runtime_metrics else None,
-        )
+        score_execution_failure(case, runtime_metrics.get(case.case_id) if runtime_metrics else None)
+        if case.case_id in execution_failures else score_case(
+                case,
+                truths_by_id[case.case_id],
+                candidates.get(case.case_id, CandidateOutput(
+                    case_id=case.case_id,
+                    root_cause_id="INSUFFICIENT_EVIDENCE",
+                    confidence=0,
+                    recommended_action_id="INSUFFICIENT_EVIDENCE",
+                    escalate=False,
+                    customer_response="No candidate supplied.",
+                    internal_notes="No candidate supplied.",
+                )),
+                runtime_metrics.get(case.case_id) if runtime_metrics else None,
+            )
         for case in cases
     ]
     total = len(scores)

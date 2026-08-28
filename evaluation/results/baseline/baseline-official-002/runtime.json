@@ -1,0 +1,46 @@
+{
+  "CASE-001": {
+    "metrics": {
+      "latency_ms": 16316.69399997918,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 5181,
+      "tool_call_count": 6
+    },
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "medium"
+  },
+  "CASE-002": {
+    "metrics": {
+      "latency_ms": 16889.014399959706,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 6952,
+      "tool_call_count": 7
+    },
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "medium"
+  },
+  "CASE-003": {
+    "metrics": {
+      "latency_ms": 23628.590599983,
+      "model_cost_usd": null,
+      "retries": 1,
+      "token_usage": null,
+      "tool_call_count": 13
+    },
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "medium"
+  },
+  "CASE-004": {
+    "metrics": {
+      "latency_ms": 13947.857599996496,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 6165,
+      "tool_call_count": 6
+    },
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "medium"
+  }
+}

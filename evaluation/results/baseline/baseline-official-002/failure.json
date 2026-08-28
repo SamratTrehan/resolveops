@@ -1,0 +1,35 @@
+{
+  "agent_name": "ResolveOps Baseline",
+  "completed_case_ids": [
+    "CASE-001",
+    "CASE-002",
+    "CASE-003",
+    "CASE-004"
+  ],
+  "error_message": "Invalid JSON when parsing model output",
+  "error_type": "ModelBehaviorError",
+  "failed_case_id": "CASE-005",
+  "model": "gpt-5.6-terra",
+  "prompt_id": "baseline-v1",
+  "reasoning_effort": "medium",
+  "requested_case_ids": [
+    "CASE-001",
+    "CASE-002",
+    "CASE-003",
+    "CASE-004",
+    "CASE-005",
+    "CASE-006",
+    "CASE-007",
+    "CASE-008",
+    "CASE-009",
+    "CASE-010",
+    "CASE-011",
+    "CASE-012",
+    "CASE-013",
+    "CASE-014",
+    "CASE-015"
+  ],
+  "run_id": "baseline-official-002",
+  "run_kind": "official",
+  "status": "failed"
+}

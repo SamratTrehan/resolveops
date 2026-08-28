@@ -63,6 +63,15 @@ class CandidateOutput(CandidateDraft):
     case_id: str = Field(pattern=r"^CASE-\d{3}$")
 
 
+class ExecutionFailure(BaseModel):
+    """A case that exhausted permitted execution retries without a candidate."""
+
+    case_id: str = Field(pattern=r"^CASE-\d{3}$")
+    error_type: str
+    error_message: str
+    infrastructure_retries: int = Field(ge=0)
+
+
 class RuntimeMetrics(BaseModel):
     latency_ms: float | None = Field(default=None, ge=0)
     model_cost_usd: float | None = Field(default=None, ge=0)
@@ -73,6 +82,7 @@ class RuntimeMetrics(BaseModel):
 
 class CaseScore(BaseModel):
     case_id: str
+    execution_failure: bool = False
     diagnosis_correct: bool
     action_correct: bool
     escalation_correct: bool
