@@ -23,6 +23,18 @@ The Phase 4 hypothesis is that separating evidence collection from resolution im
 
 Consequential simulated actions are safety-gated: gateway activation requires explicit human approval before any synthetic execution is allowed. Approval is separate from resolution quality and never changes CandidateOutput or scoring; pending and rejected actions remain blocked. No real systems or credentials are used.
 
+## Evaluation evidence
+
+The fair comparison uses the same frozen 15 cases, hidden truths, deterministic scorer, public ontology, simulator/tool world, `gpt-5.6-terra`, and medium reasoning effort. Agents receive no evaluator feedback; all cases remain in the denominator and execution failures count as failures. Only malformed structured JSON receives one infrastructure retry; Phase 5A's quality revision is separate. `baseline-official-003` is non-comparable because ontology IDs were hidden; `resolveops-phase4-001` is a diagnostic tool-name namespace defect. The fair baseline is `baseline-official-004` / baseline-v2.
+
+Generate the offline comparison report (no API calls):
+
+```bash
+python -m resolveops.evaluation.report_experiments
+```
+
+It writes `evaluation/reports/final_comparison.json` and `.md`. Live benchmark commands consume OpenAI API tokens. The project insight is that evidence discipline and independent verification improved reliability, but the verifier also increased latency and token usage; extra agents must earn their cost.
+
 ## Setup
 
 Python 3.12 is required.

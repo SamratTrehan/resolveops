@@ -1,0 +1,94 @@
+{
+  "runs": [
+    {
+      "run_id": "baseline-official-004",
+      "architecture": "Baseline v2",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "medium",
+      "vrsr_percent": 66.66666666666667,
+      "passed_cases": 10,
+      "total_cases": 15,
+      "diagnosis_accuracy": 86.66666666666667,
+      "action_accuracy": 86.66666666666667,
+      "escalation_accuracy": 86.66666666666667,
+      "evidence_coverage": 73.33333333333333,
+      "forbidden_claim_violation_count": 0,
+      "forbidden_claim_violation_rate": 0.0,
+      "execution_failures": 1,
+      "average_latency_ms": 9692.859353338523,
+      "recorded_token_usage": 45661,
+      "tool_calls": 96,
+      "quality_revisions": 0
+    },
+    {
+      "run_id": "resolveops-phase4-002",
+      "architecture": "Investigator -> Resolver",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "medium",
+      "vrsr_percent": 80.0,
+      "passed_cases": 12,
+      "total_cases": 15,
+      "diagnosis_accuracy": 86.66666666666667,
+      "action_accuracy": 86.66666666666667,
+      "escalation_accuracy": 86.66666666666667,
+      "evidence_coverage": 93.33333333333333,
+      "forbidden_claim_violation_count": 0,
+      "forbidden_claim_violation_rate": 0.0,
+      "execution_failures": 0,
+      "average_latency_ms": 17451.299900002778,
+      "recorded_token_usage": 112636,
+      "tool_calls": 95,
+      "quality_revisions": 0
+    },
+    {
+      "run_id": "resolveops-phase5a-001",
+      "architecture": "Investigator -> Resolver -> Verifier -> optional revision",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "medium",
+      "vrsr_percent": 93.33333333333333,
+      "passed_cases": 14,
+      "total_cases": 15,
+      "diagnosis_accuracy": 93.33333333333333,
+      "action_accuracy": 93.33333333333333,
+      "escalation_accuracy": 93.33333333333333,
+      "evidence_coverage": 100.0,
+      "forbidden_claim_violation_count": 0,
+      "forbidden_claim_violation_rate": 0.0,
+      "execution_failures": 0,
+      "average_latency_ms": 23815.481660002843,
+      "recorded_token_usage": 151432,
+      "tool_calls": 96,
+      "quality_revisions": 4
+    }
+  ],
+  "deltas": [
+    {
+      "from": "baseline-official-004",
+      "to": "resolveops-phase4-002",
+      "vrsr_percentage_points": 13.333333333333329,
+      "evidence_coverage_percentage_points": 20.0,
+      "latency_relative_percent": 80.0428466342288,
+      "token_usage_relative_percent": 146.6787849587175
+    },
+    {
+      "from": "resolveops-phase4-002",
+      "to": "resolveops-phase5a-001",
+      "vrsr_percentage_points": 13.333333333333329,
+      "evidence_coverage_percentage_points": 6.666666666666671,
+      "latency_relative_percent": 36.468239022120365,
+      "token_usage_relative_percent": 34.44369473347775
+    },
+    {
+      "from": "baseline-official-004",
+      "to": "resolveops-phase5a-001",
+      "vrsr_percentage_points": 26.666666666666657,
+      "evidence_coverage_percentage_points": 26.66666666666667,
+      "latency_relative_percent": 145.70130228702894,
+      "token_usage_relative_percent": 231.6440726221502
+    }
+  ],
+  "notes": {
+    "baseline_recorded_usage": "Recorded token usage may undercount retry attempts whose usage was unavailable.",
+    "phase5b": "Human approval is a safety gate, not a quality benchmark result."
+  }
+}
