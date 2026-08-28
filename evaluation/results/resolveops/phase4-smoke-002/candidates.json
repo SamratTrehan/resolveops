@@ -1,0 +1,30 @@
+{
+  "CASE-001": {
+    "asserted_claim_ids": [],
+    "case_id": "CASE-001",
+    "confidence": 0.97,
+    "customer_response": "We\u2019ve confirmed an active upstream service interruption affecting the District Meridian area. Your gateway is reachable locally, but it is not receiving an upstream internet connection. Your account and gateway provisioning are active, so no action is needed on your account at this time. We\u2019re monitoring restoration of the area service; we do not yet have a restoration estimate to share.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "OUT-001",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "DEV-003",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "DEV-003",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "ACC-002",
+        "tool_name": "get_account_status"
+      }
+    ],
+    "internal_notes": "Classified as regional_outage. OUT-001 confirms an active District Meridian upstream interruption beginning 2026-08-28T08:15:00Z. DEV-003 is online locally but has no WAN connection, WAN IP, or DNS reachability. Account is current, active, and fully provisioned. No escalation needed; restoration estimate is unavailable in the evidence bundle.",
+    "recommended_action_id": "communicate_outage_status",
+    "root_cause_id": "regional_outage"
+  }
+}

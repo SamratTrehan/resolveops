@@ -34,7 +34,14 @@ def _input(case: EvaluationCase) -> str:
 
 
 def _metrics(attempts: list[AgentAttempt]) -> RuntimeMetrics:
-    return RuntimeMetrics(latency_ms=sum(item.runtime_metrics.latency_ms or 0 for item in attempts), retries=len(attempts) - 1, tool_call_count=sum(len(item.tool_calls) for item in attempts))
+    usage = _aggregate_usage(attempts)
+    return RuntimeMetrics(latency_ms=sum(item.runtime_metrics.latency_ms or 0 for item in attempts), token_usage=usage["total_tokens"] if usage else None, retries=len(attempts) - 1, tool_call_count=sum(len(item.tool_calls) for item in attempts))
+
+
+def _aggregate_usage(attempts: list[AgentAttempt]) -> dict[str, int] | None:
+    if not attempts or any(item.usage is None for item in attempts):
+        return None
+    return {key: sum(item.usage[key] for item in attempts if item.usage is not None) for key in ("input_tokens", "output_tokens", "reasoning_tokens", "total_tokens")}
 
 
 def _run_agent(case: EvaluationCase, config: BaselineConfig, run_id: str, name: str, prompt_id: str, agent_factory: Callable[[BaselineConfig], Any], user_input: str, uses_tools: bool, run_sync: Callable[..., Any]) -> tuple[Any | None, AgentTrajectory]:
@@ -47,12 +54,12 @@ def _run_agent(case: EvaluationCase, config: BaselineConfig, run_id: str, name: 
             usage = _usage_data(result)
             attempts.append(AgentAttempt(attempt_number=number, status="completed", tool_calls=attempt_context.tool_calls, runtime_metrics=RuntimeMetrics(latency_ms=(time.perf_counter()-started)*1000, token_usage=usage["total_tokens"] if usage else None, tool_call_count=len(attempt_context.tool_calls)), usage=usage))
             output = result.final_output
-            return output, AgentTrajectory(run_id=run_id, case_id=case.case_id, agent_name=name, prompt_id=prompt_id, model=config.model, reasoning_effort=config.reasoning_effort, input_summary=user_input, status="completed", attempts=attempts, tool_calls=[call for attempt in attempts for call in attempt.tool_calls], output=output.model_dump(mode="json"), runtime_metrics=_metrics(attempts), usage=usage)
+            return output, AgentTrajectory(run_id=run_id, case_id=case.case_id, agent_name=name, prompt_id=prompt_id, model=config.model, reasoning_effort=config.reasoning_effort, input_summary=user_input, status="completed", attempts=attempts, tool_calls=[call for attempt in attempts for call in attempt.tool_calls], output=output.model_dump(mode="json"), runtime_metrics=_metrics(attempts), usage=_aggregate_usage(attempts))
         except Exception as error:
             attempts.append(AgentAttempt(attempt_number=number, status="failed", tool_calls=attempt_context.tool_calls, error=f"{type(error).__name__}: {error}", runtime_metrics=RuntimeMetrics(latency_ms=(time.perf_counter()-started)*1000, tool_call_count=len(attempt_context.tool_calls))))
             if _retryable(error) and number <= MAX_INFRASTRUCTURE_RETRIES:
                 continue
-            return None, AgentTrajectory(run_id=run_id, case_id=case.case_id, agent_name=name, prompt_id=prompt_id, model=config.model, reasoning_effort=config.reasoning_effort, input_summary=user_input, status="failed", attempts=attempts, tool_calls=[call for attempt in attempts for call in attempt.tool_calls], error=attempts[-1].error, runtime_metrics=_metrics(attempts))
+            return None, AgentTrajectory(run_id=run_id, case_id=case.case_id, agent_name=name, prompt_id=prompt_id, model=config.model, reasoning_effort=config.reasoning_effort, input_summary=user_input, status="failed", attempts=attempts, tool_calls=[call for attempt in attempts for call in attempt.tool_calls], error=attempts[-1].error, runtime_metrics=_metrics(attempts), usage=_aggregate_usage(attempts))
 
 
 def _validate_bundle(bundle: EvidenceBundle, calls: list[Any]) -> None:
@@ -90,7 +97,8 @@ def run_cases(cases: list[EvaluationCase], config: BaselineConfig, run_id: str, 
         candidate, investigator, resolver = run_case(case, config, run_id)
         store.write_trajectory(investigator)
         if resolver: store.write_trajectory(resolver)
-        metrics = RuntimeMetrics(latency_ms=(investigator.runtime_metrics.latency_ms or 0) + ((resolver.runtime_metrics.latency_ms or 0) if resolver else 0), retries=(investigator.runtime_metrics.retries or 0) + ((resolver.runtime_metrics.retries or 0) if resolver else 0), tool_call_count=(investigator.runtime_metrics.tool_call_count or 0) + ((resolver.runtime_metrics.tool_call_count or 0) if resolver else 0))
+        stage_tokens = [investigator.runtime_metrics.token_usage] + ([resolver.runtime_metrics.token_usage] if resolver else [])
+        metrics = RuntimeMetrics(latency_ms=(investigator.runtime_metrics.latency_ms or 0) + ((resolver.runtime_metrics.latency_ms or 0) if resolver else 0), token_usage=sum(stage_tokens) if all(value is not None for value in stage_tokens) else None, retries=(investigator.runtime_metrics.retries or 0) + ((resolver.runtime_metrics.retries or 0) if resolver else 0), tool_call_count=(investigator.runtime_metrics.tool_call_count or 0) + ((resolver.runtime_metrics.tool_call_count or 0) if resolver else 0))
         runtime[case.case_id] = RuntimeRecord(model=config.model, reasoning_effort=config.reasoning_effort, metrics=metrics)
         if candidate is None:
             failed = resolver or investigator

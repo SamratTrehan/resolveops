@@ -12,6 +12,9 @@ from resolveops.agents.resolveops.factory import create_investigator, create_res
 from resolveops.agents.resolveops.evidence import with_authoritative_evidence_case_id
 from resolveops.agents.resolveops.prompts import INVESTIGATOR_INSTRUCTIONS, RESOLVER_INSTRUCTIONS
 from resolveops.agents.resolveops.runner import run_case
+from resolveops.agents.resolveops.runner import _metrics
+from resolveops.agents.resolveops.records import AgentAttempt
+from resolveops.evaluation.models import RuntimeMetrics
 from resolveops.agents.resolveops.schemas import EvidenceBundle, EvidenceBundleDraft, Hypothesis, ObservedFact
 from resolveops.evaluation.models import CandidateDraft, EvidenceReference
 
@@ -76,3 +79,13 @@ def test_authoritative_evidence_case_id_is_not_model_controlled() -> None:
     assert bundle.case_id == "CASE-001"
     with pytest.raises(ValueError):
         EvidenceBundleDraft.model_validate({"case_id": "CASE-002", "ticket_summary": "Ticket.", "investigation_summary": "No evidence yet."})
+
+
+def test_agent_token_aggregation_is_complete_or_null() -> None:
+    known = [AgentAttempt(attempt_number=1, status="completed", runtime_metrics=RuntimeMetrics(latency_ms=2, tool_call_count=3), usage={"input_tokens": 100, "output_tokens": 200, "reasoning_tokens": 4587, "total_tokens": 4887})]
+    assert _metrics(known).token_usage == 4887
+    retry = known + [AgentAttempt(attempt_number=2, status="completed", runtime_metrics=RuntimeMetrics(latency_ms=3, tool_call_count=4), usage={"input_tokens": 10, "output_tokens": 20, "reasoning_tokens": 30, "total_tokens": 60})]
+    metrics = _metrics(retry)
+    assert (metrics.token_usage, metrics.retries, metrics.tool_call_count, metrics.latency_ms) == (4947, 1, 0, 5)
+    missing = retry + [AgentAttempt(attempt_number=3, status="failed", runtime_metrics=RuntimeMetrics(latency_ms=1, tool_call_count=0))]
+    assert _metrics(missing).token_usage is None
