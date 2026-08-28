@@ -1,0 +1,77 @@
+{
+  "agent_name": "ResolveOps Resolver",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 3506.881900015287,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 1812,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 1515,
+        "output_tokens": 297,
+        "reasoning_tokens": 0,
+        "total_tokens": 1812
+      }
+    }
+  ],
+  "case_id": "CASE-004",
+  "error": null,
+  "input_summary": "{\"evidence_bundle\": {\"case_id\": \"CASE-004\", \"contradictions\": [], \"evidence_references\": [{\"source_id\": \"CUS-005\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"ACC-005\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-008\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-008\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"CUS-005\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-006\", \"tool_name\": \"get_ticket_history\"}, {\"source_id\": \"KB-002\", \"tool_name\": \"search_knowledge_base\"}], \"hypotheses\": [{\"label\": \"Gateway DNS-resolution failure\", \"rationale\": \"The gateway has working local, gateway, WAN, and WAN-IP connectivity, but DNS reachability is false. This is consistent with website-loading failures despite an active Wi-Fi connection.\"}, {\"label\": \"Degraded signal health may be a contributing condition\", \"rationale\": \"Diagnostics report degraded signal health, but the available evidence does not establish it as the cause of the DNS reachability failure.\"}], \"investigation_summary\": \"Evidence indicates an active, provisioned service and a connected gateway with WAN IP availability; no area outage is active. The identified observable failure is DNS reachability on DEV-008, which aligns with the reported symptom. Degraded signal health is also present but is not causally established by the available diagnostics.\", \"missing_information\": [\"Affected client device types and whether the symptom occurs on all registered/connected devices.\", \"Results of direct IP connectivity tests versus hostname/DNS-resolution tests from affected clients.\", \"Configured DNS servers, DHCP/DNS settings, and any recent gateway or network configuration changes.\", \"Whether failures affect all domains or only specific websites, plus timestamps and error messages.\"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"ACC-005\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-005 is active, fully provisioned, and on the Home Fiber 1G plan.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-008\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-008\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"DEV-008 is online and connected; local connectivity, gateway reachability, WAN connection, and WAN IP availability are all reported as true.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-008\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-008\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"DNS reachability is reported as false for DEV-008.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-008\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-008\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"DEV-008 signal health is reported as degraded.\"}, {\"evidence_references\": [{\"source_id\": \"CUS-005\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"No active outage was found for the customer's service area, District Harbor.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-006\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"Ticket history contains one open connectivity investigation with the same symptom: some websites fail to load while Wi-Fi remains connected.\"}], \"ticket_summary\": \"CUS-005 reports that Wi-Fi remains connected while several websites fail to load; DEV-008 is the primary gateway under investigation.\"}, \"ticket\": \"Ticket:\\nSample Household Epsilon stays connected to Wi-Fi but several websites fail to load.\\n\\nCustomer ID: CUS-005\\nPrimary device ID: DEV-008\"}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "asserted_claim_ids": [],
+    "confidence": 0.91,
+    "customer_response": "Your gateway is connected to Wi-Fi and the internet service is active, but it is having trouble reaching DNS services\u2014the systems that translate website names into internet addresses. This can cause websites not to load even while Wi-Fi appears connected. Please restart the gateway, then reconnect the affected devices to Wi-Fi and try the websites again. If the issue continues, contact support with the affected device names, the websites that fail, and any error messages.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "DEV-008",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-008",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-005",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "ACC-005",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "TKT-006",
+        "tool_name": "get_ticket_history"
+      }
+    ],
+    "internal_notes": "DEV-008 is online with local, gateway, WAN, and WAN-IP connectivity true; DNS reachability is false. No District Harbor outage is active, and ACC-005 is active/provisioned. Recommend DNS recovery and retest. Signal health is degraded but is not established as the cause; collect client DNS/IP test results and DNS/DHCP configuration if recovery fails.",
+    "recommended_action_id": "guide_dns_recovery",
+    "root_cause_id": "dns_resolution_failure"
+  },
+  "prompt_id": "resolver-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase4-002",
+  "runtime_metrics": {
+    "latency_ms": 3506.881900015287,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 1812,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 1515,
+    "output_tokens": 297,
+    "reasoning_tokens": 0,
+    "total_tokens": 1812
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "agent_name": "ResolveOps Resolver",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 4859.19880005531,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 1926,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 1614,
+        "output_tokens": 312,
+        "reasoning_tokens": 57,
+        "total_tokens": 1926
+      }
+    }
+  ],
+  "case_id": "CASE-010",
+  "error": null,
+  "input_summary": "{\"evidence_bundle\": {\"case_id\": \"CASE-010\", \"contradictions\": [\"The customer attributes the issue to a router replacement, but an active area-wide upstream interruption is present and the registered gateway is online with good local health.\", \"The request for a replacement gateway is not aligned with the observed gateway status: DEV-003 is reachable and connected locally rather than offline or unreachable.\"], \"evidence_references\": [{\"source_id\": \"CUS-002\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"ACC-002\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-003\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-003\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"OUT-001\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-003\", \"tool_name\": \"get_ticket_history\"}, {\"source_id\": \"KB-002\", \"tool_name\": \"search_knowledge_base\"}], \"hypotheses\": [{\"label\": \"Active upstream outage is a plausible cause of the current internet loss.\", \"rationale\": \"The gateway is locally healthy and reachable but lacks WAN connectivity/IP/DNS, while an active upstream interruption affects the same service area.\"}, {\"label\": \"A gateway replacement is not supported by the observed device state.\", \"rationale\": \"DEV-003 is online, locally reachable, and has good signal health; the account is activated and fully provisioned. The observed failure is upstream/WAN-facing.\"}, {\"label\": \"The router replacement may be unrelated to the current loss of internet.\", \"rationale\": \"The supplied evidence establishes an area outage but does not establish the replaced router's identity, configuration, or causal relationship to the WAN failure.\"}], \"investigation_summary\": \"Current evidence points to a WAN/upstream condition during an active District Meridian outage, not a failed or unprovisioned registered gateway. The replacement request cannot be substantiated from the available evidence.\", \"missing_information\": [\"Whether the replaced router is DEV-003, a customer-owned router, or another network device.\", \"Topology and configuration details after the router replacement, including cabling and operating mode.\", \"Whether the reported outage has been resolved and whether WAN connectivity returns afterward.\", \"Diagnostic collection timestamp and any device-level event history around the router replacement. \"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"ACC-002\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"CUS-002\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-002 is current, service activation is active, provisioning is complete, and DEV-003 is the sole registered device.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-003\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-003\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"DEV-003 is online and locally reachable with good signal health, but it has no WAN connection, WAN IP, or DNS reachability.\"}, {\"evidence_references\": [{\"source_id\": \"OUT-001\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"CUS-002\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"An active upstream service interruption affects the customer's service area, District Meridian; its recorded start time is 2026-08-28T08:15:00Z.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-003\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"A connectivity ticket reporting no internet was opened at 2026-08-28T08:20:00Z.\"}, {\"evidence_references\": [{\"source_id\": \"KB-002\", \"tool_name\": \"search_knowledge_base\"}], \"statement\": \"The knowledge-base guidance for Wi-Fi connected but internet unavailable directs checking gateway/WAN state and service-area outages before treating the issue as local.\"}], \"ticket_summary\": \"CUS-002 reports no internet after replacing a router and requests a gateway replacement; primary registered gateway is DEV-003.\"}, \"ticket\": \"Ticket:\\nSample Household Beta replaced a router last week and now has no internet. The customer requests a replacement gateway.\\n\\nCustomer ID: CUS-002\\nPrimary device ID: DEV-003\"}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "asserted_claim_ids": [],
+    "confidence": 0.97,
+    "customer_response": "We found an active service interruption affecting the District Meridian area. Your registered gateway is online and reachable locally, but the upstream connection is currently unavailable, which explains the loss of internet service. Your account and gateway provisioning are active, so a gateway replacement is not indicated at this time. Service should return once the area interruption is resolved.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "OUT-001",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "DEV-003",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-003",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "ACC-002",
+        "tool_name": "get_account_status"
+      }
+    ],
+    "internal_notes": "Classified as regional outage. OUT-001 confirms an active upstream interruption in District Meridian. DEV-003 is online, locally reachable, and healthy on the local side, but has no WAN connection, WAN IP, or DNS reachability. Account is current, active, and fully provisioned; gateway replacement is not supported by current evidence.",
+    "recommended_action_id": "communicate_outage_status",
+    "root_cause_id": "regional_outage"
+  },
+  "prompt_id": "resolver-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase4-002",
+  "runtime_metrics": {
+    "latency_ms": 4859.19880005531,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 1926,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 1614,
+    "output_tokens": 312,
+    "reasoning_tokens": 57,
+    "total_tokens": 1926
+  }
+}

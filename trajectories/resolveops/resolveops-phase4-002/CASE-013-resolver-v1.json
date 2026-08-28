@@ -1,0 +1,77 @@
+{
+  "agent_name": "ResolveOps Resolver",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 4153.930799977388,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 1764,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 1455,
+        "output_tokens": 309,
+        "reasoning_tokens": 0,
+        "total_tokens": 1764
+      }
+    }
+  ],
+  "case_id": "CASE-013",
+  "error": null,
+  "input_summary": "{\"evidence_bundle\": {\"case_id\": \"CASE-013\", \"contradictions\": [\"The reported lack of internet conflicts with DEV-010's current healthy gateway, WAN, DNS, and local-connectivity results.\", \"The account is past due, but its service activation is recorded as active.\"], \"evidence_references\": [{\"source_id\": \"CUS-006\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"ACC-006\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-010\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-010\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"CUS-006\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-007\", \"tool_name\": \"get_ticket_history\"}], \"hypotheses\": [{\"label\": \"Affected-device or local-network issue\", \"rationale\": \"The tested primary gateway has healthy end-to-end connectivity, while the report does not identify an affected device and DEV-011 was not evaluated.\"}, {\"label\": \"Service reminder may be account-related\", \"rationale\": \"The account is past due and prior history references a service reminder; however, service activation remains active and no evidence establishes that billing status is causing the reported symptom.\"}], \"investigation_summary\": \"Available network evidence does not show an active area outage or a connectivity failure on primary gateway DEV-010. The issue cannot be localized without affected-device and client-side details.\", \"missing_information\": [\"Which device or devices are affected, including whether DEV-010 or DEV-011 is involved.\", \"Whether the problem affects wired clients, Wi-Fi clients, or all clients.\", \"Client-side connection state, IP/DNS configuration, and timing of the symptom.\", \"The content and timing of the referenced service reminder.\"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"ACC-006\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-006 is active, provisioning is complete, and the account is marked past due.\"}, {\"evidence_references\": [{\"source_id\": \"ACC-006\", \"tool_name\": \"get_account_status\"}], \"statement\": \"The account has two registered devices: DEV-010 and DEV-011.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-010\", \"tool_name\": \"get_device_status\"}], \"statement\": \"Primary gateway DEV-010 is online and connected; it reports local connectivity, WAN connectivity, a WAN IP, reachable DNS, and good signal health.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-010\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"Connectivity diagnostics for DEV-010 confirmed gateway reachability, WAN connectivity and IP availability, DNS reachability, local connectivity, and good signal health.\"}, {\"evidence_references\": [{\"source_id\": \"CUS-006\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"No active outage was found for District Solstice.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-007\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"Prior ticket TKT-007 concerned a service reminder and resulted in an account-access article.\"}], \"ticket_summary\": \"CUS-006 reports no internet and references a service reminder; no affected-device details were provided.\"}, \"ticket\": \"Ticket:\\nSample Household Zeta reports no internet despite a service reminder, but gives no affected-device details.\\n\\nCustomer ID: CUS-006\\nPrimary device ID: DEV-010\"}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "asserted_claim_ids": [],
+    "confidence": 0.93,
+    "customer_response": "We checked the primary gateway and it is currently online with working internet and DNS connectivity, and there is no known outage in your area. Your account is active. To identify what is affected, please tell us which device(s) cannot connect, whether the issue affects Wi-Fi, wired connections, or both, and what message or behavior you see. If possible, also share the timing and content of the service reminder.",
+    "escalate": true,
+    "evidence_references": [
+      {
+        "source_id": "DEV-010",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-010",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-006",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "ACC-006",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "TKT-007",
+        "tool_name": "get_ticket_history"
+      }
+    ],
+    "internal_notes": "DEV-010 health and diagnostics show local, WAN, and DNS connectivity; no District Solstice outage is active. ACC-006 is active and fully provisioned despite past-due status, so billing cannot be established as the symptom cause. DEV-011 and affected client details were not evaluated/provided. Escalate for affected-device scope, client IP/DNS/connection state, symptom timing, and service-reminder content.",
+    "recommended_action_id": "escalate_for_more_evidence",
+    "root_cause_id": "INSUFFICIENT_EVIDENCE"
+  },
+  "prompt_id": "resolver-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase4-002",
+  "runtime_metrics": {
+    "latency_ms": 4153.930799977388,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 1764,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 1455,
+    "output_tokens": 309,
+    "reasoning_tokens": 0,
+    "total_tokens": 1764
+  }
+}

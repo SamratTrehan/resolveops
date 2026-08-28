@@ -1,0 +1,77 @@
+{
+  "agent_name": "ResolveOps Resolver",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 7564.062100020237,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 1838,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 1528,
+        "output_tokens": 310,
+        "reasoning_tokens": 0,
+        "total_tokens": 1838
+      }
+    }
+  ],
+  "case_id": "CASE-001",
+  "error": null,
+  "input_summary": "{\"evidence_bundle\": {\"case_id\": \"CASE-001\", \"contradictions\": [\"The gateway lights were reported as normal, but diagnostics show that the gateway has no WAN connection or WAN IP. Indicator-light state alone does not establish WAN service availability.\"], \"evidence_references\": [{\"source_id\": \"CUS-002\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"ACC-002\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-003\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-003\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"OUT-001\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-003\", \"tool_name\": \"get_ticket_history\"}], \"hypotheses\": [{\"label\": \"Area upstream service interruption is the likely cause of the loss of internet service.\", \"rationale\": \"The customer is in District Meridian, where an active upstream interruption is recorded, and the gateway lacks WAN connectivity, WAN IP assignment, and DNS reachability while its local connectivity remains available.\"}, {\"label\": \"Account activation or provisioning is unlikely to be the immediate cause.\", \"rationale\": \"The account is current, active, and fully provisioned.\"}], \"investigation_summary\": \"Evidence supports a WAN-side failure rather than a local gateway reachability or account-status issue. The active District Meridian upstream interruption is temporally consistent with the connectivity report and is the leading explanation; no evidence establishes a separate household-specific fault.\", \"missing_information\": [\"Outage restoration estimate, affected-service scope, and whether DEV-003's specific access path is included in the outage.\", \"Gateway event logs or physical/optical link telemetry needed to distinguish an outage-related WAN loss from a local access-link fault.\", \"Post-outage WAN-status verification. \"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"ACC-002\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"CUS-002\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-002 for customer CUS-002 is current, active, and fully provisioned on the Home Fiber 500 plan; DEV-003 is the only registered device.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-003\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-003\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"DEV-003 is online and reachable locally, reports good signal health, and has local connectivity.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-003\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-003\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"DEV-003 reports WAN disconnected, no WAN IP available, and DNS unreachable.\"}, {\"evidence_references\": [{\"source_id\": \"OUT-001\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"CUS-002\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"District Meridian has an active upstream service interruption that began at 2026-08-28T08:15:00Z.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-003\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"A connectivity ticket reporting no internet on connected devices was opened at 2026-08-28T08:20:00Z.\"}], \"ticket_summary\": \"Sample Household Beta reported loss of internet on all devices this morning while gateway lights appeared normal. The registered gateway is locally reachable but has no WAN connection or WAN IP; an active upstream interruption affects the customer's service area.\"}, \"ticket\": \"Ticket:\\nAll devices at Sample Household Beta lost internet this morning. The gateway lights are normal.\\n\\nCustomer ID: CUS-002\\nPrimary device ID: DEV-003\"}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "asserted_claim_ids": [],
+    "confidence": 0.94,
+    "customer_response": "We confirmed an active upstream service interruption in the District Meridian area. Your gateway is reachable inside the home, but its connection to the wider internet is currently unavailable, which explains why all connected devices have no internet access. Your account is active and fully provisioned, so no account action is needed. Service should return when the area interruption is resolved; please check the connection again afterward.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "OUT-001",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "DEV-003",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "DEV-003",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "TKT-003",
+        "tool_name": "get_ticket_history"
+      },
+      {
+        "source_id": "ACC-002",
+        "tool_name": "get_account_status"
+      }
+    ],
+    "internal_notes": "Classified as regional_outage. OUT-001 records an active District Meridian upstream interruption beginning 2026-08-28T08:15:00Z; TKT-003 was opened at 08:20Z. DEV-003 is locally reachable with local connectivity but has WAN disconnected, no WAN IP, and DNS unreachable. Account is current, active, and fully provisioned (ACC-002). No household-specific fault is established. Restoration ETA and path-specific outage scope are unavailable.",
+    "recommended_action_id": "communicate_outage_status",
+    "root_cause_id": "regional_outage"
+  },
+  "prompt_id": "resolver-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase4-002",
+  "runtime_metrics": {
+    "latency_ms": 7564.062100020237,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 1838,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 1528,
+    "output_tokens": 310,
+    "reasoning_tokens": 0,
+    "total_tokens": 1838
+  }
+}

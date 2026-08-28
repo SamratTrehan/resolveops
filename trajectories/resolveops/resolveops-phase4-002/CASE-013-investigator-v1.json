@@ -1,0 +1,507 @@
+{
+  "agent_name": "ResolveOps Investigator",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 11547.43639996741,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 4604,
+        "tool_call_count": 5
+      },
+      "status": "completed",
+      "tool_calls": [
+        {
+          "arguments": {
+            "customer_id": "CUS-006"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "display_name": "Sample Household Zeta",
+                  "id": "CUS-006",
+                  "service_area": "District Solstice"
+                },
+                "entity_id": "CUS-006",
+                "source": "synthetic_world",
+                "summary": "Synthetic customer record."
+              },
+              {
+                "data": {
+                  "customer_id": "CUS-006",
+                  "id": "ACC-006",
+                  "provisioning_status": "complete",
+                  "service_activation": "active",
+                  "service_plan": "Home Fiber 300",
+                  "standing": "past_due"
+                },
+                "entity_id": "ACC-006",
+                "source": "synthetic_world",
+                "summary": "Synthetic account status."
+              },
+              {
+                "data": {
+                  "device_ids": [
+                    "DEV-010",
+                    "DEV-011"
+                  ]
+                },
+                "entity_id": "ACC-006",
+                "source": "synthetic_world",
+                "summary": "Devices registered to the synthetic account."
+              }
+            ],
+            "source_ids": [
+              "CUS-006",
+              "ACC-006"
+            ],
+            "success": true,
+            "summary": "Account ACC-006 is active.",
+            "tool_name": "get_account_status"
+          },
+          "tool_name": "get_account_status"
+        },
+        {
+          "arguments": {
+            "device_id": "DEV-010"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "account_id": "ACC-006",
+                  "device_type": "gateway",
+                  "id": "DEV-010",
+                  "label": "Zeta Gateway",
+                  "status": {
+                    "connection_state": "connected",
+                    "dns_reachable": true,
+                    "firmware_version": "FW-3.4.1",
+                    "gateway_reachable": true,
+                    "local_connectivity": true,
+                    "online": true,
+                    "signal_health": "good",
+                    "wan_connected": true,
+                    "wan_ip_available": true
+                  }
+                },
+                "entity_id": "DEV-010",
+                "source": "synthetic_world",
+                "summary": "Synthetic device state."
+              }
+            ],
+            "source_ids": [
+              "DEV-010"
+            ],
+            "success": true,
+            "summary": "Device DEV-010 is online.",
+            "tool_name": "get_device_status"
+          },
+          "tool_name": "get_device_status"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-006"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "service_area": "District Solstice"
+                },
+                "entity_id": "CUS-006",
+                "source": "synthetic_world",
+                "summary": "Synthetic service area used for outage lookup."
+              }
+            ],
+            "source_ids": [
+              "CUS-006"
+            ],
+            "success": true,
+            "summary": "No active outage found for District Solstice.",
+            "tool_name": "check_service_outages"
+          },
+          "tool_name": "check_service_outages"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-006"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "category": "account",
+                  "created_at": "2026-08-12T15:40:00Z",
+                  "customer_id": "CUS-006",
+                  "id": "TKT-007",
+                  "outcome": "Provided account-access article.",
+                  "summary": "Asked about a service reminder on the synthetic account."
+                },
+                "entity_id": "TKT-007",
+                "source": "synthetic_ticket_history",
+                "summary": "Asked about a service reminder on the synthetic account."
+              }
+            ],
+            "source_ids": [
+              "TKT-007"
+            ],
+            "success": true,
+            "summary": "Found 1 ticket-history entries.",
+            "tool_name": "get_ticket_history"
+          },
+          "tool_name": "get_ticket_history"
+        },
+        {
+          "arguments": {
+            "device_id": "DEV-010"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "dns_reachable": true,
+                  "gateway_reachable": true,
+                  "local_connectivity": true,
+                  "signal_health": "good",
+                  "wan_connected": true,
+                  "wan_ip_available": true
+                },
+                "entity_id": "DEV-010",
+                "source": "synthetic_diagnostics",
+                "summary": "Deterministic gateway connectivity checks."
+              }
+            ],
+            "source_ids": [
+              "DEV-010"
+            ],
+            "success": true,
+            "summary": "Connectivity diagnostics completed for DEV-010.",
+            "tool_name": "run_connectivity_diagnostics"
+          },
+          "tool_name": "run_connectivity_diagnostics"
+        }
+      ],
+      "usage": {
+        "input_tokens": 3670,
+        "output_tokens": 934,
+        "reasoning_tokens": 157,
+        "total_tokens": 4604
+      }
+    }
+  ],
+  "case_id": "CASE-013",
+  "error": null,
+  "input_summary": "Ticket:\nSample Household Zeta reports no internet despite a service reminder, but gives no affected-device details.\n\nCustomer ID: CUS-006\nPrimary device ID: DEV-010",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "case_id": "CASE-013",
+    "contradictions": [
+      "The reported lack of internet conflicts with DEV-010's current healthy gateway, WAN, DNS, and local-connectivity results.",
+      "The account is past due, but its service activation is recorded as active."
+    ],
+    "evidence_references": [
+      {
+        "source_id": "CUS-006",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "ACC-006",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-010",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-010",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-006",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "TKT-007",
+        "tool_name": "get_ticket_history"
+      }
+    ],
+    "hypotheses": [
+      {
+        "label": "Affected-device or local-network issue",
+        "rationale": "The tested primary gateway has healthy end-to-end connectivity, while the report does not identify an affected device and DEV-011 was not evaluated."
+      },
+      {
+        "label": "Service reminder may be account-related",
+        "rationale": "The account is past due and prior history references a service reminder; however, service activation remains active and no evidence establishes that billing status is causing the reported symptom."
+      }
+    ],
+    "investigation_summary": "Available network evidence does not show an active area outage or a connectivity failure on primary gateway DEV-010. The issue cannot be localized without affected-device and client-side details.",
+    "missing_information": [
+      "Which device or devices are affected, including whether DEV-010 or DEV-011 is involved.",
+      "Whether the problem affects wired clients, Wi-Fi clients, or all clients.",
+      "Client-side connection state, IP/DNS configuration, and timing of the symptom.",
+      "The content and timing of the referenced service reminder."
+    ],
+    "observed_facts": [
+      {
+        "evidence_references": [
+          {
+            "source_id": "ACC-006",
+            "tool_name": "get_account_status"
+          }
+        ],
+        "statement": "Account ACC-006 is active, provisioning is complete, and the account is marked past due."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "ACC-006",
+            "tool_name": "get_account_status"
+          }
+        ],
+        "statement": "The account has two registered devices: DEV-010 and DEV-011."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "DEV-010",
+            "tool_name": "get_device_status"
+          }
+        ],
+        "statement": "Primary gateway DEV-010 is online and connected; it reports local connectivity, WAN connectivity, a WAN IP, reachable DNS, and good signal health."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "DEV-010",
+            "tool_name": "run_connectivity_diagnostics"
+          }
+        ],
+        "statement": "Connectivity diagnostics for DEV-010 confirmed gateway reachability, WAN connectivity and IP availability, DNS reachability, local connectivity, and good signal health."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "CUS-006",
+            "tool_name": "check_service_outages"
+          }
+        ],
+        "statement": "No active outage was found for District Solstice."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "TKT-007",
+            "tool_name": "get_ticket_history"
+          }
+        ],
+        "statement": "Prior ticket TKT-007 concerned a service reminder and resulted in an account-access article."
+      }
+    ],
+    "ticket_summary": "CUS-006 reports no internet and references a service reminder; no affected-device details were provided."
+  },
+  "prompt_id": "investigator-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase4-002",
+  "runtime_metrics": {
+    "latency_ms": 11547.43639996741,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 4604,
+    "tool_call_count": 5
+  },
+  "status": "completed",
+  "tool_calls": [
+    {
+      "arguments": {
+        "customer_id": "CUS-006"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "display_name": "Sample Household Zeta",
+              "id": "CUS-006",
+              "service_area": "District Solstice"
+            },
+            "entity_id": "CUS-006",
+            "source": "synthetic_world",
+            "summary": "Synthetic customer record."
+          },
+          {
+            "data": {
+              "customer_id": "CUS-006",
+              "id": "ACC-006",
+              "provisioning_status": "complete",
+              "service_activation": "active",
+              "service_plan": "Home Fiber 300",
+              "standing": "past_due"
+            },
+            "entity_id": "ACC-006",
+            "source": "synthetic_world",
+            "summary": "Synthetic account status."
+          },
+          {
+            "data": {
+              "device_ids": [
+                "DEV-010",
+                "DEV-011"
+              ]
+            },
+            "entity_id": "ACC-006",
+            "source": "synthetic_world",
+            "summary": "Devices registered to the synthetic account."
+          }
+        ],
+        "source_ids": [
+          "CUS-006",
+          "ACC-006"
+        ],
+        "success": true,
+        "summary": "Account ACC-006 is active.",
+        "tool_name": "get_account_status"
+      },
+      "tool_name": "get_account_status"
+    },
+    {
+      "arguments": {
+        "device_id": "DEV-010"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "account_id": "ACC-006",
+              "device_type": "gateway",
+              "id": "DEV-010",
+              "label": "Zeta Gateway",
+              "status": {
+                "connection_state": "connected",
+                "dns_reachable": true,
+                "firmware_version": "FW-3.4.1",
+                "gateway_reachable": true,
+                "local_connectivity": true,
+                "online": true,
+                "signal_health": "good",
+                "wan_connected": true,
+                "wan_ip_available": true
+              }
+            },
+            "entity_id": "DEV-010",
+            "source": "synthetic_world",
+            "summary": "Synthetic device state."
+          }
+        ],
+        "source_ids": [
+          "DEV-010"
+        ],
+        "success": true,
+        "summary": "Device DEV-010 is online.",
+        "tool_name": "get_device_status"
+      },
+      "tool_name": "get_device_status"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-006"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "service_area": "District Solstice"
+            },
+            "entity_id": "CUS-006",
+            "source": "synthetic_world",
+            "summary": "Synthetic service area used for outage lookup."
+          }
+        ],
+        "source_ids": [
+          "CUS-006"
+        ],
+        "success": true,
+        "summary": "No active outage found for District Solstice.",
+        "tool_name": "check_service_outages"
+      },
+      "tool_name": "check_service_outages"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-006"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "category": "account",
+              "created_at": "2026-08-12T15:40:00Z",
+              "customer_id": "CUS-006",
+              "id": "TKT-007",
+              "outcome": "Provided account-access article.",
+              "summary": "Asked about a service reminder on the synthetic account."
+            },
+            "entity_id": "TKT-007",
+            "source": "synthetic_ticket_history",
+            "summary": "Asked about a service reminder on the synthetic account."
+          }
+        ],
+        "source_ids": [
+          "TKT-007"
+        ],
+        "success": true,
+        "summary": "Found 1 ticket-history entries.",
+        "tool_name": "get_ticket_history"
+      },
+      "tool_name": "get_ticket_history"
+    },
+    {
+      "arguments": {
+        "device_id": "DEV-010"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "dns_reachable": true,
+              "gateway_reachable": true,
+              "local_connectivity": true,
+              "signal_health": "good",
+              "wan_connected": true,
+              "wan_ip_available": true
+            },
+            "entity_id": "DEV-010",
+            "source": "synthetic_diagnostics",
+            "summary": "Deterministic gateway connectivity checks."
+          }
+        ],
+        "source_ids": [
+          "DEV-010"
+        ],
+        "success": true,
+        "summary": "Connectivity diagnostics completed for DEV-010.",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      "tool_name": "run_connectivity_diagnostics"
+    }
+  ],
+  "usage": {
+    "input_tokens": 3670,
+    "output_tokens": 934,
+    "reasoning_tokens": 157,
+    "total_tokens": 4604
+  }
+}

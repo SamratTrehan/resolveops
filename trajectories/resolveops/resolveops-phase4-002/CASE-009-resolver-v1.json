@@ -1,0 +1,77 @@
+{
+  "agent_name": "ResolveOps Resolver",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 3729.5978000038303,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 1975,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 1664,
+        "output_tokens": 311,
+        "reasoning_tokens": 0,
+        "total_tokens": 1975
+      }
+    }
+  ],
+  "case_id": "CASE-009",
+  "error": null,
+  "input_summary": "{\"evidence_bundle\": {\"case_id\": \"CASE-009\", \"contradictions\": [\"The customer's belief that the new hardware failed is not consistent with the observed gateway online status, local connectivity, WAN connectivity, and assigned WAN IP.\", \"The current report says websites no longer load, whereas prior ticket TKT-006 described only some websites failing; the scope and timing of the change are not established.\"], \"evidence_references\": [{\"source_id\": \"CUS-005\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"ACC-005\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-008\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-008\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"CUS-005\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-006\", \"tool_name\": \"get_ticket_history\"}, {\"source_id\": \"KB-002\", \"tool_name\": \"search_knowledge_base\"}], \"hypotheses\": [{\"label\": \"DNS-resolution failure is the leading explanation for websites not loading.\", \"rationale\": \"The gateway has local and WAN connectivity plus a WAN IP, while DNS is consistently unreachable. This pattern aligns with the knowledge-base guidance for Wi-Fi-connected devices that lack internet access.\"}, {\"label\": \"Degraded signal health may be a contributing condition, but its causal relationship to the reported website failures is not established.\", \"rationale\": \"Signal health is degraded, but the available evidence does not show that it is causing the DNS failure or a WAN loss.\"}, {\"label\": \"A complete hardware or activation failure is not supported by current evidence.\", \"rationale\": \"The gateway is online, locally reachable, WAN-connected, and has a WAN IP; the account is active and fully provisioned.\"}], \"investigation_summary\": \"Observed evidence isolates a DNS-reachability failure on an otherwise online, WAN-connected gateway. There is no active area outage, and account activation/provisioning is complete. Degraded signal health is present but not proven causal; complete gateway failure is not evidenced.\", \"missing_information\": [\"Whether DEV-008 is the newly moved or newly installed hardware and when the move occurred.\", \"DNS server configuration, DNS query/error details, and whether failures occur on all client devices.\", \"Whether the issue affects all domains/apps or only selected websites.\", \"Physical placement, cabling, and signal measurements following the router move.\"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"ACC-005\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-005 is current, active, and completely provisioned on the Home Fiber 1G plan.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-008\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-008\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"DEV-008 is a registered gateway on ACC-005 and is online, locally connected, gateway-reachable, WAN-connected, and has a WAN IP address.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-008\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-008\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"DNS was not reachable from DEV-008 in both current device status and connectivity diagnostics.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-008\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-008\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"DEV-008 signal health is reported as degraded.\"}, {\"evidence_references\": [{\"source_id\": \"CUS-005\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"No active service outage was found for the customer's service area, District Harbor.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-006\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"Prior ticket TKT-006 recorded that some websites failed to load while Wi-Fi remained connected; its investigation remained open.\"}], \"ticket_summary\": \"CUS-005 reports that websites no longer load after moving the router and suspects new hardware failure. Primary gateway DEV-008 is active and online, but observed DNS reachability is failing.\"}, \"ticket\": \"Ticket:\\nSample Household Epsilon recently moved the router. The customer thinks the new hardware failed because websites no longer load.\\n\\nCustomer ID: CUS-005\\nPrimary device ID: DEV-008\"}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "asserted_claim_ids": [],
+    "confidence": 0.92,
+    "customer_response": "Your gateway is online and connected to the network, so the available checks do not indicate a hardware failure or an area outage. The issue appears to be DNS resolution, which can prevent websites from loading even while Wi-Fi remains connected. Please follow the DNS recovery steps: restart the gateway, reconnect your affected devices to Wi-Fi, and retest website access. If the issue continues after those steps, contact support with the affected device(s) and examples of sites that still fail to load.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "DEV-008",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-008",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "ACC-005",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "CUS-005",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "KB-002",
+        "tool_name": "search_knowledge_base"
+      }
+    ],
+    "internal_notes": "DEV-008 is registered, online, locally reachable, WAN-connected, and assigned a WAN IP; DNS is unreachable in both device status and connectivity diagnostics. ACC-005 is active and fully provisioned, and no District Harbor outage is active. Degraded signal health is present but not established as causal. Prior TKT-006 also reported partial website-loading failures; scope/timing change is unconfirmed.",
+    "recommended_action_id": "guide_dns_recovery",
+    "root_cause_id": "dns_resolution_failure"
+  },
+  "prompt_id": "resolver-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase4-002",
+  "runtime_metrics": {
+    "latency_ms": 3729.5978000038303,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 1975,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 1664,
+    "output_tokens": 311,
+    "reasoning_tokens": 0,
+    "total_tokens": 1975
+  }
+}

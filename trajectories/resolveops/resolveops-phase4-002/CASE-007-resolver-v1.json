@@ -1,0 +1,77 @@
+{
+  "agent_name": "ResolveOps Resolver",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 3137.508599960711,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 1790,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 1510,
+        "output_tokens": 280,
+        "reasoning_tokens": 0,
+        "total_tokens": 1790
+      }
+    }
+  ],
+  "case_id": "CASE-007",
+  "error": null,
+  "input_summary": "{\"evidence_bundle\": {\"case_id\": \"CASE-007\", \"contradictions\": [], \"evidence_references\": [{\"source_id\": \"CUS-006\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"ACC-006\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-010\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-010\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"CUS-006\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-007\", \"tool_name\": \"get_ticket_history\"}, {\"source_id\": \"KB-007\", \"tool_name\": \"search_knowledge_base\"}], \"hypotheses\": [{\"label\": \"No current connectivity impact is observable from the reminder/account state\", \"rationale\": \"The account is active and the gateway's current status and diagnostics show successful local, WAN, IP, and DNS connectivity. The reminder's text and policy meaning were not retrieved, so a causal determination about the reminder itself cannot be made.\"}, {\"label\": \"The reminder may relate to the past-due account standing\", \"rationale\": \"The account is marked past due, and the available ticket history identifies a prior account service-reminder inquiry; however, no evidence explicitly identifies the reminder's content or links it to the past-due state.\"}], \"investigation_summary\": \"Current observable evidence supports normal connectivity on DEV-010 and no area outage. The account is past due but remains active and fully provisioned. The available evidence does not establish what the portal reminder means or demonstrate that it is currently affecting connectivity.\", \"missing_information\": [\"The exact text, date, and trigger of the service reminder in the account portal.\", \"Any account-policy evidence stating whether a past-due status can change or limit service while activation remains active.\", \"Customer-reported connectivity symptoms, affected client devices, timing, and whether the question is preventive or follows an observed outage.\"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"ACC-006\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-006 is past due, while service activation is active and provisioning status is complete.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-010\", \"tool_name\": \"get_device_status\"}], \"statement\": \"DEV-010 is online and connected; its reported local connectivity, gateway reachability, WAN connection, WAN IP availability, and DNS reachability are all true, with good signal health.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-010\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"Connectivity diagnostics for DEV-010 report gateway reachable, WAN connected, WAN IP available, DNS reachable, and local connectivity, with good signal health.\"}, {\"evidence_references\": [{\"source_id\": \"CUS-006\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"No active outage was found for the customer's service area, District Solstice.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-007\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"Prior ticket TKT-007 concerned a service reminder on the account and was handled with an account-access article.\"}, {\"evidence_references\": [{\"source_id\": \"KB-007\", \"tool_name\": \"search_knowledge_base\"}], \"statement\": \"Knowledge-base guidance says to keep account observations separate from device diagnostics and not infer a device fault from account status alone.\"}], \"ticket_summary\": \"CUS-006 asks whether an account-portal service reminder affects current connectivity for primary gateway DEV-010.\"}, \"ticket\": \"Ticket:\\nSample Household Zeta asks whether a service reminder in the account portal affects current connectivity.\\n\\nCustomer ID: CUS-006\\nPrimary device ID: DEV-010\"}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "asserted_claim_ids": [],
+    "confidence": 0.86,
+    "customer_response": "Your gateway is currently online and diagnostics show normal local, internet, and DNS connectivity. We also found no active outage in your area. Your account is active, although it is marked past due. The available information does not show that the portal reminder is currently affecting your connection. Please review the reminder in your account portal for its specific details and any requested account action.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "ACC-006",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-010",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-010",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-006",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "TKT-007",
+        "tool_name": "get_ticket_history"
+      }
+    ],
+    "internal_notes": "Classified as an account-standing question. ACC-006 is past due but active and fully provisioned; DEV-010 is online with successful gateway, WAN, IP, DNS, and local-connectivity checks. No District Solstice outage is active. Reminder text/policy linkage is unavailable, so do not assert that past-due status caused or will cause connectivity impact.",
+    "recommended_action_id": "review_account_notice",
+    "root_cause_id": "account_standing_question"
+  },
+  "prompt_id": "resolver-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase4-002",
+  "runtime_metrics": {
+    "latency_ms": 3137.508599960711,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 1790,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 1510,
+    "output_tokens": 280,
+    "reasoning_tokens": 0,
+    "total_tokens": 1790
+  }
+}

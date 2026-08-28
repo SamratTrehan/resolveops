@@ -1,0 +1,85 @@
+{
+  "agent_name": "ResolveOps Resolver",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 3265.880200022366,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 1795,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 1516,
+        "output_tokens": 279,
+        "reasoning_tokens": 0,
+        "total_tokens": 1795
+      }
+    }
+  ],
+  "case_id": "CASE-006",
+  "error": null,
+  "input_summary": "{\"evidence_bundle\": {\"case_id\": \"CASE-006\", \"contradictions\": [\"DEV-004 is reported online and locally reachable, while DEV-005 reports gateway_unavailable. The available evidence does not establish whether activation-pending status accounts for this difference.\"], \"evidence_references\": [{\"source_id\": \"CUS-003\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"ACC-003\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-005\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-004\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-004\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"CUS-003\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-004\", \"tool_name\": \"get_ticket_history\"}, {\"source_id\": \"KB-001\", \"tool_name\": \"search_knowledge_base\"}, {\"source_id\": \"KB-006\", \"tool_name\": \"search_knowledge_base\"}], \"hypotheses\": [{\"label\": \"Replacement gateway activation is the primary dependency blocking sensor connectivity.\", \"rationale\": \"The account and gateway both show pending activation, the sensor reports gateway_unavailable, and the delivery ticket remains awaiting customer activation.\"}, {\"label\": \"A wider area outage is unlikely to explain the symptom.\", \"rationale\": \"No active outage is reported for the customer service area; the gateway is locally reachable.\"}], \"investigation_summary\": \"Evidence supports an activation-pending replacement gateway as the immediate dependency to address before isolating a sensor-specific fault. No area outage is active.\", \"missing_information\": [\"Whether the replacement-gateway activation step has been completed.\", \"Whether DEV-005 has been paired or re-paired to the replacement gateway.\", \"Sensor power/battery status and any sensor-side pairing or reset observations.\", \"Reason the gateway activation remains pending and its WAN/IP/DNS state is unavailable.\"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"ACC-003\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-003 is current, but service activation is pending and provisioning status is awaiting_gateway_activation.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-005\", \"tool_name\": \"get_device_status\"}], \"statement\": \"DEV-005 (Gamma Window Sensor) is offline with connection_state gateway_unavailable; its local connectivity is false and signal health is unknown.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-004\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-004\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"DEV-004 (Gamma Replacement Gateway) is online and locally reachable, but its connection state is activation_pending; WAN, WAN IP, and DNS are unavailable.\"}, {\"evidence_references\": [{\"source_id\": \"CUS-003\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"No active service outage was found for District Solstice.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-004\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"Ticket history records replacement-gateway delivery confirmation with outcome Awaiting customer activation.\"}, {\"evidence_references\": [{\"source_id\": \"KB-006\", \"tool_name\": \"search_knowledge_base\"}], \"statement\": \"The knowledge-base guidance for offline sensors says to restore the paired-gateway dependency first when the gateway is pending activation or unavailable.\"}], \"ticket_summary\": \"Gamma Window Sensor (DEV-005) is offline after replacement-gateway delivery; available evidence indicates the replacement gateway remains pending activation.\"}, \"ticket\": \"Ticket:\\nSample Household Gamma's window sensor is offline following the gateway replacement.\\n\\nCustomer ID: CUS-003\\nPrimary device ID: DEV-005\"}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "asserted_claim_ids": [],
+    "confidence": 0.9,
+    "customer_response": "Your replacement gateway is still awaiting activation, which is preventing the window sensor from connecting. There is no active service outage in your area. Please complete the replacement gateway activation process; once activation finishes, reconnect or re-pair the window sensor if it does not come back online automatically.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "ACC-003",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-005",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-004",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-004",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-003",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "TKT-004",
+        "tool_name": "get_ticket_history"
+      },
+      {
+        "source_id": "KB-006",
+        "tool_name": "search_knowledge_base"
+      }
+    ],
+    "internal_notes": "ACC-003 shows awaiting_gateway_activation. DEV-004 is locally reachable but activation_pending, with WAN/IP/DNS unavailable; DEV-005 reports gateway_unavailable. Delivery history is Awaiting customer activation. Prioritize gateway activation before sensor-specific troubleshooting; re-pair the sensor afterward only if needed.",
+    "recommended_action_id": "guide_gateway_activation",
+    "root_cause_id": "pending_gateway_provisioning"
+  },
+  "prompt_id": "resolver-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase4-002",
+  "runtime_metrics": {
+    "latency_ms": 3265.880200022366,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 1795,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 1516,
+    "output_tokens": 279,
+    "reasoning_tokens": 0,
+    "total_tokens": 1795
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "agent_name": "ResolveOps Resolver",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 5425.867200014181,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 1741,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 1448,
+        "output_tokens": 293,
+        "reasoning_tokens": 0,
+        "total_tokens": 1741
+      }
+    }
+  ],
+  "case_id": "CASE-011",
+  "error": null,
+  "input_summary": "{\"evidence_bundle\": {\"case_id\": \"CASE-011\", \"contradictions\": [], \"evidence_references\": [{\"source_id\": \"ACC-001\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"CUS-001\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-001\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-001\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"CUS-001\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-001\", \"tool_name\": \"get_ticket_history\"}], \"hypotheses\": [{\"label\": \"No currently observable gateway or area-wide service failure\", \"rationale\": \"The gateway is healthy in current status and diagnostics, and no active area outage is reported. This does not rule out brief historical or intermittent events.\"}, {\"label\": \"Scope and cause of the reported evening drops are indeterminate\", \"rationale\": \"No exact occurrence times, duration, affected devices, or event-time diagnostics are available.\"}], \"investigation_summary\": \"Current account, gateway status, and connectivity diagnostics are healthy, and no active District Aurora outage is present. Available evidence neither confirms nor isolates the reported historical evening drops.\", \"missing_information\": [\"Exact dates, times, time zone, frequency, and duration of the evening drops.\", \"Whether the drops affect all devices/services or only particular wired or Wi-Fi devices.\", \"Event-time gateway/WAN/DNS status, logs, or diagnostics.\", \"Current status and involvement of registered device DEV-002.\", \"Whether the issue coincides with local power, Wi-Fi conditions, or other household-network changes.\"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"ACC-001\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-001 is current, active, and completely provisioned on the Home Fiber 500 plan.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-001\", \"tool_name\": \"get_device_status\"}], \"statement\": \"DEV-001 (Alpha Gateway) is currently online and connected; it reports working local connectivity, WAN connectivity/IP availability, DNS reachability, and good signal health.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-001\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"Current diagnostics for DEV-001 passed gateway reachability, WAN connectivity/IP availability, DNS reachability, local connectivity, and signal-health checks.\"}, {\"evidence_references\": [{\"source_id\": \"CUS-001\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"No active outage was found for District Aurora at the time of the outage lookup.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-001\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"The available prior ticket history contains one billing inquiry and no recorded prior connectivity issue.\"}, {\"evidence_references\": [{\"source_id\": \"ACC-001\", \"tool_name\": \"get_account_status\"}], \"statement\": \"The account has a second registered device, DEV-002, in addition to the primary gateway DEV-001.\"}], \"ticket_summary\": \"Sample Household Alpha reports brief evening service drops. Service is currently working; no event timestamps or affected-device details were captured.\"}, \"ticket\": \"Ticket:\\nSample Household Alpha reports brief evening drops, but service is currently working and no exact times or affected devices were captured.\\n\\nCustomer ID: CUS-001\\nPrimary device ID: DEV-001\"}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "asserted_claim_ids": [],
+    "confidence": 0.97,
+    "customer_response": "Your service and gateway are currently working normally, and there is no active area outage showing. Because the evening drops were not captured while they were occurring, we cannot yet determine their cause. Please note the date, time, time zone, duration, and which devices are affected the next time it happens, and let us know whether all devices lose service or only Wi-Fi devices. We\u2019ll use that information to investigate further.",
+    "escalate": true,
+    "evidence_references": [
+      {
+        "source_id": "ACC-001",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-001",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-001",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-001",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "TKT-001",
+        "tool_name": "get_ticket_history"
+      }
+    ],
+    "internal_notes": "Current account is active/provisioned; DEV-001 is online with passing WAN, DNS, local-connectivity, and signal-health diagnostics. No active District Aurora outage. Historical evening drops cannot be diagnosed without event timing, scope, affected-device details, and event-time diagnostics. Escalate for additional evidence; also clarify DEV-002 involvement.",
+    "recommended_action_id": "escalate_for_more_evidence",
+    "root_cause_id": "INSUFFICIENT_EVIDENCE"
+  },
+  "prompt_id": "resolver-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase4-002",
+  "runtime_metrics": {
+    "latency_ms": 5425.867200014181,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 1741,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 1448,
+    "output_tokens": 293,
+    "reasoning_tokens": 0,
+    "total_tokens": 1741
+  }
+}

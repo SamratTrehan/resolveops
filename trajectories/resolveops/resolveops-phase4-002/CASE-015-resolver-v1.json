@@ -1,0 +1,81 @@
+{
+  "agent_name": "ResolveOps Resolver",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 3245.855799992569,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 1751,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 1465,
+        "output_tokens": 286,
+        "reasoning_tokens": 0,
+        "total_tokens": 1751
+      }
+    }
+  ],
+  "case_id": "CASE-015",
+  "error": null,
+  "input_summary": "{\"evidence_bundle\": {\"case_id\": \"CASE-015\", \"contradictions\": [\"The reported neighbour outage is not corroborated by the active-outage lookup for District Solstice; this does not rule out a past, localized, or different-provider issue.\"], \"evidence_references\": [{\"source_id\": \"CUS-003\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"ACC-003\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-004\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-004\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"CUS-003\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-004\", \"tool_name\": \"get_ticket_history\"}, {\"source_id\": \"KB-001\", \"tool_name\": \"search_knowledge_base\"}], \"hypotheses\": [{\"label\": \"Gateway/account activation has not been completed\", \"rationale\": \"The account provisioning status is awaiting_gateway_activation, the gateway state is activation_pending, and history shows the replacement gateway awaiting customer activation.\"}, {\"label\": \"Area outage is not the current primary explanation\", \"rationale\": \"No active outage is recorded for District Solstice, while the gateway has a specific pending-activation state. The neighbour report is not independently verified.\"}], \"investigation_summary\": \"Available evidence consistently indicates an activation/provisioning blocker for DEV-004 rather than an active service-area outage. The gateway is powered, locally reachable, and has good signal health, but has no WAN connectivity, WAN IP, or DNS reachability while activation remains pending.\", \"missing_information\": [\"Whether the required customer activation step was attempted and its result.\", \"Physical WAN/optical-link status and cabling details.\", \"Timestamp, provider, and scope of the neighbour-reported outage.\"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"ACC-003\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-003 is current, but service activation is pending and provisioning status is awaiting_gateway_activation.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-004\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-004\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"DEV-004 is online and locally reachable with good signal health, but its connection state is activation_pending; WAN is disconnected, no WAN IP is available, and DNS is unreachable.\"}, {\"evidence_references\": [{\"source_id\": \"CUS-003\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"No active outage was found for the customer\\u2019s service area, District Solstice.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-004\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"Ticket history records replacement-gateway delivery confirmation with outcome Awaiting customer activation.\"}, {\"evidence_references\": [{\"source_id\": \"KB-001\", \"tool_name\": \"search_knowledge_base\"}], \"statement\": \"The knowledge-base result for replacement gateways states that account provisioning should be confirmed and the activation step completed after the gateway is powered on and locally connected.\"}], \"ticket_summary\": \"CUS-003 reports that a newly delivered gateway (DEV-004) has never completed internet setup; a neighbour\\u2019s outage report is unverified.\"}, \"ticket\": \"Ticket:\\nSample Household Gamma says a neighbour mentioned an outage, but this household's newly delivered gateway has never reached internet setup.\\n\\nCustomer ID: CUS-003\\nPrimary device ID: DEV-004\"}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "asserted_claim_ids": [],
+    "confidence": 0.96,
+    "customer_response": "Your new gateway appears to be waiting for activation rather than affected by an area outage. It is powered on and reachable locally, but activation has not completed, so it cannot yet establish internet service. Please complete the gateway activation steps with the gateway powered on and connected, then retry the internet setup. We do not currently see an active outage in District Solstice.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "ACC-003",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-004",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-004",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "TKT-004",
+        "tool_name": "get_ticket_history"
+      },
+      {
+        "source_id": "CUS-003",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "KB-001",
+        "tool_name": "search_knowledge_base"
+      }
+    ],
+    "internal_notes": "ACC-003 is current but awaiting_gateway_activation. DEV-004 is activation_pending, locally reachable with good signal, but has disconnected WAN, no WAN IP, and unreachable DNS. Ticket history confirms replacement gateway delivery and Awaiting customer activation. No active District Solstice outage found; neighbor report is uncorroborated.",
+    "recommended_action_id": "guide_gateway_activation",
+    "root_cause_id": "pending_gateway_provisioning"
+  },
+  "prompt_id": "resolver-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase4-002",
+  "runtime_metrics": {
+    "latency_ms": 3245.855799992569,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 1751,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 1465,
+    "output_tokens": 286,
+    "reasoning_tokens": 0,
+    "total_tokens": 1751
+  }
+}
