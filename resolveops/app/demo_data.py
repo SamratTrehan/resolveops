@@ -45,8 +45,13 @@ def evidence_cards(bundle: dict[str, object]) -> dict[str, list[dict[str, str]]]
 def comparison_rows(stages: dict[str, dict[str, object]]) -> list[dict[str, object]]:
     before = stages.get("resolver-v1", {}).get("output", {}); after = stages.get("resolver-revision-v1", {}).get("output", before)
     keys = ("root_cause_id", "recommended_action_id", "escalate", "confidence")
-    rows = [{"label": display_label(key), "before": before.get(key), "after": after.get(key), "changed": before.get(key) != after.get(key)} for key in keys]
-    rows.append({"label": "Evidence Count", "before": len(before.get("evidence_references", [])), "after": len(after.get("evidence_references", [])), "changed": len(before.get("evidence_references", [])) != len(after.get("evidence_references", []))})
+    def cell(value: object) -> str:
+        if isinstance(value, bool): return "True" if value else "False"
+        if isinstance(value, float): return f"{value:.2f}"
+        return str(value)
+    rows = [{"label": display_label(key), "before": cell(before.get(key)), "after": cell(after.get(key)), "changed": "✓" if before.get(key) != after.get(key) else "—"} for key in keys]
+    count_before, count_after = len(before.get("evidence_references", [])), len(after.get("evidence_references", []))
+    rows.append({"label": "Evidence Count", "before": cell(count_before), "after": cell(count_after), "changed": "✓" if count_before != count_after else "—"})
     return rows
 
 

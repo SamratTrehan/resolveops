@@ -13,3 +13,5 @@ def test_demo_loaders_are_read_only_and_hide_evaluator_fields() -> None:
     assert comparison_rows(stages)
     assert chart_data(comparison_report())[0]["stage"] == "Baseline"
     assert evidence_cards(stages["investigator-v1"]["output"])
+    for row in comparison_rows(stages):
+        assert isinstance(row["before"], str) and isinstance(row["after"], str) and row["changed"] in {"✓", "—"}

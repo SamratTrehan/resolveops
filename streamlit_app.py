@@ -37,7 +37,7 @@ with improvement:
         cols = st.columns(3)
         for col, run in zip(cols, runs):
             col.metric(run["architecture"], f"{run['vrsr_percent']:.2f}%", f"Evidence {run['evidence_coverage']:.2f}%")
-        st.vega_lite_chart({"data": {"values": chart_data(report)}, "mark": "bar", "encoding": {"x": {"field": "stage", "type": "nominal", "axis": {"labelAngle": 0}}, "y": {"field": "vrsr", "type": "quantitative", "scale": {"domain": [0, 100]}}, "tooltip": [{"field": "vrsr", "type": "quantitative"}]}}, use_container_width=True)
+        st.vega_lite_chart({"data": {"values": chart_data(report)}, "mark": "bar", "encoding": {"x": {"field": "stage", "type": "nominal", "axis": {"labelAngle": 0}}, "y": {"field": "vrsr", "type": "quantitative", "scale": {"domain": [0, 100]}}, "tooltip": [{"field": "vrsr", "type": "quantitative"}]}}, width="stretch")
         st.metric("Baseline → final VRSR", f"+{runs[-1]['vrsr_percent']-runs[0]['vrsr_percent']:.1f} pp")
         st.metric("Phase 4 → verifier VRSR", f"+{runs[-1]['vrsr_percent']-runs[1]['vrsr_percent']:.1f} pp")
         st.caption("Reliability came at a cost: latency and recorded tokens increased. Additional agents must earn their cost.")
@@ -82,9 +82,9 @@ with recorded:
                 if right.button("Reject simulated action"):
                     st.error(safety_gate(answer.get("recommended_action_id"), HumanApproval.REJECT).summary)
         rows = comparison_rows(stages)
-        if any(row["changed"] for row in rows):
+        if any(row["changed"] == "✓" for row in rows):
             st.subheader("Verifier before vs after")
-            st.dataframe(rows, hide_index=True, use_container_width=True)
-            changed = [row["label"] for row in rows if row["changed"]]
+            st.dataframe(rows, hide_index=True, width="stretch")
+            changed = [row["label"] for row in rows if row["changed"] == "✓"]
             st.write("**What the verifier changed:** " + ", ".join(changed))
         if case == "CASE-003": st.info("Known limitation: shared conservative bias. Independent verification reduces error, but does not guarantee independent judgment.")
