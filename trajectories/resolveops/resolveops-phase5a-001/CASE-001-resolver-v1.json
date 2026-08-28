@@ -1,0 +1,77 @@
+{
+  "agent_name": "ResolveOps Resolver",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 3078.0025999993086,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 1677,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 1393,
+        "output_tokens": 284,
+        "reasoning_tokens": 0,
+        "total_tokens": 1677
+      }
+    }
+  ],
+  "case_id": "CASE-001",
+  "error": null,
+  "input_summary": "{\"evidence_bundle\": {\"case_id\": \"CASE-001\", \"contradictions\": [], \"evidence_references\": [{\"source_id\": \"ACC-002\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-003\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-003\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"OUT-001\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-003\", \"tool_name\": \"get_ticket_history\"}], \"hypotheses\": [{\"label\": \"Active upstream service interruption is the likely cause of the loss of internet access.\", \"rationale\": \"The outage is active in District Meridian and its start time precedes the connectivity report; the gateway retains local connectivity but lacks WAN connection and WAN IP availability.\"}, {\"label\": \"Local gateway power, signal, or account-activation failure is less supported.\", \"rationale\": \"The gateway is online and locally reachable with good signal health, while the account is active and completely provisioned.\"}], \"investigation_summary\": \"Evidence supports an area-level upstream interruption causing WAN loss on an otherwise online, locally reachable gateway. No account or gateway-local failure is evidenced.\", \"missing_information\": [\"Whether service restores after the active District Meridian outage is resolved.\", \"Customer-side verification of device connectivity after outage resolution.\"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"ACC-002\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-002 is current, active, and completely provisioned for Home Fiber 500; DEV-003 is the sole registered device.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-003\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-003\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"DEV-003 is online, connected, locally reachable, and has good signal health.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-003\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-003\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"DEV-003 has no WAN connection, no WAN IP address, and no DNS reachability.\"}, {\"evidence_references\": [{\"source_id\": \"OUT-001\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"CUS-002\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"An active upstream service interruption affects the customer's service area, District Meridian, and began at 2026-08-28T08:15:00Z.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-003\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"A connectivity ticket reporting no internet access on connected devices was opened at 2026-08-28T08:20:00Z.\"}], \"ticket_summary\": \"CUS-002 reports loss of internet on all devices this morning while the gateway lights appear normal; primary gateway is DEV-003.\"}, \"ticket\": \"Ticket:\\nAll devices at Sample Household Beta lost internet this morning. The gateway lights are normal.\\n\\nCustomer ID: CUS-002\\nPrimary device ID: DEV-003\"}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "asserted_claim_ids": [],
+    "confidence": 0.97,
+    "customer_response": "We\u2019ve confirmed an active service interruption affecting the District Meridian area. Your gateway appears to be powered on and reachable locally, but it is not receiving a WAN connection, which is consistent with the area outage. Your account and gateway provisioning are active. Service should return once the outage is resolved; please reconnect your devices after service is restored.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "OUT-001",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "DEV-003",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-003",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "ACC-002",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "TKT-003",
+        "tool_name": "get_ticket_history"
+      }
+    ],
+    "internal_notes": "Classified as regional_outage. Active District Meridian upstream interruption began at 2026-08-28T08:15:00Z, before the no-internet ticket at 08:20Z. DEV-003 is online, locally reachable, and has good signal, but has no WAN connection/IP or DNS reachability. Account is active and fully provisioned. No local gateway or account issue evidenced.",
+    "recommended_action_id": "communicate_outage_status",
+    "root_cause_id": "regional_outage"
+  },
+  "prompt_id": "resolver-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase5a-001",
+  "runtime_metrics": {
+    "latency_ms": 3078.0025999993086,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 1677,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 1393,
+    "output_tokens": 284,
+    "reasoning_tokens": 0,
+    "total_tokens": 1677
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "agent_name": "ResolveOps Resolver",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 3865.7768000266515,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 2444,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 2079,
+        "output_tokens": 365,
+        "reasoning_tokens": 0,
+        "total_tokens": 2444
+      }
+    }
+  ],
+  "case_id": "CASE-003",
+  "error": null,
+  "input_summary": "{\"evidence_bundle\": {\"case_id\": \"CASE-003\", \"contradictions\": [], \"evidence_references\": [{\"source_id\": \"CUS-004\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"ACC-004\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-007\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-006\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-006\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"CUS-004\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-005\", \"tool_name\": \"get_ticket_history\"}, {\"source_id\": \"KB-005\", \"tool_name\": \"search_knowledge_base\"}], \"hypotheses\": [{\"label\": \"Camera-local power or connectivity recovery failure after the interruption\", \"rationale\": \"The camera is offline with no local connectivity while the gateway is healthy and no area outage is active. The power interruption is a reported temporal trigger, but the available evidence does not establish the specific camera-side failure mode.\"}, {\"label\": \"Camera network reconnection may be required\", \"rationale\": \"The gateway is available and the relevant knowledge-base article describes reconnecting an offline camera with current network details after a network change. There is no evidence yet that the camera's saved network configuration changed or that reconnection will resolve the condition.\"}], \"investigation_summary\": \"Evidence supports an isolated DEV-007 camera-offline condition rather than an account, gateway, WAN/DNS, or District Aurora service outage issue. Camera-level power and network-reassociation evidence is required to determine the failure mode.\", \"missing_information\": [\"Camera power state, charger/outlet condition, and any local status LEDs or error indicators.\", \"Whether DEV-007 can see or join the local network, including its current saved network configuration.\", \"Camera-side event logs, last successful check-in time, and any reset/reboot attempts.\", \"Camera-specific connectivity diagnostics are unavailable: the diagnostic tool rejected DEV-007 because it is a camera.\"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"ACC-004\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-004 is current, active, and completely provisioned; DEV-006 and DEV-007 are registered to it.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-007\", \"tool_name\": \"get_device_status\"}], \"statement\": \"DEV-007 (Delta Porch Camera) is offline with local_connectivity=false; its gateway/WAN/DNS fields are unavailable and signal health is unknown.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-006\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-006\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"DEV-006 (Delta Gateway) is online and connected, with local connectivity, gateway reachability, WAN connectivity, WAN IP, and DNS all true; signal health is good.\"}, {\"evidence_references\": [{\"source_id\": \"CUS-004\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"No active service outage was found in District Aurora.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-005\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"The ticket history records that the porch camera stopped reporting after a power interruption and remains under investigation.\"}, {\"evidence_references\": [{\"source_id\": \"KB-005\", \"tool_name\": \"search_knowledge_base\"}], \"statement\": \"Knowledge-base guidance for an offline camera following a network change is to verify gateway availability and reconnect the camera using current network details; an offline camera alone does not establish a regional outage.\"}], \"ticket_summary\": \"Porch camera DEV-007 stopped reporting following a power interruption; investigation indicates an isolated camera-offline condition while the account, gateway, and area service are operational.\"}, \"previous_candidate_draft\": {\"asserted_claim_ids\": [], \"confidence\": 0.88, \"customer_response\": \"Your porch camera is offline, while your gateway and home internet connection are working normally, and there is no active area outage. Because the camera stopped reporting after a power interruption, we need a little more camera-specific information\\u2014such as its power/charger status and indicator lights\\u2014before we can identify the cause and provide the right recovery steps. We\\u2019re escalating this for further review.\", \"escalate\": true, \"evidence_references\": [{\"source_id\": \"DEV-007\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-006\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-006\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"CUS-004\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-005\", \"tool_name\": \"get_ticket_history\"}], \"internal_notes\": \"Isolated DEV-007 offline condition: local_connectivity=false and camera-side gateway/WAN/DNS fields unavailable. DEV-006 is healthy with local, WAN, and DNS connectivity; account is active and no District Aurora outage is present. Power interruption is temporal only; no camera power state, LEDs, logs, saved-network state, or camera diagnostics are available. Do not assert camera reconnect is confirmed; obtain camera power/LED state, last check-in/logs, reset history, and network visibility/configuration.\", \"recommended_action_id\": \"escalate_for_more_evidence\", \"root_cause_id\": \"INSUFFICIENT_EVIDENCE\"}, \"ticket\": \"Ticket:\\nSample Household Delta's porch camera stopped reporting after a power interruption. Other home devices are working.\\n\\nCustomer ID: CUS-004\\nPrimary device ID: DEV-007\", \"verification\": {\"approved\": false, \"feedback\": \"Keep the insufficient-evidence diagnosis and escalation: they are supported because the camera is isolated offline while the gateway and area service are healthy, but camera-side power, LED, network, and log evidence is absent. Correct the CUS-004 outage tool name and add ACC-004/get_account_status if retaining the account-status claim in internal notes.\", \"issues\": [{\"category\": \"evidence_incomplete\", \"detail\": \"The outage citation is not accurately identified: CUS-004 is supported by tool_name \\\"check_service_outages\\\" in the EvidenceBundle, not \\\"get_service_outages\\\" as listed in the draft.\"}, {\"category\": \"evidence_incomplete\", \"detail\": \"Internal notes state that the account is active, but the draft does not cite ACC-004/get_account_status for that claim.\"}]}}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "asserted_claim_ids": [],
+    "confidence": 0.88,
+    "customer_response": "Your porch camera is offline, while your gateway and home internet connection are working normally, and there is no active area outage. Because the camera stopped reporting after a power interruption, we need more camera-specific information\u2014such as its power or charger status and indicator lights\u2014before we can identify the cause and provide the right recovery steps. We\u2019re escalating this for further review.",
+    "escalate": true,
+    "evidence_references": [
+      {
+        "source_id": "DEV-007",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-006",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-006",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-004",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "TKT-005",
+        "tool_name": "get_ticket_history"
+      },
+      {
+        "source_id": "ACC-004",
+        "tool_name": "get_account_status"
+      }
+    ],
+    "internal_notes": "Evidence supports an isolated DEV-007 camera-offline condition: local_connectivity=false and camera gateway/WAN/DNS fields are unavailable. DEV-006 is online with local, WAN, and DNS connectivity, and no active District Aurora outage is present. ACC-004 is active and fully provisioned. The power interruption is a temporal trigger only; camera power state, LEDs, logs/last check-in, reset history, and saved-network or network-visibility information are unavailable. Camera-specific connectivity diagnostics cannot be run. Obtain camera power/LED state, last check-in or logs, reset history, and local network visibility/configuration before determining a camera-side failure mode or recommending reconnection.",
+    "recommended_action_id": "escalate_for_more_evidence",
+    "root_cause_id": "INSUFFICIENT_EVIDENCE"
+  },
+  "prompt_id": "resolver-revision-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase5a-001",
+  "runtime_metrics": {
+    "latency_ms": 3865.7768000266515,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 2444,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 2079,
+    "output_tokens": 365,
+    "reasoning_tokens": 0,
+    "total_tokens": 2444
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "agent_name": "ResolveOps Verifier",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 8398.433600028511,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 2249,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 1629,
+        "output_tokens": 620,
+        "reasoning_tokens": 387,
+        "total_tokens": 2249
+      }
+    }
+  ],
+  "case_id": "CASE-010",
+  "error": null,
+  "input_summary": "{\"candidate_draft\": {\"asserted_claim_ids\": [], \"confidence\": 0.93, \"customer_response\": \"We confirmed an active service interruption affecting the District Meridian area. Your gateway is reachable locally, but it is not currently receiving an upstream WAN connection, which is consistent with this area outage. Your account is active and the available checks do not indicate that the gateway needs replacement at this time. Service should recover once the area interruption is resolved; please reconnect and test again afterward.\", \"escalate\": false, \"evidence_references\": [{\"source_id\": \"ACC-002\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-003\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-003\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"OUT-001\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"CUS-002\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-003\", \"tool_name\": \"get_ticket_history\"}], \"internal_notes\": \"Classified as regional_outage. ACC-002 is active and fully provisioned. DEV-003 is online, locally reachable, and has good signal health, but WAN is disconnected with no WAN IP and DNS unavailable. OUT-001/CUS-002 confirm an active upstream interruption in District Meridian. Router replacement details and post-outage topology remain unverified; do not replace gateway based on current evidence.\", \"recommended_action_id\": \"communicate_outage_status\", \"root_cause_id\": \"regional_outage\"}, \"evidence_bundle\": {\"case_id\": \"CASE-010\", \"contradictions\": [], \"evidence_references\": [{\"source_id\": \"CUS-002\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"ACC-002\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-003\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-003\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"OUT-001\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-003\", \"tool_name\": \"get_ticket_history\"}, {\"source_id\": \"KB-002\", \"tool_name\": \"search_knowledge_base\"}], \"hypotheses\": [{\"label\": \"Area upstream outage is a plausible cause of the current no-internet symptom.\", \"rationale\": \"The active District Meridian outage coincides with WAN disconnection, absent WAN IP, and failed DNS while the gateway remains locally reachable and has good signal health.\"}, {\"label\": \"A gateway hardware replacement is not supported by the currently observed device state.\", \"rationale\": \"DEV-003 is online and locally reachable; available evidence identifies an active area outage and does not establish gateway hardware failure.\"}, {\"label\": \"The reported router replacement may be relevant but is unverified as the cause.\", \"rationale\": \"No observed record identifies the replaced router, its connection configuration, or a provisioning change associated with the replacement.\"}], \"investigation_summary\": \"The account is active and provisioned, and the gateway is operational on the local side but lacks WAN connectivity, WAN IP, and DNS. An active upstream outage in District Meridian is the strongest observed explanation. Current evidence does not establish that DEV-003 requires replacement.\", \"missing_information\": [\"Identity and role of the router reportedly replaced, including whether it is DEV-003 or customer-owned equipment.\", \"Physical WAN/cabling and topology after the router replacement.\", \"Whether internet service recovers after OUT-001 is resolved.\", \"Any device-level fault evidence or replacement eligibility criteria beyond the current online/reachable status.\"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"ACC-002\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-002 is current, active, and completely provisioned for the Home Fiber 500 plan; DEV-003 is the only registered device.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-003\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-003\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"DEV-003 is online, locally reachable, and reports good signal health, but its WAN is disconnected, no WAN IP is available, and DNS is unreachable.\"}, {\"evidence_references\": [{\"source_id\": \"OUT-001\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"CUS-002\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"An active upstream service interruption affects the customer's service area, District Meridian.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-003\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"A connectivity ticket reporting no internet access was opened on 2026-08-28 at 08:20 UTC.\"}], \"ticket_summary\": \"CUS-002 reports no internet after replacing a router last week and requests a replacement gateway for primary device DEV-003.\"}, \"ticket\": \"Ticket:\\nSample Household Beta replaced a router last week and now has no internet. The customer requests a replacement gateway.\\n\\nCustomer ID: CUS-002\\nPrimary device ID: DEV-003\"}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "approved": false,
+    "feedback": "The regional-outage classification and communicate-outage-status action are supported as the responsible current support path; no gateway replacement is supported. Correct the CUS-002 citation, lower confidence, and qualify recovery as expected/likely pending post-outage retest rather than guaranteed.",
+    "issues": [
+      {
+        "category": "unsupported_conclusion",
+        "detail": "\u201cService should recover once the area interruption is resolved\u201d is too definite: the reported router replacement and resulting topology remain unverified, so restoration after outage resolution is not established."
+      },
+      {
+        "category": "evidence_incomplete",
+        "detail": "The cited reference for CUS-002 uses check_service_outages, but the EvidenceBundle lists CUS-002 under get_account_status. Cite OUT-001 for the outage (and ACC-002 for account status) unless a valid CUS-002 outage record is available."
+      },
+      {
+        "category": "internal_inconsistency",
+        "detail": "Confidence of 0.93 overstates certainty that the outage explains this customer's loss of service, given the explicitly unverified router replacement/topology and need to retest after the outage."
+      }
+    ]
+  },
+  "prompt_id": "verifier-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase5a-001",
+  "runtime_metrics": {
+    "latency_ms": 8398.433600028511,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 2249,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 1629,
+    "output_tokens": 620,
+    "reasoning_tokens": 387,
+    "total_tokens": 2249
+  }
+}

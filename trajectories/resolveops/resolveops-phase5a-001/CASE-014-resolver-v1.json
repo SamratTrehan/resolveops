@@ -1,0 +1,77 @@
+{
+  "agent_name": "ResolveOps Resolver",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 6616.406399989501,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 1699,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 1403,
+        "output_tokens": 296,
+        "reasoning_tokens": 0,
+        "total_tokens": 1699
+      }
+    }
+  ],
+  "case_id": "CASE-014",
+  "error": null,
+  "input_summary": "{\"evidence_bundle\": {\"case_id\": \"CASE-014\", \"contradictions\": [], \"evidence_references\": [{\"source_id\": \"ACC-001\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-002\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-001\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"CUS-001\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-001\", \"tool_name\": \"get_ticket_history\"}], \"hypotheses\": [{\"label\": \"Intermittent sensor-level false-trigger condition\", \"rationale\": \"The sensor and gateway are currently connected with good reported signal health, and no area outage is active. This does not establish the cause of the historical alerts.\"}, {\"label\": \"Service, gateway, or account-activation dependency issue is less supported\", \"rationale\": \"The account is active and provisioned; the gateway is online with positive reachability checks; and no service-area outage is active.\"}], \"investigation_summary\": \"Current evidence confirms a healthy connected sensor, healthy gateway path, active account, and no active area outage. The reported issue is intermittent and historical; available evidence does not identify a root cause.\", \"missing_information\": [\"Timestamps, frequency, and alert types for the reported false alerts.\", \"Sensor event/audit history and any open/close state records around the alerts.\", \"Physical installation, alignment, battery, tamper, environmental, and door-movement information.\", \"Sensor-specific diagnostic capability or telemetry; the available connectivity diagnostic does not support sensors.\"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"ACC-001\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-001 is active, fully provisioned, and current; DEV-002 is registered to the account.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-002\", \"tool_name\": \"get_device_status\"}], \"statement\": \"DEV-002 is a sensor and is currently online and connected, with good signal health and local connectivity.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-001\", \"tool_name\": \"get_device_status\"}], \"statement\": \"The paired account gateway (DEV-001) is online and connected; its local, gateway, WAN, IP, and DNS checks are all positive, with good signal health.\"}, {\"evidence_references\": [{\"source_id\": \"CUS-001\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"No active service outage is reported for District Aurora.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-001\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"Available prior ticket history contains one billing inquiry and no prior sensor-alert ticket.\"}, {\"evidence_references\": [{\"source_id\": null, \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"Direct connectivity diagnostics are unsupported for DEV-002 because it is a sensor.\"}], \"ticket_summary\": \"Sample Household Alpha reports occasional false alerts from Alpha Door Sensor (DEV-002), which is currently connected.\"}, \"ticket\": \"Ticket:\\nSample Household Alpha reports occasional false alerts from its door sensor while the sensor currently appears connected.\\n\\nCustomer ID: CUS-001\\nPrimary device ID: DEV-002\"}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "asserted_claim_ids": [],
+    "confidence": 0.95,
+    "customer_response": "Your door sensor and gateway are currently connected and healthy, and there is no reported service outage in your area. Because the alerts are intermittent, we need additional details to identify what is triggering them. Please share the approximate times of the false alerts, how often they occur, and whether the door was moved, bumped, or exposed to environmental changes at those times. We\u2019ll use that information to investigate further.",
+    "escalate": true,
+    "evidence_references": [
+      {
+        "source_id": "ACC-001",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-002",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-001",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "CUS-001",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "TKT-001",
+        "tool_name": "get_ticket_history"
+      }
+    ],
+    "internal_notes": "Current evidence rules against an active area outage, account/provisioning issue, gateway connectivity failure, and current sensor disconnection. Historical intermittent false alerts cannot be diagnosed from present-state connectivity. Escalate for sensor event/audit history, alert timestamps/types, installation/alignment, battery/tamper, environmental, and door-movement details. Direct connectivity diagnostics are unsupported for the sensor.",
+    "recommended_action_id": "escalate_for_more_evidence",
+    "root_cause_id": "INSUFFICIENT_EVIDENCE"
+  },
+  "prompt_id": "resolver-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase5a-001",
+  "runtime_metrics": {
+    "latency_ms": 6616.406399989501,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 1699,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 1403,
+    "output_tokens": 296,
+    "reasoning_tokens": 0,
+    "total_tokens": 1699
+  }
+}

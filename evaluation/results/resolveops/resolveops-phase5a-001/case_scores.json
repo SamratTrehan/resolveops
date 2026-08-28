@@ -1,0 +1,257 @@
+[
+  {
+    "action_correct": true,
+    "case_id": "CASE-001",
+    "diagnosis_correct": true,
+    "escalation_correct": true,
+    "evidence_coverage": true,
+    "execution_failure": false,
+    "forbidden_claim_violations": [],
+    "passed": true,
+    "runtime_metrics": {
+      "latency_ms": 21049.86500000814,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 7097,
+      "tool_call_count": 6
+    }
+  },
+  {
+    "action_correct": true,
+    "case_id": "CASE-002",
+    "diagnosis_correct": true,
+    "escalation_correct": true,
+    "evidence_coverage": true,
+    "execution_failure": false,
+    "forbidden_claim_violations": [],
+    "passed": true,
+    "runtime_metrics": {
+      "latency_ms": 18664.725999929942,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 7538,
+      "tool_call_count": 6
+    }
+  },
+  {
+    "action_correct": false,
+    "case_id": "CASE-003",
+    "diagnosis_correct": false,
+    "escalation_correct": false,
+    "evidence_coverage": true,
+    "execution_failure": false,
+    "forbidden_claim_violations": [],
+    "passed": false,
+    "runtime_metrics": {
+      "latency_ms": 30217.29540009983,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 14768,
+      "tool_call_count": 9
+    }
+  },
+  {
+    "action_correct": true,
+    "case_id": "CASE-004",
+    "diagnosis_correct": true,
+    "escalation_correct": true,
+    "evidence_coverage": true,
+    "execution_failure": false,
+    "forbidden_claim_violations": [],
+    "passed": true,
+    "runtime_metrics": {
+      "latency_ms": 19465.388900018297,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 9064,
+      "tool_call_count": 6
+    }
+  },
+  {
+    "action_correct": true,
+    "case_id": "CASE-005",
+    "diagnosis_correct": true,
+    "escalation_correct": true,
+    "evidence_coverage": true,
+    "execution_failure": false,
+    "forbidden_claim_violations": [],
+    "passed": true,
+    "runtime_metrics": {
+      "latency_ms": 33599.435599986464,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 11732,
+      "tool_call_count": 6
+    }
+  },
+  {
+    "action_correct": true,
+    "case_id": "CASE-006",
+    "diagnosis_correct": true,
+    "escalation_correct": true,
+    "evidence_coverage": true,
+    "execution_failure": false,
+    "forbidden_claim_violations": [],
+    "passed": true,
+    "runtime_metrics": {
+      "latency_ms": 26966.679899953306,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 13570,
+      "tool_call_count": 8
+    }
+  },
+  {
+    "action_correct": true,
+    "case_id": "CASE-007",
+    "diagnosis_correct": true,
+    "escalation_correct": true,
+    "evidence_coverage": true,
+    "execution_failure": false,
+    "forbidden_claim_violations": [],
+    "passed": true,
+    "runtime_metrics": {
+      "latency_ms": 21659.683599951677,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 8651,
+      "tool_call_count": 6
+    }
+  },
+  {
+    "action_correct": true,
+    "case_id": "CASE-008",
+    "diagnosis_correct": true,
+    "escalation_correct": true,
+    "evidence_coverage": true,
+    "execution_failure": false,
+    "forbidden_claim_violations": [],
+    "passed": true,
+    "runtime_metrics": {
+      "latency_ms": 26505.00090001151,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 12423,
+      "tool_call_count": 7
+    }
+  },
+  {
+    "action_correct": true,
+    "case_id": "CASE-009",
+    "diagnosis_correct": true,
+    "escalation_correct": true,
+    "evidence_coverage": true,
+    "execution_failure": false,
+    "forbidden_claim_violations": [],
+    "passed": true,
+    "runtime_metrics": {
+      "latency_ms": 24985.181900090538,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 9650,
+      "tool_call_count": 6
+    }
+  },
+  {
+    "action_correct": true,
+    "case_id": "CASE-010",
+    "diagnosis_correct": true,
+    "escalation_correct": true,
+    "evidence_coverage": true,
+    "execution_failure": false,
+    "forbidden_claim_violations": [],
+    "passed": true,
+    "runtime_metrics": {
+      "latency_ms": 26657.62110002106,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 10180,
+      "tool_call_count": 6
+    }
+  },
+  {
+    "action_correct": true,
+    "case_id": "CASE-011",
+    "diagnosis_correct": true,
+    "escalation_correct": true,
+    "evidence_coverage": true,
+    "execution_failure": false,
+    "forbidden_claim_violations": [],
+    "passed": true,
+    "runtime_metrics": {
+      "latency_ms": 20392.05220004078,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 8209,
+      "tool_call_count": 5
+    }
+  },
+  {
+    "action_correct": true,
+    "case_id": "CASE-012",
+    "diagnosis_correct": true,
+    "escalation_correct": true,
+    "evidence_coverage": true,
+    "execution_failure": false,
+    "forbidden_claim_violations": [],
+    "passed": true,
+    "runtime_metrics": {
+      "latency_ms": 22440.69610000588,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 9833,
+      "tool_call_count": 6
+    }
+  },
+  {
+    "action_correct": true,
+    "case_id": "CASE-013",
+    "diagnosis_correct": true,
+    "escalation_correct": true,
+    "evidence_coverage": true,
+    "execution_failure": false,
+    "forbidden_claim_violations": [],
+    "passed": true,
+    "runtime_metrics": {
+      "latency_ms": 21415.17329995986,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 9240,
+      "tool_call_count": 6
+    }
+  },
+  {
+    "action_correct": true,
+    "case_id": "CASE-014",
+    "diagnosis_correct": true,
+    "escalation_correct": true,
+    "evidence_coverage": true,
+    "execution_failure": false,
+    "forbidden_claim_violations": [],
+    "passed": true,
+    "runtime_metrics": {
+      "latency_ms": 21516.954999940936,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 10669,
+      "tool_call_count": 7
+    }
+  },
+  {
+    "action_correct": true,
+    "case_id": "CASE-015",
+    "diagnosis_correct": true,
+    "escalation_correct": true,
+    "evidence_coverage": true,
+    "execution_failure": false,
+    "forbidden_claim_violations": [],
+    "passed": true,
+    "runtime_metrics": {
+      "latency_ms": 21696.47000002442,
+      "model_cost_usd": null,
+      "retries": 0,
+      "token_usage": 8808,
+      "tool_call_count": 6
+    }
+  }
+]

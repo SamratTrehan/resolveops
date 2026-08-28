@@ -1,0 +1,541 @@
+{
+  "agent_name": "ResolveOps Investigator",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 12440.511199994944,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 3194,
+        "tool_call_count": 5
+      },
+      "status": "completed",
+      "tool_calls": [
+        {
+          "arguments": {
+            "device_id": "DEV-003"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "account_id": "ACC-002",
+                  "device_type": "gateway",
+                  "id": "DEV-003",
+                  "label": "Beta Gateway",
+                  "status": {
+                    "connection_state": "connected",
+                    "dns_reachable": false,
+                    "firmware_version": "FW-3.4.1",
+                    "gateway_reachable": true,
+                    "local_connectivity": true,
+                    "online": true,
+                    "signal_health": "good",
+                    "wan_connected": false,
+                    "wan_ip_available": false
+                  }
+                },
+                "entity_id": "DEV-003",
+                "source": "synthetic_world",
+                "summary": "Synthetic device state."
+              }
+            ],
+            "source_ids": [
+              "DEV-003"
+            ],
+            "success": true,
+            "summary": "Device DEV-003 is online.",
+            "tool_name": "get_device_status"
+          },
+          "tool_name": "get_device_status"
+        },
+        {
+          "arguments": {
+            "device_id": "DEV-003"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "dns_reachable": false,
+                  "gateway_reachable": true,
+                  "local_connectivity": true,
+                  "signal_health": "good",
+                  "wan_connected": false,
+                  "wan_ip_available": false
+                },
+                "entity_id": "DEV-003",
+                "source": "synthetic_diagnostics",
+                "summary": "Deterministic gateway connectivity checks."
+              }
+            ],
+            "source_ids": [
+              "DEV-003"
+            ],
+            "success": true,
+            "summary": "Connectivity diagnostics completed for DEV-003.",
+            "tool_name": "run_connectivity_diagnostics"
+          },
+          "tool_name": "run_connectivity_diagnostics"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-002"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "service_area": "District Meridian"
+                },
+                "entity_id": "CUS-002",
+                "source": "synthetic_world",
+                "summary": "Synthetic service area used for outage lookup."
+              },
+              {
+                "data": {
+                  "affected_areas": [
+                    "District Meridian"
+                  ],
+                  "id": "OUT-001",
+                  "started_at": "2026-08-28T08:15:00Z",
+                  "status": "active",
+                  "summary": "Synthetic upstream service interruption affecting District Meridian."
+                },
+                "entity_id": "OUT-001",
+                "source": "synthetic_outage_feed",
+                "summary": "Synthetic upstream service interruption affecting District Meridian."
+              }
+            ],
+            "source_ids": [
+              "CUS-002",
+              "OUT-001"
+            ],
+            "success": true,
+            "summary": "Active outage found for District Meridian.",
+            "tool_name": "check_service_outages"
+          },
+          "tool_name": "check_service_outages"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-002"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "category": "wifi",
+                  "created_at": "2026-06-18T11:10:00Z",
+                  "customer_id": "CUS-002",
+                  "id": "TKT-002",
+                  "outcome": "Shared placement article.",
+                  "summary": "Requested placement guidance for the gateway."
+                },
+                "entity_id": "TKT-002",
+                "source": "synthetic_ticket_history",
+                "summary": "Requested placement guidance for the gateway."
+              },
+              {
+                "data": {
+                  "category": "connectivity",
+                  "created_at": "2026-08-28T08:20:00Z",
+                  "customer_id": "CUS-002",
+                  "id": "TKT-003",
+                  "outcome": "Investigation open.",
+                  "summary": "Reported no internet access on connected devices."
+                },
+                "entity_id": "TKT-003",
+                "source": "synthetic_ticket_history",
+                "summary": "Reported no internet access on connected devices."
+              }
+            ],
+            "source_ids": [
+              "TKT-002",
+              "TKT-003"
+            ],
+            "success": true,
+            "summary": "Found 2 ticket-history entries.",
+            "tool_name": "get_ticket_history"
+          },
+          "tool_name": "get_ticket_history"
+        },
+        {
+          "arguments": {
+            "customer_id": "CUS-002"
+          },
+          "result": {
+            "error": null,
+            "evidence": [
+              {
+                "data": {
+                  "display_name": "Sample Household Beta",
+                  "id": "CUS-002",
+                  "service_area": "District Meridian"
+                },
+                "entity_id": "CUS-002",
+                "source": "synthetic_world",
+                "summary": "Synthetic customer record."
+              },
+              {
+                "data": {
+                  "customer_id": "CUS-002",
+                  "id": "ACC-002",
+                  "provisioning_status": "complete",
+                  "service_activation": "active",
+                  "service_plan": "Home Fiber 500",
+                  "standing": "current"
+                },
+                "entity_id": "ACC-002",
+                "source": "synthetic_world",
+                "summary": "Synthetic account status."
+              },
+              {
+                "data": {
+                  "device_ids": [
+                    "DEV-003"
+                  ]
+                },
+                "entity_id": "ACC-002",
+                "source": "synthetic_world",
+                "summary": "Devices registered to the synthetic account."
+              }
+            ],
+            "source_ids": [
+              "CUS-002",
+              "ACC-002"
+            ],
+            "success": true,
+            "summary": "Account ACC-002 is active.",
+            "tool_name": "get_account_status"
+          },
+          "tool_name": "get_account_status"
+        }
+      ],
+      "usage": {
+        "input_tokens": 2396,
+        "output_tokens": 798,
+        "reasoning_tokens": 134,
+        "total_tokens": 3194
+      }
+    }
+  ],
+  "case_id": "CASE-001",
+  "error": null,
+  "input_summary": "Ticket:\nAll devices at Sample Household Beta lost internet this morning. The gateway lights are normal.\n\nCustomer ID: CUS-002\nPrimary device ID: DEV-003",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "case_id": "CASE-001",
+    "contradictions": [],
+    "evidence_references": [
+      {
+        "source_id": "CUS-002",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "ACC-002",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-003",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-003",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "OUT-001",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "TKT-003",
+        "tool_name": "get_ticket_history"
+      }
+    ],
+    "hypotheses": [
+      {
+        "label": "Area upstream outage is the likely cause of the internet loss",
+        "rationale": "The active District Meridian upstream interruption coincides with the reported timeframe, while the gateway remains locally reachable but lacks WAN connectivity and a WAN IP."
+      }
+    ],
+    "investigation_summary": "Observed evidence indicates an upstream/WAN-side failure rather than loss of local gateway reachability, and an active area outage provides a supported likely cause. Account activation and provisioning do not indicate an account-side service block.",
+    "missing_information": [
+      "Whether the active District Meridian outage has an estimated restoration time or confirmed resolution status.",
+      "Customer-side observations beyond gateway lights, including whether any wired client can reach the gateway locally.",
+      "Gateway event logs or optical/physical-link telemetry to distinguish an area interruption from an individual access-link fault."
+    ],
+    "observed_facts": [
+      {
+        "evidence_references": [
+          {
+            "source_id": "ACC-002",
+            "tool_name": "get_account_status"
+          }
+        ],
+        "statement": "Account ACC-002 is active, fully provisioned, and on the Home Fiber 500 plan. DEV-003 is the only registered device."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "DEV-003",
+            "tool_name": "get_device_status"
+          },
+          {
+            "source_id": "DEV-003",
+            "tool_name": "run_connectivity_diagnostics"
+          }
+        ],
+        "statement": "DEV-003 is online and reachable locally, with good signal health, but WAN is disconnected, no WAN IP is available, and DNS is unreachable."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "OUT-001",
+            "tool_name": "check_service_outages"
+          }
+        ],
+        "statement": "District Meridian has an active upstream service interruption, starting at 2026-08-28T08:15:00Z."
+      },
+      {
+        "evidence_references": [
+          {
+            "source_id": "TKT-003",
+            "tool_name": "get_ticket_history"
+          }
+        ],
+        "statement": "A connectivity ticket reporting no internet access on connected devices was created at 2026-08-28T08:20:00Z and remains under investigation."
+      }
+    ],
+    "ticket_summary": "CUS-002 reports loss of internet across all devices this morning; primary gateway DEV-003 is locally reachable but has no WAN connection. An active upstream interruption is recorded for the customer\u2019s service area."
+  },
+  "prompt_id": "investigator-v1",
+  "reasoning_effort": "medium",
+  "run_id": "phase5a-smoke-001",
+  "runtime_metrics": {
+    "latency_ms": 12440.511199994944,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 3194,
+    "tool_call_count": 5
+  },
+  "status": "completed",
+  "tool_calls": [
+    {
+      "arguments": {
+        "device_id": "DEV-003"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "account_id": "ACC-002",
+              "device_type": "gateway",
+              "id": "DEV-003",
+              "label": "Beta Gateway",
+              "status": {
+                "connection_state": "connected",
+                "dns_reachable": false,
+                "firmware_version": "FW-3.4.1",
+                "gateway_reachable": true,
+                "local_connectivity": true,
+                "online": true,
+                "signal_health": "good",
+                "wan_connected": false,
+                "wan_ip_available": false
+              }
+            },
+            "entity_id": "DEV-003",
+            "source": "synthetic_world",
+            "summary": "Synthetic device state."
+          }
+        ],
+        "source_ids": [
+          "DEV-003"
+        ],
+        "success": true,
+        "summary": "Device DEV-003 is online.",
+        "tool_name": "get_device_status"
+      },
+      "tool_name": "get_device_status"
+    },
+    {
+      "arguments": {
+        "device_id": "DEV-003"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "dns_reachable": false,
+              "gateway_reachable": true,
+              "local_connectivity": true,
+              "signal_health": "good",
+              "wan_connected": false,
+              "wan_ip_available": false
+            },
+            "entity_id": "DEV-003",
+            "source": "synthetic_diagnostics",
+            "summary": "Deterministic gateway connectivity checks."
+          }
+        ],
+        "source_ids": [
+          "DEV-003"
+        ],
+        "success": true,
+        "summary": "Connectivity diagnostics completed for DEV-003.",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      "tool_name": "run_connectivity_diagnostics"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-002"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "service_area": "District Meridian"
+            },
+            "entity_id": "CUS-002",
+            "source": "synthetic_world",
+            "summary": "Synthetic service area used for outage lookup."
+          },
+          {
+            "data": {
+              "affected_areas": [
+                "District Meridian"
+              ],
+              "id": "OUT-001",
+              "started_at": "2026-08-28T08:15:00Z",
+              "status": "active",
+              "summary": "Synthetic upstream service interruption affecting District Meridian."
+            },
+            "entity_id": "OUT-001",
+            "source": "synthetic_outage_feed",
+            "summary": "Synthetic upstream service interruption affecting District Meridian."
+          }
+        ],
+        "source_ids": [
+          "CUS-002",
+          "OUT-001"
+        ],
+        "success": true,
+        "summary": "Active outage found for District Meridian.",
+        "tool_name": "check_service_outages"
+      },
+      "tool_name": "check_service_outages"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-002"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "category": "wifi",
+              "created_at": "2026-06-18T11:10:00Z",
+              "customer_id": "CUS-002",
+              "id": "TKT-002",
+              "outcome": "Shared placement article.",
+              "summary": "Requested placement guidance for the gateway."
+            },
+            "entity_id": "TKT-002",
+            "source": "synthetic_ticket_history",
+            "summary": "Requested placement guidance for the gateway."
+          },
+          {
+            "data": {
+              "category": "connectivity",
+              "created_at": "2026-08-28T08:20:00Z",
+              "customer_id": "CUS-002",
+              "id": "TKT-003",
+              "outcome": "Investigation open.",
+              "summary": "Reported no internet access on connected devices."
+            },
+            "entity_id": "TKT-003",
+            "source": "synthetic_ticket_history",
+            "summary": "Reported no internet access on connected devices."
+          }
+        ],
+        "source_ids": [
+          "TKT-002",
+          "TKT-003"
+        ],
+        "success": true,
+        "summary": "Found 2 ticket-history entries.",
+        "tool_name": "get_ticket_history"
+      },
+      "tool_name": "get_ticket_history"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUS-002"
+      },
+      "result": {
+        "error": null,
+        "evidence": [
+          {
+            "data": {
+              "display_name": "Sample Household Beta",
+              "id": "CUS-002",
+              "service_area": "District Meridian"
+            },
+            "entity_id": "CUS-002",
+            "source": "synthetic_world",
+            "summary": "Synthetic customer record."
+          },
+          {
+            "data": {
+              "customer_id": "CUS-002",
+              "id": "ACC-002",
+              "provisioning_status": "complete",
+              "service_activation": "active",
+              "service_plan": "Home Fiber 500",
+              "standing": "current"
+            },
+            "entity_id": "ACC-002",
+            "source": "synthetic_world",
+            "summary": "Synthetic account status."
+          },
+          {
+            "data": {
+              "device_ids": [
+                "DEV-003"
+              ]
+            },
+            "entity_id": "ACC-002",
+            "source": "synthetic_world",
+            "summary": "Devices registered to the synthetic account."
+          }
+        ],
+        "source_ids": [
+          "CUS-002",
+          "ACC-002"
+        ],
+        "success": true,
+        "summary": "Account ACC-002 is active.",
+        "tool_name": "get_account_status"
+      },
+      "tool_name": "get_account_status"
+    }
+  ],
+  "usage": {
+    "input_tokens": 2396,
+    "output_tokens": 798,
+    "reasoning_tokens": 134,
+    "total_tokens": 3194
+  }
+}

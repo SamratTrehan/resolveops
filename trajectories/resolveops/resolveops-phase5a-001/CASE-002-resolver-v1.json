@@ -1,0 +1,77 @@
+{
+  "agent_name": "ResolveOps Resolver",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 3171.816299960483,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 1828,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 1568,
+        "output_tokens": 260,
+        "reasoning_tokens": 0,
+        "total_tokens": 1828
+      }
+    }
+  ],
+  "case_id": "CASE-002",
+  "error": null,
+  "input_summary": "{\"evidence_bundle\": {\"case_id\": \"CASE-002\", \"contradictions\": [], \"evidence_references\": [{\"source_id\": \"CUS-003\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"ACC-003\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-004\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-004\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"CUS-003\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-004\", \"tool_name\": \"get_ticket_history\"}, {\"source_id\": \"KB-001\", \"tool_name\": \"search_knowledge_base\"}, {\"source_id\": \"KB-002\", \"tool_name\": \"search_knowledge_base\"}], \"hypotheses\": [{\"label\": \"Replacement gateway activation/provisioning has not completed.\", \"rationale\": \"The account is awaiting gateway activation, the gateway state is activation_pending, and ticket history previously recorded awaiting customer activation. This would account for absent WAN and WAN-IP connectivity.\"}, {\"label\": \"A local Wi-Fi or gateway-reachability fault is less likely than an activation/WAN-side condition.\", \"rationale\": \"The gateway is online, locally reachable, and reports good signal health, while WAN, WAN IP, and DNS are unavailable. No active area outage is reported.\"}], \"investigation_summary\": \"Observable evidence supports an incomplete replacement-gateway activation/provisioning state. Local gateway and Wi-Fi access are functioning, while WAN connectivity, WAN IP assignment, and DNS remain unavailable. No active District Solstice outage was identified.\", \"missing_information\": [\"Whether an activation attempt was initiated and, if so, its result or error message.\", \"Physical WAN/optical link state and upstream termination status.\", \"Gateway activation logs or provisioning-system response explaining why activation remains pending.\", \"Timing of replacement installation and any changes to account/device assignment after delivery.\"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"ACC-003\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-003 is current, but service activation is pending and provisioning status is awaiting_gateway_activation.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-004\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"ACC-003\", \"tool_name\": \"get_account_status\"}], \"statement\": \"DEV-004 is the registered replacement gateway for ACC-003 and is online, locally connected, and reachable with good signal health.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-004\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-004\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"DEV-004 reports connection_state activation_pending; WAN is disconnected, no WAN IP is available, and DNS is unreachable.\"}, {\"evidence_references\": [{\"source_id\": \"CUS-003\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"No active outage was found for the customer's service area, District Solstice.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-004\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"Ticket history records that the replacement gateway delivery was confirmed and its prior outcome was awaiting customer activation.\"}, {\"evidence_references\": [{\"source_id\": \"KB-001\", \"tool_name\": \"search_knowledge_base\"}, {\"source_id\": \"KB-002\", \"tool_name\": \"search_knowledge_base\"}], \"statement\": \"Knowledge-base results identify replacement-gateway activation and WAN/WAN-IP/DNS checks as relevant to this symptom pattern.\"}], \"ticket_summary\": \"Replacement gateway DEV-004 is locally reachable and provides Wi-Fi, but it remains in activation-pending state without WAN connectivity or a WAN IP. Account provisioning is awaiting gateway activation; no service-area outage is active.\"}, \"ticket\": \"Ticket:\\nSample Household Gamma received a replacement gateway and can join its Wi-Fi, but internet setup never completes.\\n\\nCustomer ID: CUS-003\\nPrimary device ID: DEV-004\"}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "asserted_claim_ids": [],
+    "confidence": 0.97,
+    "customer_response": "Your replacement gateway is connected locally, but its service activation has not finished yet. That is why you can join Wi-Fi but cannot complete internet setup. Please complete the gateway activation steps; once activation succeeds, the gateway should receive its internet connection automatically. There is no known outage in your area at this time.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "ACC-003",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-004",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-004",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "TKT-004",
+        "tool_name": "get_ticket_history"
+      },
+      {
+        "source_id": "CUS-003",
+        "tool_name": "check_service_outages"
+      }
+    ],
+    "internal_notes": "ACC-003 provisioning is awaiting_gateway_activation and DEV-004 is activation_pending. Gateway is locally reachable with good signal, but WAN is disconnected, no WAN IP is assigned, and DNS is unreachable. No District Solstice outage. Prior ticket outcome was awaiting customer activation; guide activation before investigating local Wi-Fi or DNS.",
+    "recommended_action_id": "guide_gateway_activation",
+    "root_cause_id": "pending_gateway_provisioning"
+  },
+  "prompt_id": "resolver-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase5a-001",
+  "runtime_metrics": {
+    "latency_ms": 3171.816299960483,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 1828,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 1568,
+    "output_tokens": 260,
+    "reasoning_tokens": 0,
+    "total_tokens": 1828
+  }
+}

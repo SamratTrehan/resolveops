@@ -1,0 +1,51 @@
+{
+  "agent_name": "ResolveOps Verifier",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 3542.279699991923,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 1840,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 1578,
+        "output_tokens": 262,
+        "reasoning_tokens": 184,
+        "total_tokens": 1840
+      }
+    }
+  ],
+  "case_id": "CASE-012",
+  "error": null,
+  "input_summary": "{\"candidate_draft\": {\"asserted_claim_ids\": [], \"confidence\": 0.82, \"customer_response\": \"Your gateway and service connection are operating normally, and there is no active area outage. The porch camera is currently offline after the power interruption, so please verify that it has power and restart it. Then reconnect the camera to your home network in the app if prompted. The app\\u2019s connected status may be stale; please confirm the camera returns online and uploads a new image after reconnecting.\", \"escalate\": false, \"evidence_references\": [{\"source_id\": \"DEV-007\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-006\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"CUS-004\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-005\", \"tool_name\": \"get_ticket_history\"}, {\"source_id\": \"ACC-004\", \"tool_name\": \"get_account_status\"}], \"internal_notes\": \"DEV-007 is offline with local connectivity false. DEV-006 gateway is online with healthy local/WAN/DNS status; account is active/provisioned and no District Aurora outage is active. Ticket history links the reporting failure to a power interruption. Camera diagnostics are unsupported, and app status conflicts with device telemetry; guide camera power verification/restart and network reconnection.\", \"recommended_action_id\": \"guide_camera_reconnect\", \"root_cause_id\": \"camera_reconnect_needed\"}, \"evidence_bundle\": {\"case_id\": \"CASE-012\", \"contradictions\": [\"The app reportedly displays the camera as connected, but DEV-007 is observed offline with local connectivity false.\"], \"evidence_references\": [{\"source_id\": \"ACC-004\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-007\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-006\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"CUS-004\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-005\", \"tool_name\": \"get_ticket_history\"}], \"hypotheses\": [{\"label\": \"Camera did not recover local connectivity after the power interruption\", \"rationale\": \"The camera is currently offline with local connectivity false, while the gateway is operating normally and no area outage is active.\"}, {\"label\": \"App connection status is stale or does not reflect the camera's current connection state\", \"rationale\": \"The reported app status conflicts with the observed offline state of DEV-007.\"}], \"investigation_summary\": \"Available evidence isolates the current failure to DEV-007 rather than the registered gateway, account provisioning, or an active area outage. The power interruption is documented in ticket history, but its direct effect on the camera cannot be confirmed from the available telemetry.\", \"missing_information\": [\"Camera power status and any local indicator/LED state after the interruption.\", \"Time and status of the last successfully uploaded image.\", \"Whether DEV-007 can join the local network after a camera-side restart or power verification.\", \"Camera-specific network diagnostic data, which is unavailable through the supported diagnostic tool.\"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"ACC-004\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-004 is active, provisioning is complete, and DEV-006 and DEV-007 are registered to the account.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-007\", \"tool_name\": \"get_device_status\"}], \"statement\": \"DEV-007 (Delta Porch Camera) is offline with local connectivity false; gateway/WAN/DNS reachability and signal health are not reported for the camera.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-006\", \"tool_name\": \"get_device_status\"}], \"statement\": \"The registered gateway, DEV-006, is online and connected, with local connectivity, WAN connection, WAN IP, and DNS reachability all true; signal health is good.\"}, {\"evidence_references\": [{\"source_id\": \"CUS-004\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"No active service outage was found for District Aurora.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-005\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"Ticket history records that the porch camera stopped reporting after a power interruption and remains under investigation.\"}, {\"evidence_references\": [{\"source_id\": null, \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"Camera-targeted connectivity diagnostics are unsupported, so no camera diagnostic result was available.\"}], \"ticket_summary\": \"Sample Household Delta reports that the camera app shows connected, but the Delta Porch Camera has not sent an image since a power interruption.\"}, \"ticket\": \"Ticket:\\nSample Household Delta reports that a camera app says connected, while the camera has not sent an image since the power interruption.\\n\\nCustomer ID: CUS-004\\nPrimary device ID: DEV-007\"}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "approved": true,
+    "feedback": "Diagnosis and camera-reconnection action are supported by the camera's offline/local-connectivity state, healthy gateway telemetry, active account, and absence of an area outage. The draft appropriately treats the app status as potentially stale rather than definitive and does not assert an unproven camera hardware failure.",
+    "issues": []
+  },
+  "prompt_id": "verifier-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase5a-001",
+  "runtime_metrics": {
+    "latency_ms": 3542.279699991923,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 1840,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 1578,
+    "output_tokens": 262,
+    "reasoning_tokens": 184,
+    "total_tokens": 1840
+  }
+}

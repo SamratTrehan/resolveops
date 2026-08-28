@@ -1,0 +1,89 @@
+{
+  "agent_name": "ResolveOps Resolver",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 3673.190900008194,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 2336,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 1987,
+        "output_tokens": 349,
+        "reasoning_tokens": 0,
+        "total_tokens": 2336
+      }
+    }
+  ],
+  "case_id": "CASE-006",
+  "error": null,
+  "input_summary": "{\"evidence_bundle\": {\"case_id\": \"CASE-006\", \"contradictions\": [], \"evidence_references\": [{\"source_id\": \"ACC-003\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-005\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-004\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-004\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"TKT-004\", \"tool_name\": \"get_ticket_history\"}, {\"source_id\": \"CUS-003\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"KB-001\", \"tool_name\": \"search_knowledge_base\"}, {\"source_id\": \"KB-006\", \"tool_name\": \"search_knowledge_base\"}], \"hypotheses\": [{\"label\": \"Replacement gateway activation is blocking sensor availability\", \"rationale\": \"The sensor reports gateway_unavailable while the replacement gateway and account are both awaiting activation/provisioning. The gateway is locally reachable but has no WAN connectivity. This is consistent with the documented dependency, but does not establish the specific activation failure cause.\"}], \"investigation_summary\": \"Observable evidence points to an unresolved replacement-gateway activation/provisioning state rather than an area outage. Restore/complete gateway activation and WAN availability before further sensor-specific investigation.\", \"missing_information\": [\"Whether the customer completed the replacement-gateway activation step.\", \"Why DEV-004 has no WAN connection, WAN IP, or DNS reachability while locally reachable.\", \"Whether DEV-005 remains paired to DEV-004 after the gateway replacement.\", \"Sensor-specific diagnostics are unavailable because the diagnostics tool does not support sensor targets.\"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"ACC-003\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-003 is current, but service activation is pending and provisioning status is awaiting_gateway_activation.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-005\", \"tool_name\": \"get_device_status\"}], \"statement\": \"DEV-005 (Gamma Window Sensor) is offline, with connection_state gateway_unavailable and local_connectivity false.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-004\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-004\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"DEV-004 (Gamma Replacement Gateway) is online and locally reachable, but its connection state is activation_pending; WAN connection, WAN IP, and DNS reachability are all false.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-004\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"Ticket history records replacement-gateway delivery confirmation with outcome Awaiting customer activation.\"}, {\"evidence_references\": [{\"source_id\": \"CUS-003\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"No active service outage was found for District Solstice.\"}, {\"evidence_references\": [{\"source_id\": \"KB-001\", \"tool_name\": \"search_knowledge_base\"}, {\"source_id\": \"KB-006\", \"tool_name\": \"search_knowledge_base\"}], \"statement\": \"Knowledge-base guidance states that a paired gateway pending activation should be restored before troubleshooting an offline sensor.\"}], \"ticket_summary\": \"Gamma Window Sensor (DEV-005) is offline after replacement-gateway delivery; the replacement gateway is locally reachable but remains pending activation and lacks WAN connectivity.\"}, \"previous_candidate_draft\": {\"asserted_claim_ids\": [], \"confidence\": 0.96, \"customer_response\": \"Your replacement gateway is still awaiting activation, which is preventing the window sensor from connecting. Please complete the gateway activation steps, then allow the gateway to establish its internet connection. Once activation is complete, the sensor should reconnect; if it does not, contact us so we can help reconnect it.\", \"escalate\": false, \"evidence_references\": [{\"source_id\": \"ACC-003\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-004\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-004\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"TKT-004\", \"tool_name\": \"get_ticket_history\"}, {\"source_id\": \"DEV-005\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"CUS-003\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"KB-001\", \"tool_name\": \"search_knowledge_base\"}, {\"source_id\": \"KB-006\", \"tool_name\": \"search_knowledge_base\"}], \"internal_notes\": \"ACC-003 is current but awaiting_gateway_activation. DEV-004 is locally reachable with activation_pending and no WAN connection, WAN IP, or DNS reachability. DEV-005 reports gateway_unavailable. Ticket history shows replacement delivery with outcome Awaiting customer activation. No District Solstice outage is active. Complete gateway activation/WAN restoration before sensor-specific troubleshooting.\", \"recommended_action_id\": \"guide_gateway_activation\", \"root_cause_id\": \"pending_gateway_provisioning\"}, \"ticket\": \"Ticket:\\nSample Household Gamma's window sensor is offline following the gateway replacement.\\n\\nCustomer ID: CUS-003\\nPrimary device ID: DEV-005\", \"verification\": {\"approved\": false, \"feedback\": \"Keep root_cause_id pending_gateway_provisioning and recommended_action_id guide_gateway_activation. Rephrase causally certain language to state that the gateway is awaiting activation and should be activated before sensor troubleshooting. Say the sensor can be checked/reconnected if it remains offline after activation, rather than saying it should reconnect. Lower confidence to reflect unresolved WAN and pairing details.\", \"issues\": [{\"category\": \"unsupported_conclusion\", \"detail\": \"The customer response states that pending activation is definitively preventing the sensor from connecting. Evidence supports pending gateway activation as the responsible problem class and next action, but does not prove the specific causal mechanism or that the sensor will reconnect afterward; pairing status remains unknown.\"}, {\"category\": \"internal_inconsistency\", \"detail\": \"Confidence of 0.96 is too high relative to the documented missing information, including whether activation was completed, why WAN remains unavailable, and whether the sensor remains paired after gateway replacement.\"}]}}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "asserted_claim_ids": [],
+    "confidence": 0.78,
+    "customer_response": "Your replacement gateway is currently awaiting activation. Please complete the gateway activation steps and allow it to establish its internet connection before troubleshooting the window sensor. After the gateway is activated, check whether the sensor is back online. If it remains offline, contact us for help checking or reconnecting the sensor.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "ACC-003",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-004",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-004",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "DEV-005",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "TKT-004",
+        "tool_name": "get_ticket_history"
+      },
+      {
+        "source_id": "CUS-003",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "KB-001",
+        "tool_name": "search_knowledge_base"
+      },
+      {
+        "source_id": "KB-006",
+        "tool_name": "search_knowledge_base"
+      }
+    ],
+    "internal_notes": "ACC-003 shows awaiting_gateway_activation, and DEV-004 is locally reachable but activation_pending with no WAN connection, WAN IP, or DNS reachability. DEV-005 is offline with gateway_unavailable. Ticket history records replacement-gateway delivery with outcome Awaiting customer activation. No active District Solstice outage is recorded. KB guidance supports restoring a paired gateway pending activation before sensor troubleshooting. Do not state activation is proven to be the direct cause of the sensor state or that the sensor will automatically reconnect: WAN failure cause and post-replacement sensor pairing remain unconfirmed.",
+    "recommended_action_id": "guide_gateway_activation",
+    "root_cause_id": "pending_gateway_provisioning"
+  },
+  "prompt_id": "resolver-revision-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase5a-001",
+  "runtime_metrics": {
+    "latency_ms": 3673.190900008194,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 2336,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 1987,
+    "output_tokens": 349,
+    "reasoning_tokens": 0,
+    "total_tokens": 2336
+  }
+}

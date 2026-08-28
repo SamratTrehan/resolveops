@@ -1,0 +1,81 @@
+{
+  "agent_name": "ResolveOps Resolver",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 3316.7559999856167,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 1749,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 1448,
+        "output_tokens": 301,
+        "reasoning_tokens": 0,
+        "total_tokens": 1749
+      }
+    }
+  ],
+  "case_id": "CASE-007",
+  "error": null,
+  "input_summary": "{\"evidence_bundle\": {\"case_id\": \"CASE-007\", \"contradictions\": [], \"evidence_references\": [{\"source_id\": \"ACC-006\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-010\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-010\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"CUS-006\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-007\", \"tool_name\": \"get_ticket_history\"}, {\"source_id\": \"KB-007\", \"tool_name\": \"search_knowledge_base\"}], \"hypotheses\": [{\"label\": \"No observable current connectivity impact\", \"rationale\": \"Current gateway status and diagnostics are healthy, service activation remains active, and no area outage is active.\"}, {\"label\": \"Portal reminder may concern account standing\", \"rationale\": \"The account is marked past_due and the prior reminder inquiry was categorized as an account issue; the returned evidence does not explicitly identify the reminder's wording or cause.\"}], \"investigation_summary\": \"Available evidence separates an account-standing condition (`past_due`) from current service and gateway operation: activation is active and DEV-010 has successful local, WAN, and DNS connectivity checks. The reminder's specific meaning and any future service-access effect are not established by the returned evidence.\", \"missing_information\": [\"Exact text, type, and effective date of the portal service reminder.\", \"Whether the household is experiencing a specific current connectivity symptom despite the healthy gateway diagnostics.\", \"Status and relevance of the second registered device, DEV-011, if the reported symptom is on that device.\"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"ACC-006\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-006 has standing `past_due`, while service activation is `active` and provisioning is `complete`.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-010\", \"tool_name\": \"get_device_status\"}], \"statement\": \"DEV-010 is online and connected; its reported local connectivity, gateway reachability, WAN connection, WAN IP availability, and DNS reachability are all positive, with good signal health.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-010\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"Deterministic connectivity diagnostics for DEV-010 confirmed gateway reachability, local connectivity, WAN connectivity and IP availability, DNS reachability, and good signal health.\"}, {\"evidence_references\": [{\"source_id\": \"CUS-006\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"No active service outage was found for District Solstice.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-007\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"Prior ticket TKT-007 concerned a service reminder on the account and was categorized as an account issue.\"}, {\"evidence_references\": [{\"source_id\": \"KB-007\", \"tool_name\": \"search_knowledge_base\"}], \"statement\": \"The knowledge-base guidance says to keep account observations separate from device diagnostics and not infer a device fault from account status alone.\"}], \"ticket_summary\": \"Assess whether the account-portal service reminder is associated with current connectivity for CUS-006 / DEV-010.\"}, \"ticket\": \"Ticket:\\nSample Household Zeta asks whether a service reminder in the account portal affects current connectivity.\\n\\nCustomer ID: CUS-006\\nPrimary device ID: DEV-010\"}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "asserted_claim_ids": [],
+    "confidence": 0.86,
+    "customer_response": "Your current service appears active, and the primary gateway is online with healthy local, internet, and DNS connectivity. We also found no active outage in your area. The portal reminder appears to be related to account standing rather than a current connectivity interruption; please review the reminder details and account status for any required next steps. If you are seeing a specific connection problem, let us know which device is affected and what happens.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "ACC-006",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "DEV-010",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-010",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "CUS-006",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "TKT-007",
+        "tool_name": "get_ticket_history"
+      },
+      {
+        "source_id": "KB-007",
+        "tool_name": "search_knowledge_base"
+      }
+    ],
+    "internal_notes": "ACC-006 is past_due, but activation is active and provisioning complete. DEV-010 diagnostics are fully healthy; no District Solstice outage is active. Prior reminder ticket was categorized as an account issue. Reminder wording, effective date, and any prospective service impact were not returned, so do not assert that it has caused or will cause service suspension.",
+    "recommended_action_id": "review_account_notice",
+    "root_cause_id": "account_standing_question"
+  },
+  "prompt_id": "resolver-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase5a-001",
+  "runtime_metrics": {
+    "latency_ms": 3316.7559999856167,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 1749,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 1448,
+    "output_tokens": 301,
+    "reasoning_tokens": 0,
+    "total_tokens": 1749
+  }
+}

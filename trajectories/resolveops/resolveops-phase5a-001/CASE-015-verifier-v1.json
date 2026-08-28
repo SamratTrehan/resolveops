@@ -1,0 +1,51 @@
+{
+  "agent_name": "ResolveOps Verifier",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 3474.5691000134684,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 1800,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 1652,
+        "output_tokens": 148,
+        "reasoning_tokens": 86,
+        "total_tokens": 1800
+      }
+    }
+  ],
+  "case_id": "CASE-015",
+  "error": null,
+  "input_summary": "{\"candidate_draft\": {\"asserted_claim_ids\": [], \"confidence\": 0.95, \"customer_response\": \"Your new gateway appears to be connected locally, but its activation has not yet completed, so it has not been given an internet connection. We do not currently see an outage affecting District Solstice. Please complete the replacement-gateway activation step for your account, then allow the gateway to finish connecting and retest your service. If activation does not complete, let us know what happens or any error shown so we can investigate further.\", \"escalate\": false, \"evidence_references\": [{\"source_id\": \"ACC-003\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-004\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-004\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"CUS-003\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-004\", \"tool_name\": \"get_ticket_history\"}, {\"source_id\": \"KB-001\", \"tool_name\": \"search_knowledge_base\"}], \"internal_notes\": \"ACC-003 is current but marked awaiting_gateway_activation. DEV-004 is reachable with healthy local signal and activation_pending, but has no WAN connection, WAN IP, or DNS reachability. No active District Solstice outage is reported. Ticket history confirms replacement delivery and Awaiting customer activation. Route to gateway activation guidance; no escalation currently required.\", \"recommended_action_id\": \"guide_gateway_activation\", \"root_cause_id\": \"pending_gateway_provisioning\"}, \"evidence_bundle\": {\"case_id\": \"CASE-015\", \"contradictions\": [\"The neighbour-reported outage is not corroborated by the active outage lookup for District Solstice.\", \"The gateway is online and locally reachable, but it has not obtained WAN connectivity, an IP address, or DNS reachability.\"], \"evidence_references\": [{\"source_id\": \"CUS-003\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"ACC-003\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-004\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-004\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"CUS-003\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-004\", \"tool_name\": \"get_ticket_history\"}, {\"source_id\": \"KB-001\", \"tool_name\": \"search_knowledge_base\"}], \"hypotheses\": [{\"label\": \"Incomplete replacement-gateway activation/provisioning\", \"rationale\": \"The account and gateway both show pending activation, while the gateway is locally healthy and reachable but lacks WAN service.\"}, {\"label\": \"Area outage is not the primary explanation\", \"rationale\": \"The outage lookup returned no active outage for District Solstice; the observed state aligns more directly with activation pending.\"}], \"investigation_summary\": \"Available evidence indicates a pending replacement-gateway activation/provisioning state rather than a currently active area outage. DEV-004 has healthy local reachability but no WAN service.\", \"missing_information\": [\"Whether the required customer activation step was attempted and its result.\", \"Whether any activation workflow or provisioning error was recorded outside the available account and ticket-history data.\", \"The timing and scope of the neighbour's reported outage relative to the current outage lookup.\", \"Status and relevance of the second registered device, DEV-005.\"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"ACC-003\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-003 is current but service activation is pending, with provisioning status `awaiting_gateway_activation`.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-004\", \"tool_name\": \"get_device_status\"}], \"statement\": \"DEV-004 is a registered gateway that is online, locally connected, reachable, and has good signal health, but its connection state is `activation_pending`.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-004\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-004\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"DEV-004 has no WAN connection, WAN IP address, or DNS reachability.\"}, {\"evidence_references\": [{\"source_id\": \"CUS-003\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"No active outage was found for the customer's service area, District Solstice.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-004\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"Ticket history records replacement-gateway delivery confirmation with outcome `Awaiting customer activation`.\"}, {\"evidence_references\": [{\"source_id\": \"KB-001\", \"tool_name\": \"search_knowledge_base\"}], \"statement\": \"The knowledge base identifies activation of a replacement gateway as requiring confirmation of account provisioning status and completion of the activation step.\"}], \"ticket_summary\": \"CUS-003 reports that gateway DEV-004 has never completed internet setup; a neighbour suggested an outage.\"}, \"ticket\": \"Ticket:\\nSample Household Gamma says a neighbour mentioned an outage, but this household's newly delivered gateway has never reached internet setup.\\n\\nCustomer ID: CUS-003\\nPrimary device ID: DEV-004\"}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "approved": true,
+    "feedback": "Diagnosis, customer guidance, confidence, and non-escalation are supported by the pending account/gateway activation state, local gateway health with absent WAN service, ticket history, and the no-outage lookup.",
+    "issues": []
+  },
+  "prompt_id": "verifier-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase5a-001",
+  "runtime_metrics": {
+    "latency_ms": 3474.5691000134684,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 1800,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 1652,
+    "output_tokens": 148,
+    "reasoning_tokens": 86,
+    "total_tokens": 1800
+  }
+}

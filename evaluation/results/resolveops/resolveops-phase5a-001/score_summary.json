@@ -1,0 +1,18 @@
+{
+  "action_accuracy": 93.33333333333333,
+  "diagnosis_accuracy": 93.33333333333333,
+  "escalation_accuracy": 93.33333333333333,
+  "evidence_coverage": 100.0,
+  "forbidden_claim_violation_count": 0,
+  "forbidden_claim_violation_rate": 0.0,
+  "passed_cases": 14,
+  "runtime_summary": {
+    "average_latency_ms": 23815.481660002843,
+    "total_model_cost_usd": null,
+    "total_retries": 0,
+    "total_token_usage": 151432,
+    "total_tool_call_count": 96
+  },
+  "total_cases": 15,
+  "vrsr_percent": 93.33333333333333
+}

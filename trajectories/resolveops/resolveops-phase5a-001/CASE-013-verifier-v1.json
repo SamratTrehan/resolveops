@@ -1,0 +1,51 @@
+{
+  "agent_name": "ResolveOps Verifier",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 3686.384200002067,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 1879,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 1684,
+        "output_tokens": 195,
+        "reasoning_tokens": 114,
+        "total_tokens": 1879
+      }
+    }
+  ],
+  "case_id": "CASE-013",
+  "error": null,
+  "input_summary": "{\"candidate_draft\": {\"asserted_claim_ids\": [], \"confidence\": 0.9, \"customer_response\": \"We checked your primary gateway and it is currently online with healthy local, internet, and DNS connectivity. There is also no active outage in your area. Your account is past due, but the service is still active and fully provisioned. To investigate the reported no-internet issue further, please tell us which device(s) are affected, whether they are using Wi-Fi or Ethernet, the exact error you see, and when the problem occurs.\", \"escalate\": true, \"evidence_references\": [{\"source_id\": \"ACC-006\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-010\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-010\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"CUS-006\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-007\", \"tool_name\": \"get_ticket_history\"}], \"internal_notes\": \"No regional outage or primary-gateway/WAN/DNS fault is supported: DEV-010 is healthy and diagnostics pass. Account is past due but activation remains active and provisioning complete; prior ticket involved a service reminder. Device-specific or local-network issue remains possible but is unverified, including DEV-011. Escalate/request affected-device scope, connection method, error state, onset/intermittency, and device-level test results.\", \"recommended_action_id\": \"escalate_for_more_evidence\", \"root_cause_id\": \"INSUFFICIENT_EVIDENCE\"}, \"evidence_bundle\": {\"case_id\": \"CASE-013\", \"contradictions\": [\"The reported 'no internet' symptom conflicts with the current healthy connectivity status and diagnostic results for primary gateway DEV-010.\", \"The account is past due, but service activation remains active and provisioning is complete.\"], \"evidence_references\": [{\"source_id\": \"ACC-006\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-010\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-010\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"CUS-006\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-007\", \"tool_name\": \"get_ticket_history\"}], \"hypotheses\": [{\"label\": \"Reported loss of internet is not corroborated at the primary gateway at the time of investigation.\", \"rationale\": \"DEV-010 status and diagnostics show healthy local, WAN, and DNS connectivity; no area outage is active.\"}, {\"label\": \"The service reminder may be associated with account standing rather than an observed current service deactivation.\", \"rationale\": \"The account is past due, but its activation is active and provisioning is complete. The prior ticket also concerned a service reminder.\"}, {\"label\": \"A device-specific or local-network issue remains possible but unverified.\", \"rationale\": \"No affected-device details were supplied, and DEV-011 has not been evaluated.\"}], \"investigation_summary\": \"Current evidence does not show an outage or an upstream connectivity failure on DEV-010. The account has a past-due standing but remains active; the reported reminder has prior ticket history. Device-specific scope and symptom details are required to investigate the reported impact further.\", \"missing_information\": [\"Which device or devices are affected, including whether DEV-011 is affected.\", \"Whether affected devices can connect to Wi-Fi or Ethernet, and the exact observed error or failure mode.\", \"When the issue began and whether it is continuous or intermittent.\", \"Any device-level network test results during the reported failure.\"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"ACC-006\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-006 is past due, while service activation is active and provisioning is complete for the Home Fiber 300 plan.\"}, {\"evidence_references\": [{\"source_id\": \"ACC-006\", \"tool_name\": \"get_account_status\"}], \"statement\": \"The account has two registered devices: DEV-010 and DEV-011.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-010\", \"tool_name\": \"get_device_status\"}], \"statement\": \"Primary gateway DEV-010 is online and connected, with local connectivity, gateway reachability, WAN connectivity, a WAN IP, DNS reachability, and good signal health.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-010\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"Connectivity diagnostics for DEV-010 confirmed gateway reachability, local connectivity, WAN connectivity and IP availability, DNS reachability, and good signal health.\"}, {\"evidence_references\": [{\"source_id\": \"CUS-006\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"No active service outage was found for District Solstice.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-007\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"Prior ticket TKT-007 concerned a service reminder and resulted in an account-access article.\"}], \"ticket_summary\": \"CUS-006 reports no internet and references a service reminder; no affected-device details were provided. Primary gateway DEV-010 was investigated.\"}, \"ticket\": \"Ticket:\\nSample Household Zeta reports no internet despite a service reminder, but gives no affected-device details.\\n\\nCustomer ID: CUS-006\\nPrimary device ID: DEV-010\"}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "approved": true,
+    "feedback": "The draft appropriately classifies the case as INSUFFICIENT_EVIDENCE and escalates for affected-device and symptom details. Its statements about gateway health, outage status, account activation/provisioning, and the remaining unverified local/device-specific scope are supported by the cited evidence and are internally consistent.",
+    "issues": []
+  },
+  "prompt_id": "verifier-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase5a-001",
+  "runtime_metrics": {
+    "latency_ms": 3686.384200002067,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 1879,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 1684,
+    "output_tokens": 195,
+    "reasoning_tokens": 114,
+    "total_tokens": 1879
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "agent_name": "ResolveOps Verifier",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "error": null,
+      "runtime_metrics": {
+        "latency_ms": 4268.191100039985,
+        "model_cost_usd": null,
+        "retries": null,
+        "token_usage": 1873,
+        "tool_call_count": 0
+      },
+      "status": "completed",
+      "tool_calls": [],
+      "usage": {
+        "input_tokens": 1590,
+        "output_tokens": 283,
+        "reasoning_tokens": 207,
+        "total_tokens": 1873
+      }
+    }
+  ],
+  "case_id": "CASE-011",
+  "error": null,
+  "input_summary": "{\"candidate_draft\": {\"asserted_claim_ids\": [], \"confidence\": 0.94, \"customer_response\": \"Your service and primary gateway are currently working normally, and there is no active outage reported in your area. Because the brief evening drops were not occurring during our checks, we cannot yet identify their cause. Please note the date, time, duration, affected device(s), and whether the gateway lights change if this happens again, then contact us so we can investigate during or against the event.\", \"escalate\": true, \"evidence_references\": [{\"source_id\": \"ACC-001\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-001\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-001\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"CUS-001\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-001\", \"tool_name\": \"get_ticket_history\"}], \"internal_notes\": \"Current account provisioning and DEV-001 status/diagnostics are healthy; no active District Aurora outage. The reported intermittent evening issue was not reproduced or localized. DEV-002 has no collected status/diagnostics, and event timing, scope, and event-time indicators are missing. Escalate for additional evidence if recurrence is reported.\", \"recommended_action_id\": \"escalate_for_more_evidence\", \"root_cause_id\": \"INSUFFICIENT_EVIDENCE\"}, \"evidence_bundle\": {\"case_id\": \"CASE-011\", \"contradictions\": [\"Reported brief evening drops are not reflected in the current healthy DEV-001 status/diagnostics or in the absence of an active area outage; these observations are time-limited and do not disprove a prior intermittent event.\"], \"evidence_references\": [{\"source_id\": \"CUS-001\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"ACC-001\", \"tool_name\": \"get_account_status\"}, {\"source_id\": \"DEV-001\", \"tool_name\": \"get_device_status\"}, {\"source_id\": \"DEV-001\", \"tool_name\": \"run_connectivity_diagnostics\"}, {\"source_id\": \"CUS-001\", \"tool_name\": \"check_service_outages\"}, {\"source_id\": \"TKT-001\", \"tool_name\": \"get_ticket_history\"}], \"hypotheses\": [{\"label\": \"Intermittent condition not present at investigation time\", \"rationale\": \"The reported brief evening drops are not reproduced by the current DEV-001 status or diagnostics, which only establish present-state health.\"}, {\"label\": \"Scope cannot be determined\", \"rationale\": \"A second registered device exists, but no affected-device information was captured and no status was obtained for DEV-002.\"}], \"investigation_summary\": \"Current account provisioning, primary-gateway state, and deterministic diagnostics are healthy, with no active District Aurora outage. Available evidence neither reproduces nor localizes the reported intermittent evening drops.\", \"missing_information\": [\"Exact dates, times, duration, and frequency of the evening drops.\", \"Which device(s) and connection type(s) were affected, including whether DEV-002 was involved.\", \"Whether the gateway status indicators changed during an event.\", \"Any event-time diagnostics, logs, or outage correlation.\", \"Status and connectivity diagnostics for DEV-002.\"], \"observed_facts\": [{\"evidence_references\": [{\"source_id\": \"ACC-001\", \"tool_name\": \"get_account_status\"}], \"statement\": \"Account ACC-001 is current, active, and completely provisioned on Home Fiber 500.\"}, {\"evidence_references\": [{\"source_id\": \"ACC-001\", \"tool_name\": \"get_account_status\"}], \"statement\": \"The account has two registered devices: DEV-001 and DEV-002.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-001\", \"tool_name\": \"get_device_status\"}], \"statement\": \"Primary gateway DEV-001 is currently online and connected; WAN, DNS, local connectivity, and gateway reachability are available, with good signal health.\"}, {\"evidence_references\": [{\"source_id\": \"DEV-001\", \"tool_name\": \"run_connectivity_diagnostics\"}], \"statement\": \"Current connectivity diagnostics for DEV-001 pass for gateway reachability, WAN, WAN IP, DNS, local connectivity, and signal health.\"}, {\"evidence_references\": [{\"source_id\": \"CUS-001\", \"tool_name\": \"check_service_outages\"}], \"statement\": \"No active outage was found for District Aurora.\"}, {\"evidence_references\": [{\"source_id\": \"TKT-001\", \"tool_name\": \"get_ticket_history\"}], \"statement\": \"The only recorded prior ticket was a billing inquiry and contains no prior connectivity issue.\"}], \"ticket_summary\": \"Sample Household Alpha reports brief evening service drops; service is currently working. No event times or affected devices were captured.\"}, \"ticket\": \"Ticket:\\nSample Household Alpha reports brief evening drops, but service is currently working and no exact times or affected devices were captured.\\n\\nCustomer ID: CUS-001\\nPrimary device ID: DEV-001\"}",
+  "model": "gpt-5.6-terra",
+  "output": {
+    "approved": true,
+    "feedback": "The insufficient-evidence diagnosis and escalation action are supported. The response appropriately limits current healthy observations to the investigation time, does not infer a physical cause, and requests the key missing event details. Evidence references support the account, gateway, diagnostics, outage, and ticket-history claims.",
+    "issues": []
+  },
+  "prompt_id": "verifier-v1",
+  "reasoning_effort": "medium",
+  "run_id": "resolveops-phase5a-001",
+  "runtime_metrics": {
+    "latency_ms": 4268.191100039985,
+    "model_cost_usd": null,
+    "retries": 0,
+    "token_usage": 1873,
+    "tool_call_count": 0
+  },
+  "status": "completed",
+  "tool_calls": [],
+  "usage": {
+    "input_tokens": 1590,
+    "output_tokens": 283,
+    "reasoning_tokens": 207,
+    "total_tokens": 1873
+  }
+}

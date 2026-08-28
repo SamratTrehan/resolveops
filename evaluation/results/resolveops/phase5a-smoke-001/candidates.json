@@ -1,0 +1,34 @@
+{
+  "CASE-001": {
+    "asserted_claim_ids": [],
+    "case_id": "CASE-001",
+    "confidence": 0.78,
+    "customer_response": "An active upstream service interruption is reported in the District Meridian area and is likely responsible for the WAN connection loss affecting your internet service. Your gateway remains reachable locally, but it currently has no WAN connection or WAN IP. Your account is active and fully provisioned. We will continue monitoring the area interruption; no restoration estimate is currently available.",
+    "escalate": false,
+    "evidence_references": [
+      {
+        "source_id": "OUT-001",
+        "tool_name": "check_service_outages"
+      },
+      {
+        "source_id": "DEV-003",
+        "tool_name": "get_device_status"
+      },
+      {
+        "source_id": "DEV-003",
+        "tool_name": "run_connectivity_diagnostics"
+      },
+      {
+        "source_id": "ACC-002",
+        "tool_name": "get_account_status"
+      },
+      {
+        "source_id": "TKT-003",
+        "tool_name": "get_ticket_history"
+      }
+    ],
+    "internal_notes": "Regional outage is the supported likely cause, not a confirmed connection-specific cause. OUT-001 records an active District Meridian upstream interruption beginning 2026-08-28T08:15:00Z; the no-internet ticket was created at 08:20:00Z. DEV-003 is locally reachable with good signal health but has disconnected WAN, no WAN IP, and unreachable DNS. ACC-002 is active and fully provisioned. Access-link telemetry is unavailable, so an individual access-link fault cannot be excluded. No restoration estimate is present in the bundle.",
+    "recommended_action_id": "communicate_outage_status",
+    "root_cause_id": "regional_outage"
+  }
+}
