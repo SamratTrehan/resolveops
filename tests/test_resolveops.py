@@ -15,7 +15,7 @@ from resolveops.agents.resolveops.runner import run_case
 from resolveops.agents.resolveops.runner import _metrics
 from resolveops.agents.resolveops.records import AgentAttempt
 from resolveops.evaluation.models import RuntimeMetrics
-from resolveops.agents.resolveops.schemas import EvidenceBundle, EvidenceBundleDraft, Hypothesis, ObservedFact
+from resolveops.agents.resolveops.schemas import EvidenceBundle, EvidenceBundleDraft, Hypothesis, ObservedFact, VerificationDecision
 from resolveops.evaluation.models import CandidateDraft, EvidenceReference
 from resolveops.evaluation.score_resolveops_results import score_saved_run
 from resolveops.agents.resolveops.artifacts import ResolveOpsArtifactStore, ResolveOpsManifest
@@ -48,13 +48,15 @@ def test_evidence_bundle_rejects_malformed_case_and_handoff_preserves_case_id() 
 
     def fake_run(agent: object, user_input: str, **kwargs: object) -> object:
         calls.append(agent.name)
-        return SimpleNamespace(final_output=_bundle() if agent.name == "ResolveOps Investigator" else _draft(), context_wrapper=None)
+        output = _bundle() if agent.name == "ResolveOps Investigator" else VerificationDecision(approved=True, feedback="Approved.") if agent.name == "ResolveOps Verifier" else _draft()
+        return SimpleNamespace(final_output=output, context_wrapper=None)
 
-    candidate, investigator, resolver = run_case(select_case("CASE-001"), BaselineConfig(), "phase4-test", fake_run)
+    candidate, stages = run_case(select_case("CASE-001"), BaselineConfig(), "phase4-test", fake_run)
+    investigator, resolver = stages[:2]
     assert candidate and candidate.case_id == "CASE-001"
-    assert calls == ["ResolveOps Investigator", "ResolveOps Resolver"]
+    assert calls == ["ResolveOps Investigator", "ResolveOps Resolver", "ResolveOps Verifier"]
     assert investigator.prompt_id == "investigator-v1"
-    assert resolver and resolver.prompt_id == "resolver-v1"
+    assert resolver.prompt_id == "resolver-v1"
     assert investigator.runtime_metrics.latency_ms is not None and resolver.runtime_metrics.latency_ms is not None
     assert '"case_id": "CASE-001"' in resolver.input_summary
 
@@ -66,8 +68,9 @@ def test_investigator_malformed_json_retries_once_and_prevents_resolver() -> Non
         calls.append(agent.name)
         raise ModelBehaviorError("Invalid JSON when parsing model output")
 
-    candidate, investigator, resolver = run_case(select_case("CASE-001"), BaselineConfig(), "phase4-retry", fake_run)
-    assert candidate is None and resolver is None
+    candidate, stages = run_case(select_case("CASE-001"), BaselineConfig(), "phase4-retry", fake_run)
+    investigator = stages[0]
+    assert candidate is None and len(stages) == 1
     assert calls == ["ResolveOps Investigator", "ResolveOps Investigator"]
     assert len(investigator.attempts) == 2 and investigator.runtime_metrics.retries == 1
 

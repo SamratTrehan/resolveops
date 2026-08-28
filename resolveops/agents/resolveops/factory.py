@@ -5,13 +5,14 @@ from openai.types.shared import Reasoning
 
 from resolveops.agents.baseline.config import BaselineConfig
 from resolveops.agents.baseline.tools import BASELINE_TOOLS, BaselineRunContext
-from resolveops.agents.resolveops.prompts import INVESTIGATOR_INSTRUCTIONS, RESOLVER_INSTRUCTIONS
-from resolveops.agents.resolveops.schemas import EvidenceBundleDraft
+from resolveops.agents.resolveops.prompts import INVESTIGATOR_INSTRUCTIONS, RESOLVER_INSTRUCTIONS, RESOLVER_REVISION_INSTRUCTIONS, VERIFIER_INSTRUCTIONS
+from resolveops.agents.resolveops.schemas import EvidenceBundleDraft, VerificationDecision
 from resolveops.evaluation.models import CandidateDraft
 
 
 INVESTIGATOR_NAME = "ResolveOps Investigator"
 RESOLVER_NAME = "ResolveOps Resolver"
+VERIFIER_NAME = "ResolveOps Verifier"
 
 
 def _settings(config: BaselineConfig) -> ModelSettings:
@@ -24,3 +25,11 @@ def create_investigator(config: BaselineConfig) -> Agent[BaselineRunContext]:
 
 def create_resolver(config: BaselineConfig) -> Agent[None]:
     return Agent(name=RESOLVER_NAME, instructions=RESOLVER_INSTRUCTIONS, model=config.model, model_settings=_settings(config), tools=[], output_type=CandidateDraft)
+
+
+def create_resolver_revision(config: BaselineConfig) -> Agent[None]:
+    return Agent(name=RESOLVER_NAME, instructions=RESOLVER_REVISION_INSTRUCTIONS, model=config.model, model_settings=_settings(config), tools=[], output_type=CandidateDraft)
+
+
+def create_verifier(config: BaselineConfig) -> Agent[None]:
+    return Agent(name=VERIFIER_NAME, instructions=VERIFIER_INSTRUCTIONS, model=config.model, model_settings=_settings(config), tools=[], output_type=VerificationDecision)

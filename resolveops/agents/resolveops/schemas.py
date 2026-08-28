@@ -1,5 +1,7 @@
 """Public structured handoff contracts for ResolveOps agents."""
 
+from enum import StrEnum
+
 from pydantic import BaseModel, ConfigDict, Field
 
 from resolveops.evaluation.models import EvidenceReference
@@ -28,3 +30,22 @@ class EvidenceBundleDraft(BaseModel):
 
 class EvidenceBundle(EvidenceBundleDraft):
     case_id: str = Field(pattern=r"^CASE-\d{3}$")
+
+
+class VerificationIssueCategory(StrEnum):
+    UNSUPPORTED_CONCLUSION = "unsupported_conclusion"
+    UNNECESSARY_ABSTENTION = "unnecessary_abstention"
+    INSUFFICIENT_ABSTENTION = "insufficient_abstention"
+    EVIDENCE_INCOMPLETE = "evidence_incomplete"
+    INTERNAL_INCONSISTENCY = "internal_inconsistency"
+
+
+class VerificationIssue(BaseModel):
+    category: VerificationIssueCategory
+    detail: str = Field(min_length=1)
+
+
+class VerificationDecision(BaseModel):
+    approved: bool
+    issues: list[VerificationIssue] = Field(default_factory=list)
+    feedback: str = Field(min_length=1)

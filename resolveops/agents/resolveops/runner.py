@@ -16,10 +16,10 @@ from resolveops.agents.baseline.runner import MAX_INFRASTRUCTURE_RETRIES, _usage
 from resolveops.agents.baseline.tools import BaselineRunContext
 from resolveops.agents.resolveops.artifacts import ResolveOpsArtifactStore, ResolveOpsManifest
 from resolveops.agents.resolveops.evidence import normalize_evidence_bundle, with_authoritative_evidence_case_id
-from resolveops.agents.resolveops.factory import INVESTIGATOR_NAME, RESOLVER_NAME, create_investigator, create_resolver
-from resolveops.agents.resolveops.prompts import INVESTIGATOR_PROMPT_ID, RESOLVER_PROMPT_ID
+from resolveops.agents.resolveops.factory import INVESTIGATOR_NAME, RESOLVER_NAME, VERIFIER_NAME, create_investigator, create_resolver, create_resolver_revision, create_verifier
+from resolveops.agents.resolveops.prompts import INVESTIGATOR_PROMPT_ID, RESOLVER_PROMPT_ID, RESOLVER_REVISION_PROMPT_ID, VERIFIER_PROMPT_ID
 from resolveops.agents.resolveops.records import AgentAttempt, AgentTrajectory
-from resolveops.agents.resolveops.schemas import EvidenceBundle, EvidenceBundleDraft
+from resolveops.agents.resolveops.schemas import EvidenceBundle, EvidenceBundleDraft, VerificationDecision
 from resolveops.evaluation.benchmark import load_cases
 from resolveops.evaluation.candidate import with_authoritative_case_id
 from resolveops.evaluation.models import CandidateDraft, CandidateOutput, EvaluationCase, ExecutionFailure, RuntimeMetrics
@@ -69,24 +69,49 @@ def _validate_bundle(bundle: EvidenceBundle, calls: list[Any]) -> None:
         raise ValueError("EvidenceBundle contains a reference not returned by an investigator tool.")
 
 
-def run_case(case: EvaluationCase, config: BaselineConfig, run_id: str, run_sync: Callable[..., Any] = Runner.run_sync) -> tuple[CandidateOutput | None, AgentTrajectory, AgentTrajectory | None]:
+def _validate_candidate_references(draft: CandidateDraft, bundle: EvidenceBundle) -> None:
+    available = {(item.tool_name, item.source_id) for fact in bundle.observed_facts for item in fact.evidence_references} | {(item.tool_name, item.source_id) for item in bundle.evidence_references}
+    if any((item.tool_name, item.source_id) not in available for item in draft.evidence_references):
+        raise ValueError("CandidateDraft contains a reference not present in the EvidenceBundle.")
+
+
+def run_case(case: EvaluationCase, config: BaselineConfig, run_id: str, run_sync: Callable[..., Any] = Runner.run_sync) -> tuple[CandidateOutput | None, list[AgentTrajectory]]:
     investigator_input = _input(case)
     bundle, investigator = _run_agent(case, config, run_id, INVESTIGATOR_NAME, INVESTIGATOR_PROMPT_ID, create_investigator, investigator_input, True, run_sync)
     if bundle is None:
-        return None, investigator, None
+        return None, [investigator]
     bundle = normalize_evidence_bundle(with_authoritative_evidence_case_id(case, EvidenceBundleDraft.model_validate(bundle)))
     try:
         _validate_bundle(bundle, investigator.tool_calls)
     except ValueError as error:
         investigator.status = "failed"
         investigator.error = f"ValueError: {error}"
-        return None, investigator, None
+        return None, [investigator]
     investigator.output = bundle.model_dump(mode="json")
     resolver_input = json.dumps({"ticket": _input(case), "evidence_bundle": bundle.model_dump(mode="json")}, sort_keys=True)
     draft, resolver = _run_agent(case, config, run_id, RESOLVER_NAME, RESOLVER_PROMPT_ID, create_resolver, resolver_input, False, run_sync)
     if draft is None:
-        return None, investigator, resolver
-    return with_authoritative_case_id(case, CandidateDraft.model_validate(draft)), investigator, resolver
+        return None, [investigator, resolver]
+    draft = CandidateDraft.model_validate(draft)
+    verifier_input = json.dumps({"ticket": _input(case), "evidence_bundle": bundle.model_dump(mode="json"), "candidate_draft": draft.model_dump(mode="json")}, sort_keys=True)
+    decision, verifier = _run_agent(case, config, run_id, VERIFIER_NAME, VERIFIER_PROMPT_ID, create_verifier, verifier_input, False, run_sync)
+    if decision is None:
+        return None, [investigator, resolver, verifier]
+    decision = VerificationDecision.model_validate(decision)
+    stages = [investigator, resolver, verifier]
+    if not decision.approved:
+        revision_input = json.dumps({"ticket": _input(case), "evidence_bundle": bundle.model_dump(mode="json"), "previous_candidate_draft": draft.model_dump(mode="json"), "verification": decision.model_dump(mode="json")}, sort_keys=True)
+        revised, revision = _run_agent(case, config, run_id, RESOLVER_NAME, RESOLVER_REVISION_PROMPT_ID, create_resolver_revision, revision_input, False, run_sync)
+        stages.append(revision)
+        if revised is None:
+            return None, stages
+        draft = CandidateDraft.model_validate(revised)
+    try:
+        _validate_candidate_references(draft, bundle)
+    except ValueError as error:
+        stages[-1].status = "failed"; stages[-1].error = f"ValueError: {error}"
+        return None, stages
+    return with_authoritative_case_id(case, draft), stages
 
 
 def run_cases(cases: list[EvaluationCase], config: BaselineConfig, run_id: str, all_cases: bool = False) -> None:
@@ -94,14 +119,13 @@ def run_cases(cases: list[EvaluationCase], config: BaselineConfig, run_id: str, 
     store.prepare()
     candidates: dict[str, CandidateOutput] = {}; failures: dict[str, ExecutionFailure] = {}; runtime: dict[str, RuntimeRecord] = {}
     for case in cases:
-        candidate, investigator, resolver = run_case(case, config, run_id)
-        store.write_trajectory(investigator)
-        if resolver: store.write_trajectory(resolver)
-        stage_tokens = [investigator.runtime_metrics.token_usage] + ([resolver.runtime_metrics.token_usage] if resolver else [])
-        metrics = RuntimeMetrics(latency_ms=(investigator.runtime_metrics.latency_ms or 0) + ((resolver.runtime_metrics.latency_ms or 0) if resolver else 0), token_usage=sum(stage_tokens) if all(value is not None for value in stage_tokens) else None, retries=(investigator.runtime_metrics.retries or 0) + ((resolver.runtime_metrics.retries or 0) if resolver else 0), tool_call_count=(investigator.runtime_metrics.tool_call_count or 0) + ((resolver.runtime_metrics.tool_call_count or 0) if resolver else 0))
+        candidate, stages = run_case(case, config, run_id)
+        for stage in stages: store.write_trajectory(stage)
+        stage_tokens = [stage.runtime_metrics.token_usage for stage in stages]
+        metrics = RuntimeMetrics(latency_ms=sum(stage.runtime_metrics.latency_ms or 0 for stage in stages), token_usage=sum(stage_tokens) if all(value is not None for value in stage_tokens) else None, retries=sum(stage.runtime_metrics.retries or 0 for stage in stages), tool_call_count=sum(stage.runtime_metrics.tool_call_count or 0 for stage in stages))
         runtime[case.case_id] = RuntimeRecord(model=config.model, reasoning_effort=config.reasoning_effort, metrics=metrics)
         if candidate is None:
-            failed = resolver or investigator
+            failed = stages[-1]
             failures[case.case_id] = ExecutionFailure(case_id=case.case_id, error_type=(failed.error or "ExecutionFailure").split(":", 1)[0], error_message=failed.error or "No candidate produced", infrastructure_retries=metrics.retries or 0)
             if not all_cases: break
         else: candidates[case.case_id] = candidate
