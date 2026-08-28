@@ -1,6 +1,6 @@
 """Public structured handoff contracts for ResolveOps agents."""
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from resolveops.evaluation.models import EvidenceReference
 
@@ -15,8 +15,8 @@ class Hypothesis(BaseModel):
     rationale: str = Field(min_length=1)
 
 
-class EvidenceBundle(BaseModel):
-    case_id: str = Field(pattern=r"^CASE-\d{3}$")
+class EvidenceBundleDraft(BaseModel):
+    model_config = ConfigDict(extra="forbid")
     ticket_summary: str = Field(min_length=1)
     observed_facts: list[ObservedFact] = Field(default_factory=list)
     evidence_references: list[EvidenceReference] = Field(default_factory=list)
@@ -24,3 +24,7 @@ class EvidenceBundle(BaseModel):
     contradictions: list[str] = Field(default_factory=list)
     missing_information: list[str] = Field(default_factory=list)
     investigation_summary: str = Field(min_length=1)
+
+
+class EvidenceBundle(EvidenceBundleDraft):
+    case_id: str = Field(pattern=r"^CASE-\d{3}$")

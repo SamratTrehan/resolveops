@@ -9,14 +9,15 @@ from agents.exceptions import ModelBehaviorError
 from resolveops.agents.baseline.config import BaselineConfig
 from resolveops.agents.baseline.runner import select_case
 from resolveops.agents.resolveops.factory import create_investigator, create_resolver
+from resolveops.agents.resolveops.evidence import with_authoritative_evidence_case_id
 from resolveops.agents.resolveops.prompts import INVESTIGATOR_INSTRUCTIONS, RESOLVER_INSTRUCTIONS
 from resolveops.agents.resolveops.runner import run_case
-from resolveops.agents.resolveops.schemas import EvidenceBundle, Hypothesis, ObservedFact
+from resolveops.agents.resolveops.schemas import EvidenceBundle, EvidenceBundleDraft, Hypothesis, ObservedFact
 from resolveops.evaluation.models import CandidateDraft, EvidenceReference
 
 
-def _bundle() -> EvidenceBundle:
-    return EvidenceBundle(case_id="CASE-001", ticket_summary="Internet unavailable.", hypotheses=[Hypothesis(label="outage", rationale="Needs evidence.")], investigation_summary="No tool evidence yet.")
+def _bundle() -> EvidenceBundleDraft:
+    return EvidenceBundleDraft(ticket_summary="Internet unavailable.", hypotheses=[Hypothesis(label="outage", rationale="Needs evidence.")], investigation_summary="No tool evidence yet.")
 
 
 def _draft() -> CandidateDraft:
@@ -48,6 +49,7 @@ def test_evidence_bundle_rejects_malformed_case_and_handoff_preserves_case_id() 
     assert investigator.prompt_id == "investigator-v1"
     assert resolver and resolver.prompt_id == "resolver-v1"
     assert investigator.runtime_metrics.latency_ms is not None and resolver.runtime_metrics.latency_ms is not None
+    assert '"case_id": "CASE-001"' in resolver.input_summary
 
 
 def test_investigator_malformed_json_retries_once_and_prevents_resolver() -> None:
@@ -66,3 +68,11 @@ def test_investigator_malformed_json_retries_once_and_prevents_resolver() -> Non
 def test_bundle_structure_supports_facts_with_real_reference_shape() -> None:
     bundle = EvidenceBundle(case_id="CASE-001", ticket_summary="Ticket.", observed_facts=[ObservedFact(statement="Outage observed.", evidence_references=[EvidenceReference(tool_name="check_service_outages", source_id="OUT-001")])], investigation_summary="Outage evidence collected.")
     assert bundle.observed_facts[0].evidence_references[0].source_id == "OUT-001"
+
+
+def test_authoritative_evidence_case_id_is_not_model_controlled() -> None:
+    draft = EvidenceBundleDraft(ticket_summary="Ticket.", investigation_summary="No evidence yet.")
+    bundle = with_authoritative_evidence_case_id(select_case("CASE-001"), draft)
+    assert bundle.case_id == "CASE-001"
+    with pytest.raises(ValueError):
+        EvidenceBundleDraft.model_validate({"case_id": "CASE-002", "ticket_summary": "Ticket.", "investigation_summary": "No evidence yet."})

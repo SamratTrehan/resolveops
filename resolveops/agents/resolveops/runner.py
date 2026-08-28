@@ -15,10 +15,11 @@ from resolveops.agents.baseline.records import RuntimeRecord
 from resolveops.agents.baseline.runner import MAX_INFRASTRUCTURE_RETRIES, _usage_data, select_case
 from resolveops.agents.baseline.tools import BaselineRunContext
 from resolveops.agents.resolveops.artifacts import ResolveOpsArtifactStore, ResolveOpsManifest
+from resolveops.agents.resolveops.evidence import with_authoritative_evidence_case_id
 from resolveops.agents.resolveops.factory import INVESTIGATOR_NAME, RESOLVER_NAME, create_investigator, create_resolver
 from resolveops.agents.resolveops.prompts import INVESTIGATOR_PROMPT_ID, RESOLVER_PROMPT_ID
 from resolveops.agents.resolveops.records import AgentAttempt, AgentTrajectory
-from resolveops.agents.resolveops.schemas import EvidenceBundle
+from resolveops.agents.resolveops.schemas import EvidenceBundle, EvidenceBundleDraft
 from resolveops.evaluation.benchmark import load_cases
 from resolveops.evaluation.candidate import with_authoritative_case_id
 from resolveops.evaluation.models import CandidateDraft, CandidateOutput, EvaluationCase, ExecutionFailure, RuntimeMetrics
@@ -66,13 +67,14 @@ def run_case(case: EvaluationCase, config: BaselineConfig, run_id: str, run_sync
     bundle, investigator = _run_agent(case, config, run_id, INVESTIGATOR_NAME, INVESTIGATOR_PROMPT_ID, create_investigator, investigator_input, True, run_sync)
     if bundle is None:
         return None, investigator, None
-    bundle = EvidenceBundle.model_validate(bundle)
+    bundle = with_authoritative_evidence_case_id(case, EvidenceBundleDraft.model_validate(bundle))
     try:
         _validate_bundle(bundle, investigator.tool_calls)
     except ValueError as error:
         investigator.status = "failed"
         investigator.error = f"ValueError: {error}"
         return None, investigator, None
+    investigator.output = bundle.model_dump(mode="json")
     resolver_input = json.dumps({"ticket": _input(case), "evidence_bundle": bundle.model_dump(mode="json")}, sort_keys=True)
     draft, resolver = _run_agent(case, config, run_id, RESOLVER_NAME, RESOLVER_PROMPT_ID, create_resolver, resolver_input, False, run_sync)
     if draft is None:

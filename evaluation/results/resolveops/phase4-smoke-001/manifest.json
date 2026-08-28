@@ -1,0 +1,14 @@
+{
+  "case_ids": [
+    "CASE-001"
+  ],
+  "execution_failure_count": 0,
+  "investigator_prompt_id": "investigator-v1",
+  "model": "gpt-5.6-terra",
+  "reasoning_effort": "medium",
+  "resolver_prompt_id": "resolver-v1",
+  "run_id": "phase4-smoke-001",
+  "run_kind": "development",
+  "status": "completed",
+  "successful_candidate_count": 1
+}

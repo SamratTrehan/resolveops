@@ -6,7 +6,7 @@ from openai.types.shared import Reasoning
 from resolveops.agents.baseline.config import BaselineConfig
 from resolveops.agents.baseline.tools import BASELINE_TOOLS, BaselineRunContext
 from resolveops.agents.resolveops.prompts import INVESTIGATOR_INSTRUCTIONS, RESOLVER_INSTRUCTIONS
-from resolveops.agents.resolveops.schemas import EvidenceBundle
+from resolveops.agents.resolveops.schemas import EvidenceBundleDraft
 from resolveops.evaluation.models import CandidateDraft
 
 
@@ -19,7 +19,7 @@ def _settings(config: BaselineConfig) -> ModelSettings:
 
 
 def create_investigator(config: BaselineConfig) -> Agent[BaselineRunContext]:
-    return Agent(name=INVESTIGATOR_NAME, instructions=INVESTIGATOR_INSTRUCTIONS, model=config.model, model_settings=_settings(config), tools=BASELINE_TOOLS, output_type=EvidenceBundle)
+    return Agent(name=INVESTIGATOR_NAME, instructions=INVESTIGATOR_INSTRUCTIONS, model=config.model, model_settings=_settings(config), tools=BASELINE_TOOLS, output_type=EvidenceBundleDraft)
 
 
 def create_resolver(config: BaselineConfig) -> Agent[None]:
