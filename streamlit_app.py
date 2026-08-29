@@ -46,10 +46,11 @@ from resolveops.app.judge_challenge import (
     FreshRunResult,
     FRESH_ERROR_KEY,
     FRESH_RESULT_KEY,
-    FRESH_RUN_ALLOWANCE,
+    MAX_FRESH_RUNS_PER_SESSION,
     challenge_templates,
     configured_server_key,
     fresh_allowance_available,
+    fresh_runs_remaining,
     resolution_packet_export,
     run_challenge_once,
     stage_mapping,
@@ -387,7 +388,7 @@ render_workflow_strip("Resolution" if workflow_complete else "Ticket")
 if mode == JUDGE_SIMULATION:
     st.info("Explore the full ResolveOps workflow using recorded agent outputs and synthetic support scenarios. No API key required; no new LLM inference occurs.")
 elif mode == JUDGE_CHALLENGE:
-    st.info("Run one fresh ResolveOps execution on a judge-controlled synthetic ticket. This path performs new model inference. The input is restricted to the synthetic support world. Frozen benchmark results are not modified.")
+    st.info("Run up to three fresh ResolveOps executions on judge-controlled synthetic tickets. This path performs new model inference. The input is restricted to the synthetic support world. Frozen benchmark results are not modified.")
 elif mode == HISTORICAL_REPLAY:
     st.info("Inspect immutable official trajectories directly. This read-only view uses no API key and performs no new LLM inference.")
 
@@ -423,11 +424,14 @@ with experience:
         identity_columns[1].text_input("Primary device", value=template.primary_device_id or "None", disabled=True, key=f"fresh-device-{template_id}")
         ticket_text = st.text_area("Ticket text", value=template.ticket_text, max_chars=2_000, key=f"fresh-ticket-{template_id}")
         st.caption("You can rewrite the symptom description. Customer/device state remains in the synthetic world.")
-        st.caption(f"Fresh run allowance: {FRESH_RUN_ALLOWANCE} per session. This is a session-level judge budget, not a security-grade global rate limit.")
+        remaining = fresh_runs_remaining(st.session_state)
+        if remaining:
+            st.caption(f"Fresh runs remaining: {remaining} of {MAX_FRESH_RUNS_PER_SESSION}")
+            st.caption("This is a session-level judge budget, not a security-grade global rate limiter.")
+        else:
+            st.info("Fresh run allowance used for this session. Recorded replay remains available for additional cases.")
         if not api_key:
             st.info("Fresh inference is temporarily unavailable. The recorded Judge Simulation and Historical Replay remain fully available.")
-        elif not fresh_allowance_available(st.session_state):
-            st.info("Fresh run used for this session. Use recorded replay to inspect additional cases.")
         run_disabled = not api_key or not fresh_allowance_available(st.session_state)
         if st.button("Run fresh ResolveOps", type="primary", disabled=run_disabled, key="run-fresh-resolveops"):
             with st.spinner("Running fresh ResolveOps workflow..."):

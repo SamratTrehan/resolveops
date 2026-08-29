@@ -19,8 +19,8 @@ from resolveops.evaluation.models import CandidateOutput, EvaluationCase
 from resolveops.tools import default_environment
 
 
-FRESH_RUN_ALLOWANCE = 1
-FRESH_CONSUMED_KEY = "judge_challenge_consumed"
+MAX_FRESH_RUNS_PER_SESSION = 3
+FRESH_RUN_COUNT_KEY = "judge_challenge_run_count"
 FRESH_RESULT_KEY = "judge_challenge_result"
 FRESH_ERROR_KEY = "judge_challenge_error"
 MAX_TICKET_LENGTH = 2_000
@@ -88,8 +88,16 @@ def challenge_case(template_case_id: str, ticket_text: str) -> EvaluationCase:
     return templates[template_case_id].model_copy(update={"ticket_text": cleaned})
 
 
+def fresh_runs_consumed(state: Mapping[str, object]) -> int:
+    return int(state.get(FRESH_RUN_COUNT_KEY, 0))
+
+
+def fresh_runs_remaining(state: Mapping[str, object]) -> int:
+    return max(0, MAX_FRESH_RUNS_PER_SESSION - fresh_runs_consumed(state))
+
+
 def fresh_allowance_available(state: Mapping[str, object]) -> bool:
-    return not bool(state.get(FRESH_CONSUMED_KEY))
+    return fresh_runs_remaining(state) > 0
 
 
 def _sdk_run_sync(api_key: str) -> Callable[..., Any]:
@@ -146,13 +154,13 @@ def run_challenge_once(
     api_key: str | None,
     run_sync: Callable[..., Any] | None = None,
 ) -> FreshRunResult:
-    """Validate first, then consume the one-session budget immediately before execution."""
+    """Validate first, then consume one session allowance immediately before execution."""
     if not api_key:
         raise ChallengeUnavailable("Fresh inference is temporarily unavailable.")
     if not fresh_allowance_available(state):
-        raise ChallengeAllowanceUsed("Fresh run used for this session.")
+        raise ChallengeAllowanceUsed("Fresh run allowance used for this session.")
     case = challenge_case(template_case_id, ticket_text)
-    state[FRESH_CONSUMED_KEY] = True
+    state[FRESH_RUN_COUNT_KEY] = fresh_runs_consumed(state) + 1
     state.pop(FRESH_ERROR_KEY, None)
     try:
         result = execute_challenge(case, api_key, run_sync=run_sync)

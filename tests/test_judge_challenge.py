@@ -16,14 +16,15 @@ from resolveops.app.judge_challenge import (
     ChallengeAllowanceUsed,
     ChallengeExecutionError,
     ChallengeUnavailable,
-    FRESH_CONSUMED_KEY,
+    FRESH_RUN_COUNT_KEY,
     FRESH_RESULT_KEY,
-    FRESH_RUN_ALLOWANCE,
+    MAX_FRESH_RUNS_PER_SESSION,
     challenge_case,
     challenge_templates,
     configured_server_key,
     execute_challenge,
     fresh_allowance_available,
+    fresh_runs_remaining,
     resolution_packet_export,
     run_challenge_once,
     stage_mapping,
@@ -84,23 +85,23 @@ def test_server_key_resolution_and_missing_key_do_not_consume_allowance() -> Non
     assert configured_server_key({}, {"OPENAI_API_KEY": "local-secret"}) == "local-secret"
     assert configured_server_key({}, {}) is None
     state: dict[str, object] = {}
-    assert FRESH_RUN_ALLOWANCE == 1 and fresh_allowance_available(state)
+    assert MAX_FRESH_RUNS_PER_SESSION == 3 and fresh_runs_remaining(state) == 3
     with pytest.raises(ChallengeUnavailable):
         run_challenge_once(state, "CASE-001", "Synthetic symptom.", None, _fake_sdk_run)
-    assert fresh_allowance_available(state) and FRESH_CONSUMED_KEY not in state
+    assert fresh_runs_remaining(state) == 3 and FRESH_RUN_COUNT_KEY not in state
 
 
-def test_fresh_run_uses_real_orchestration_once_and_preserves_runtime_evidence() -> None:
+def test_fresh_runs_consume_three_session_allowances_and_preserve_runtime_evidence() -> None:
     before = _hashes()
     state: dict[str, object] = {}
     result = run_challenge_once(state, "CASE-001", "Judge paraphrased synthetic symptom.", "test-secret", _fake_sdk_run)
     assert result.case.ticket_text == "Judge paraphrased synthetic symptom."
     assert result.case.customer_id == "CUS-002" and result.case.primary_device_id == "DEV-003"
     assert result.model == "gpt-5.6-terra" and result.reasoning_effort == "medium"
-    assert not result.benchmark_scored and state[FRESH_CONSUMED_KEY] is True
+    assert not result.benchmark_scored and state[FRESH_RUN_COUNT_KEY] == 1 and fresh_runs_remaining(state) == 2
     assert FRESH_RESULT_KEY in state and "test-secret" not in repr(state)
     reset_approval_for_mode(state, HISTORICAL_REPLAY)
-    assert state[FRESH_CONSUMED_KEY] is True
+    assert state[FRESH_RUN_COUNT_KEY] == 1
     assert [stage.prompt_id for stage in result.stages] == ["investigator-v1", "resolver-v1", "verifier-v1"]
     assert result.stages[0].tool_calls[0].tool_name == "get_account_status"
     assert "CUS-002" in result.stages[0].tool_calls[0].result.source_ids
@@ -109,8 +110,12 @@ def test_fresh_run_uses_real_orchestration_once_and_preserves_runtime_evidence()
     assert export["benchmark_scored"] is False and export["run_id"] == result.run_id
     assert export["label"] == "Fresh demonstration run — not benchmark-scored."
     assert _hashes() == before
+    run_challenge_once(state, "CASE-001", "Another symptom.", "test-secret", _fake_sdk_run)
+    assert state[FRESH_RUN_COUNT_KEY] == 2 and fresh_runs_remaining(state) == 1
+    run_challenge_once(state, "CASE-001", "Third symptom.", "test-secret", _fake_sdk_run)
+    assert state[FRESH_RUN_COUNT_KEY] == 3 and fresh_runs_remaining(state) == 0
     with pytest.raises(ChallengeAllowanceUsed):
-        run_challenge_once(state, "CASE-001", "Another symptom.", "test-secret", _fake_sdk_run)
+        run_challenge_once(state, "CASE-001", "Fourth symptom.", "test-secret", _fake_sdk_run)
 
 
 def test_failed_model_attempt_consumes_allowance_without_exposing_secret(caplog: pytest.LogCaptureFixture) -> None:
@@ -122,7 +127,7 @@ def test_failed_model_attempt_consumes_allowance_without_exposing_secret(caplog:
     state: dict[str, object] = {}
     with pytest.raises(ChallengeExecutionError, match="did not complete"):
         run_challenge_once(state, "CASE-001", "Synthetic symptom.", secret, fail_model)
-    assert state[FRESH_CONSUMED_KEY] is True and not fresh_allowance_available(state)
+    assert state[FRESH_RUN_COUNT_KEY] == 1 and fresh_runs_remaining(state) == 2 and fresh_allowance_available(state)
     assert secret not in repr(state) and secret not in caplog.text
 
 

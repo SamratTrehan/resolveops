@@ -30,11 +30,11 @@ Open **Case Battle** to compare the frozen fair baseline and final ResolveOps ar
 
 ## Judge Challenge — Fresh Inference
 
-Judge Challenge performs one new ResolveOps inference per Streamlit session using a judge-selected observable synthetic case. The judge may rewrite the ticket symptom, while the template's synthetic customer and device IDs remain fixed. It reuses the production Investigator → Resolver → Verifier → optional one revision → Safety Gate workflow entirely in memory.
+Judge Challenge performs up to three new ResolveOps inferences per Streamlit session using judge-selected observable synthetic cases. The judge may rewrite each ticket symptom, while the template's synthetic customer and device IDs remain fixed. It reuses the production Investigator → Resolver → Verifier → optional one revision → Safety Gate workflow entirely in memory.
 
 Fresh demonstration runs are not benchmark-scored and never update official metrics, frozen trajectories, evaluation artifacts, or hidden truth. The server-side OpenAI credential is never displayed, written to session state, or requested through the UI. If fresh inference is unavailable, Interactive Judge Simulation, Historical Replay, Case Battle, and Measured Improvement remain fully usable.
 
-The one-run allowance is a Streamlit-session judge budget, not a security-grade global rate limiter. A browser refresh or new session may reset it.
+The up-to-three-run allowance is a Streamlit-session usage budget, not a security-grade global rate limiter. A browser refresh or new session may reset it.
 
 For Streamlit Cloud, set the maintainer-only secret under **App settings → Secrets** using top-level TOML syntax:
 
@@ -124,7 +124,7 @@ The simulator demo prints deterministic synthetic evidence. Benchmark inspection
 | Mode | API key | New LLM inference | Purpose |
 | --- | --- | --- | --- |
 | Interactive Judge Simulation | No | No | Guided product exploration using recorded ResolveOps trajectories and deterministic synthetic safety behavior. |
-| Judge Challenge | Server-side | Yes | One fresh, session-only production ResolveOps run on an observable synthetic case; never benchmark-scored. |
+| Judge Challenge | Server-side | Yes | Up to three fresh, session-only production ResolveOps runs on observable synthetic cases; never benchmark-scored. |
 | Historical Replay | No | No | Direct read-only inspection of immutable official trajectories. |
 
 The simulation maps service outage, local Wi-Fi, camera/device, insufficient-evidence, and approval-required provisioning scenarios to recorded Phase 5A cases. Safety decisions are temporary Streamlit session state; they never write trajectories, benchmark artifacts, reports, or synthetic source data.

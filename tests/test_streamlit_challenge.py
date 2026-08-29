@@ -70,7 +70,7 @@ def test_streamlit_fresh_mode_runs_once_with_mocked_openai_boundary(monkeypatch)
     assert not run_button.disabled
     run_button.click().run()
     assert not app.exception
-    assert app.session_state["judge_challenge_consumed"] is True
+    assert app.session_state["judge_challenge_run_count"] == 1
     assert "judge_challenge_result" in app.session_state
     rendered = " ".join(
         [item.value for item in app.success]
@@ -79,7 +79,8 @@ def test_streamlit_fresh_mode_runs_once_with_mocked_openai_boundary(monkeypatch)
     )
     assert "Generated during this session" in rendered
     assert "not included in official benchmark metrics" in rendered
-    assert next(button for button in app.button if button.key == "run-fresh-resolveops").disabled
+    assert not next(button for button in app.button if button.key == "run-fresh-resolveops").disabled
+    assert any("Fresh runs remaining: 2 of 3" in item.value for item in app.caption)
     assert secret not in repr(app.session_state)
 
 
@@ -96,6 +97,8 @@ def test_fresh_approval_rejection_uses_the_sandbox_without_another_model_call(mo
     context = f"fresh:{result['run_id']}"
     assert read_sandbox_state(app.session_state, context, "CUS-003", "DEV-004").provisioning_status == "awaiting_gateway_activation"
     call_count = len(calls)
+    allowance_count = app.session_state["judge_challenge_run_count"]
     next(button for button in app.button if button.label == "Reject simulated action").click().run()
     assert len(calls) == call_count
+    assert app.session_state["judge_challenge_run_count"] == allowance_count
     assert read_sandbox_state(app.session_state, context, "CUS-003", "DEV-004").provisioning_status == "awaiting_gateway_activation"
