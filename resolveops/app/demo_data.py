@@ -16,6 +16,9 @@ MODE_METADATA = (
     {"id": LIVE_RESOLVEOPS, "label": "Live ResolveOps", "badge": "LIVE", "summary": "Fresh model inference", "api_key": "Yes", "inference": "Yes"},
 )
 WORKFLOW_LABELS = ("Ticket", "Investigator", "Resolver", "Verifier", "Conditional Revision", "Safety Gate", "Resolution")
+BASELINE_BATTLE_RUN = "baseline-official-004"
+RESOLVEOPS_BATTLE_RUN = "resolveops-phase5a-001"
+SAFE_SCORE_FIELDS = ("case_id", "passed", "diagnosis_correct", "action_correct", "escalation_correct", "evidence_coverage", "execution_failure")
 SIMULATION_SCENARIOS = (
     ("Service outage", "CASE-001"),
     ("Wi-Fi / local connectivity", "CASE-005"),
@@ -116,6 +119,98 @@ def reset_transient_approval(state: MutableMapping[str, object], context: str) -
     if state.get("approval_context") != context:
         state["approval_context"] = context
         state.pop("approval_decision", None)
+
+
+def _result_artifact(namespace: str, run_id: str, name: str) -> object:
+    return json.loads((ROOT / "evaluation/results" / namespace / run_id / name).read_text(encoding="utf-8"))
+
+
+def safe_score_projection(record: dict[str, object]) -> dict[str, object]:
+    return {field: record.get(field) for field in SAFE_SCORE_FIELDS}
+
+
+def _battle_artifacts() -> tuple[dict[str, object], dict[str, object], dict[str, dict[str, object]], dict[str, dict[str, object]]]:
+    baseline_candidates = _result_artifact("baseline", BASELINE_BATTLE_RUN, "candidates.json")
+    resolveops_candidates = _result_artifact("resolveops", RESOLVEOPS_BATTLE_RUN, "candidates.json")
+    baseline_scores = _result_artifact("baseline", BASELINE_BATTLE_RUN, "case_scores.json")
+    resolveops_scores = _result_artifact("resolveops", RESOLVEOPS_BATTLE_RUN, "case_scores.json")
+    return baseline_candidates, resolveops_candidates, {item["case_id"]: safe_score_projection(item) for item in baseline_scores}, {item["case_id"]: safe_score_projection(item) for item in resolveops_scores}
+
+
+def case_battle_case_ids() -> list[str]:
+    baseline, resolveops, _, _ = _battle_artifacts()
+    return sorted(set(baseline).intersection(resolveops))
+
+
+def default_case_battle_case() -> str:
+    baseline, resolveops, baseline_scores, resolveops_scores = _battle_artifacts()
+    for case_id in sorted(set(baseline).intersection(resolveops)):
+        if not baseline_scores[case_id]["passed"] and resolveops_scores[case_id]["passed"]:
+            return case_id
+    return case_battle_case_ids()[0]
+
+
+def _evidence_rows(baseline: list[dict[str, str]], resolveops: list[dict[str, str]]) -> list[dict[str, str]]:
+    groups = {"get_account_status": "Account", "get_device_status": "Device", "run_connectivity_diagnostics": "Diagnostics", "check_service_outages": "Outage", "get_ticket_history": "Ticket History", "search_knowledge_base": "Knowledge Base"}
+    baseline_keys = {(item["tool_name"], item["source_id"]) for item in baseline}
+    resolveops_keys = {(item["tool_name"], item["source_id"]) for item in resolveops}
+    rows = []
+    for tool_name, source_id in sorted(baseline_keys | resolveops_keys):
+        status = "Shared" if (tool_name, source_id) in baseline_keys & resolveops_keys else "Baseline only" if (tool_name, source_id) in baseline_keys else "ResolveOps only"
+        rows.append({"group": groups.get(tool_name, "Other"), "source_id": source_id, "tool_name": tool_name, "status": status})
+    return rows
+
+
+def _verifier_projection(case_id: str) -> dict[str, object]:
+    stages = playback(RESOLVEOPS_BATTLE_RUN, case_id)
+    verifier = stages.get("verifier-v1", {}).get("output", {})
+    changes = revision_diff(stages)
+    return {
+        "approved": verifier.get("approved"),
+        "issue_categories": [item.get("category") for item in verifier.get("issues", [])],
+        "revision_occurred": "resolver-revision-v1" in stages,
+        "changed_fields": [display_label(key) for key in changes],
+        "before_evidence_count": len((stages.get("resolver-v1", {}).get("output", {})).get("evidence_references", [])),
+        "after_evidence_count": len((stages.get("resolver-revision-v1", {}).get("output", stages.get("resolver-v1", {}).get("output", {}))).get("evidence_references", [])),
+        "before_confidence": (stages.get("resolver-v1", {}).get("output", {})).get("confidence"),
+        "after_confidence": (stages.get("resolver-revision-v1", {}).get("output", stages.get("resolver-v1", {}).get("output", {}))).get("confidence"),
+    }
+
+
+def case_battle(case_id: str) -> dict[str, object]:
+    baseline, resolveops, baseline_scores, resolveops_scores = _battle_artifacts()
+    if case_id not in set(baseline).intersection(resolveops):
+        raise ValueError(f"Case is not comparable: {case_id}")
+    baseline_runtime = _result_artifact("baseline", BASELINE_BATTLE_RUN, "runtime.json")[case_id]["metrics"]
+    resolveops_runtime = _result_artifact("resolveops", RESOLVEOPS_BATTLE_RUN, "runtime.json")[case_id]["metrics"]
+    baseline_candidate, resolveops_candidate = baseline[case_id], resolveops[case_id]
+    return {
+        "case": observable_case(case_id),
+        "baseline": {"candidate": baseline_candidate, "runtime": baseline_runtime, "score": baseline_scores[case_id], "architecture": "Ticket → General Agent → Resolution"},
+        "resolveops": {"candidate": resolveops_candidate, "runtime": resolveops_runtime, "score": resolveops_scores[case_id], "architecture": "Ticket → Investigator → Resolver → Verifier → optional Revision → Resolution", "investigator_evidence_count": len((playback(RESOLVEOPS_BATTLE_RUN, case_id).get("investigator-v1", {}).get("output", {})).get("evidence_references", [])), "verifier": _verifier_projection(case_id)},
+        "evidence": _evidence_rows(baseline_candidate["evidence_references"], resolveops_candidate["evidence_references"]),
+    }
+
+
+def case_battle_divergences(battle: dict[str, object]) -> list[str]:
+    baseline, resolveops = battle["baseline"], battle["resolveops"]
+    baseline_refs = len(baseline["candidate"]["evidence_references"])
+    resolveops_refs = len(resolveops["candidate"]["evidence_references"])
+    messages = []
+    if resolveops_refs > baseline_refs:
+        messages.append(f"ResolveOps cited {resolveops_refs - baseline_refs} additional evidence references.")
+    if not baseline["score"]["evidence_coverage"] and resolveops["score"]["evidence_coverage"]:
+        messages.append("Evidence grounding did not pass for the baseline and passed for ResolveOps.")
+    verifier = resolveops["verifier"]
+    if verifier["revision_occurred"]:
+        messages.append("The Verifier requested one bounded Resolver revision.")
+    else:
+        messages.append("ResolveOps added an independent Verifier without a revision.")
+    if baseline["candidate"]["root_cause_id"] != resolveops["candidate"]["root_cause_id"]:
+        messages.append("The architectures produced different diagnosis labels.")
+    if baseline["candidate"]["recommended_action_id"] != resolveops["candidate"]["recommended_action_id"]:
+        messages.append("The architectures produced different recommended actions.")
+    return messages
 
 
 def playback_cases(run_id: str = "resolveops-phase5a-001") -> list[str]:

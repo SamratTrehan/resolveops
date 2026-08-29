@@ -26,6 +26,8 @@ python3.12 -m venv .venv
 
 The default **Interactive Judge Simulation** replays real recorded agent outputs for curated synthetic tickets, then applies only deterministic local safety interaction. **Historical Replay** is the direct, read-only trajectory view, including the CASE-003 known limitation. **Measured Improvement** shows the frozen baseline-to-final comparison. None of these paths loads evaluator-only truth or calls an API.
 
+Open **Case Battle** to compare the frozen fair baseline and final ResolveOps architecture on the same support case. It is zero-API and derived only from immutable recorded artifacts.
+
 ## Final architecture
 
 ```text

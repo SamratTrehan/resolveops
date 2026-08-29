@@ -11,9 +11,13 @@ from resolveops.app.demo_data import (
     JUDGE_SIMULATION,
     LIVE_RESOLVEOPS,
     chart_data,
+    case_battle,
+    case_battle_case_ids,
+    case_battle_divergences,
     comparison_report,
     comparison_rows,
     display_label,
+    default_case_battle_case,
     evidence_cards,
     judge_demo_case,
     live_mode_available,
@@ -66,6 +70,95 @@ def render_mode_cards() -> str:
                 st.session_state["selected_mode"] = item["id"]
                 st.rerun()
     return st.session_state["selected_mode"]
+
+
+def display_value(value: object) -> str:
+    if value is None:
+        return "Not recorded"
+    if isinstance(value, bool):
+        return "Yes" if value else "No"
+    if isinstance(value, float):
+        return f"{value:.2f}"
+    return str(value)
+
+
+def render_battle_side(title: str, data: dict[str, object], final: bool = False) -> None:
+    candidate, runtime, score = data["candidate"], data["runtime"], data["score"]
+    st.markdown(f"### {title}")
+    st.caption("Evidence + verification pipeline" if final else "One general tool-using agent")
+    st.markdown(f"<div class='card'><b>Architecture</b><br>{data['architecture']}</div>", unsafe_allow_html=True)
+    rows = [
+        {"Field": "Tool calls", "Value": display_value(runtime.get("tool_call_count"))},
+        {"Field": "Evidence references", "Value": display_value(len(candidate["evidence_references"]))},
+        {"Field": "Diagnosis / root cause", "Value": display_label(candidate["root_cause_id"])},
+        {"Field": "Recommended action", "Value": display_label(candidate["recommended_action_id"])},
+        {"Field": "Escalation", "Value": display_value(candidate["escalate"])},
+        {"Field": "Confidence", "Value": display_value(candidate["confidence"])},
+        {"Field": "Execution failure", "Value": display_value(score["execution_failure"])},
+        {"Field": "Infrastructure retries", "Value": display_value(runtime.get("retries"))},
+        {"Field": "Latency", "Value": f"{runtime['latency_ms']:.0f} ms" if runtime.get("latency_ms") is not None else "Not recorded"},
+        {"Field": "Recorded tokens", "Value": display_value(runtime.get("token_usage"))},
+    ]
+    if final:
+        verifier = data["verifier"]
+        rows += [
+            {"Field": "Investigator evidence", "Value": display_value(data["investigator_evidence_count"])},
+            {"Field": "Verifier decision", "Value": "Approved" if verifier["approved"] else "Revision requested"},
+            {"Field": "Revision occurred", "Value": display_value(verifier["revision_occurred"])},
+        ]
+    st.dataframe(rows, hide_index=True, width="stretch")
+    outcomes = [
+        {"Measure": "Resolution", "Status": "Verified" if score["passed"] else "Did not pass"},
+        {"Measure": "Diagnosis", "Status": "Pass" if score["diagnosis_correct"] else "Did not pass"},
+        {"Measure": "Action", "Status": "Pass" if score["action_correct"] else "Did not pass"},
+        {"Measure": "Escalation", "Status": "Pass" if score["escalation_correct"] else "Did not pass"},
+        {"Measure": "Evidence grounding", "Status": "Pass" if score["evidence_coverage"] else "Did not pass"},
+    ]
+    st.caption("Official benchmark outcome")
+    st.dataframe(outcomes, hide_index=True, width="stretch")
+
+
+def render_case_battle() -> None:
+    case_ids = case_battle_case_ids()
+    default = default_case_battle_case()
+    selected = st.selectbox("Comparison case", case_ids, index=case_ids.index(default), key="battle-case")
+    battle = case_battle(selected)
+    case = battle["case"]
+    st.caption("SAME SUPPORT TICKET")
+    st.subheader(case["ticket_text"])
+    st.caption(f"{case['case_id']} · {case['customer_id']} · {case.get('primary_device_id') or 'No primary device'}")
+    baseline_column, resolveops_column = st.columns(2)
+    with baseline_column:
+        render_battle_side("BASELINE", battle["baseline"])
+    with resolveops_column:
+        render_battle_side("RESOLVEOPS", battle["resolveops"], final=True)
+
+    st.subheader("Where the architectures diverged")
+    for message in case_battle_divergences(battle):
+        st.write(message)
+
+    st.subheader("Evidence used in the final answer")
+    baseline_refs = {(item["tool_name"], item["source_id"]) for item in battle["baseline"]["candidate"]["evidence_references"]}
+    resolveops_refs = {(item["tool_name"], item["source_id"]) for item in battle["resolveops"]["candidate"]["evidence_references"]}
+    baseline_evidence, resolveops_evidence = st.columns(2)
+    for column, title, refs in ((baseline_evidence, "BASELINE", baseline_refs), (resolveops_evidence, "RESOLVEOPS", resolveops_refs)):
+        with column:
+            st.markdown(f"**{title}**")
+            rows = [row for row in battle["evidence"] if (row["tool_name"], row["source_id"]) in refs]
+            st.dataframe(rows, hide_index=True, width="stretch")
+
+    verifier = battle["resolveops"]["verifier"]
+    st.subheader("Verifier intervention")
+    if verifier["revision_occurred"]:
+        st.write("Verifier requested a bounded Resolver revision.")
+        if verifier["issue_categories"]:
+            st.caption("Issue categories: " + " · ".join(display_label(item) for item in verifier["issue_categories"]))
+        st.caption("Fields changed: " + (", ".join(verifier["changed_fields"]) or "None recorded"))
+        st.caption(f"Evidence references: {verifier['before_evidence_count']} → {verifier['after_evidence_count']} · Confidence: {display_value(verifier['before_confidence'])} → {display_value(verifier['after_confidence'])}")
+    else:
+        st.write("Verifier approved the Resolver output without revision.")
+    with st.expander("Recorded candidate packets"):
+        st.json({"baseline": battle["baseline"]["candidate"], "resolveops": battle["resolveops"]["candidate"]})
 
 
 def render_recorded_workflow(case: dict[str, object], stages: dict[str, dict[str, object]], context: str, source: str) -> None:
@@ -136,7 +229,7 @@ else:
     st.info("Run fresh inference only with a configured server-side OpenAI API key.")
 
 st.dataframe(mode_comparison(), hide_index=True, width="stretch")
-experience, improvement = st.tabs(["Run a scenario", "Measured Improvement"])
+experience, battle_tab, improvement = st.tabs(["Run a scenario", "Case Battle", "Measured Improvement"])
 
 with experience:
     if mode == JUDGE_SIMULATION:
@@ -170,6 +263,17 @@ with experience:
             st.info("Live ResolveOps requires an OpenAI API key. Use Interactive Judge Simulation for the full no-key experience.")
         else:
             st.caption("Use the documented CLI to create a persisted live run with a new explicit run ID.")
+
+with battle_tab:
+    st.caption("Frozen fair baseline versus final ResolveOps on the same observable support ticket. Zero API calls.")
+    report_runs = report["runs"] if report else []
+    if len(report_runs) >= 3:
+        baseline_run, final_run = report_runs[0], report_runs[-1]
+        st.markdown("**Architecture, not a stronger model.**")
+        st.caption(f"Both frozen runs used {baseline_run['model']} with {baseline_run['reasoning_effort']} reasoning effort. The measured difference came from evidence specialization, independent verification, and bounded correction.")
+        st.caption("Same 15 cases · same tools and synthetic world · same scorer.")
+        st.caption(f"{baseline_run['vrsr_percent']:.2f}% → {final_run['vrsr_percent']:.2f}% VRSR · {baseline_run['evidence_coverage']:.2f}% → {final_run['evidence_coverage']:.2f}% evidence coverage. Recorded latency and token use increased with the final architecture.")
+    render_case_battle()
 
 with improvement:
     if not report:

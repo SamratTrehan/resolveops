@@ -15,6 +15,9 @@ def test_no_key_streamlit_modes_are_safe_and_interactive(monkeypatch) -> None:
     assert not app.exception
     assert app.button[0].label == "Selected"
     assert any("no new llm inference" in info.value.lower() for info in app.info)
+    assert "Case Battle" in [tab.label for tab in app.tabs]
+    app.selectbox[1].set_value("CASE-006").run()
+    assert not app.exception
 
     app.selectbox[0].set_value("Provisioning / approval-required").run()
     app.button[3].click().run()
