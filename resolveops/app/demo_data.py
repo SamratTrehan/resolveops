@@ -16,8 +16,11 @@ MODE_METADATA = (
     {"id": LIVE_RESOLVEOPS, "label": "Live ResolveOps", "badge": "LIVE", "summary": "Fresh model inference", "api_key": "Yes", "inference": "Yes"},
 )
 WORKFLOW_LABELS = ("Ticket", "Investigator", "Resolver", "Verifier", "Conditional Revision", "Safety Gate", "Resolution")
+IMPROVEMENT_STAGE_LABELS = ("Baseline", "Investigator + Resolver", "Final ResolveOps")
+IMPROVEMENT_CHART_HEIGHT = 180
 BASELINE_BATTLE_RUN = "baseline-official-004"
 RESOLVEOPS_BATTLE_RUN = "resolveops-phase5a-001"
+FEATURED_BATTLE_CASE = "CASE-006"
 SAFE_SCORE_FIELDS = ("case_id", "passed", "diagnosis_correct", "action_correct", "escalation_correct", "evidence_coverage", "execution_failure")
 SIMULATION_SCENARIOS = (
     ("Service outage", "CASE-001"),
@@ -76,8 +79,7 @@ def comparison_rows(stages: dict[str, dict[str, object]]) -> list[dict[str, obje
 
 
 def chart_data(report: dict[str, object]) -> list[dict[str, object]]:
-    labels = ("Baseline", "Investigator", "Verifier")
-    return [{"stage": label, "vrsr": run["vrsr_percent"], "evidence": run["evidence_coverage"]} for label, run in zip(labels, report["runs"])]
+    return [{"stage": label, "vrsr": run["vrsr_percent"], "evidence": run["evidence_coverage"]} for label, run in zip(IMPROVEMENT_STAGE_LABELS, report["runs"])]
 
 
 def evidence_coverage_data(report: dict[str, object]) -> list[dict[str, object]]:
@@ -154,11 +156,8 @@ def case_battle_case_ids() -> list[str]:
 
 
 def default_case_battle_case() -> str:
-    baseline, resolveops, baseline_scores, resolveops_scores = _battle_artifacts()
-    for case_id in sorted(set(baseline).intersection(resolveops)):
-        if not baseline_scores[case_id]["passed"] and resolveops_scores[case_id]["passed"]:
-            return case_id
-    return case_battle_case_ids()[0]
+    cases = case_battle_case_ids()
+    return FEATURED_BATTLE_CASE if FEATURED_BATTLE_CASE in cases else cases[0]
 
 
 def _evidence_rows(baseline: list[dict[str, str]], resolveops: list[dict[str, str]]) -> list[dict[str, str]]:
@@ -211,12 +210,12 @@ def case_battle_divergences(battle: dict[str, object]) -> list[str]:
     if resolveops_refs > baseline_refs:
         messages.append(f"ResolveOps cited {resolveops_refs - baseline_refs} additional evidence references.")
     if not baseline["score"]["evidence_coverage"] and resolveops["score"]["evidence_coverage"]:
-        messages.append("Evidence grounding did not pass for the baseline and passed for ResolveOps.")
+        messages.append("Required evidence-reference coverage did not pass for the baseline and passed for ResolveOps.")
     verifier = resolveops["verifier"]
     if verifier["revision_occurred"]:
         messages.append("The Verifier requested one bounded Resolver revision.")
     else:
-        messages.append("ResolveOps added an independent Verifier without a revision.")
+        messages.append("ResolveOps added a separate Verifier without a revision.")
     if baseline["candidate"]["root_cause_id"] != resolveops["candidate"]["root_cause_id"]:
         messages.append("The architectures produced different diagnosis labels.")
     if baseline["candidate"]["recommended_action_id"] != resolveops["candidate"]["recommended_action_id"]:

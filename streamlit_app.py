@@ -10,6 +10,8 @@ from resolveops.app.demo_data import (
     HISTORICAL_REPLAY,
     JUDGE_SIMULATION,
     LIVE_RESOLVEOPS,
+    FEATURED_BATTLE_CASE,
+    IMPROVEMENT_CHART_HEIGHT,
     chart_data,
     case_battle,
     case_battle_case_ids,
@@ -124,7 +126,7 @@ def render_battle_side(title: str, data: dict[str, object], final: bool = False)
         {"Measure": "Diagnosis", "Status": "Pass" if score["diagnosis_correct"] else "Did not pass"},
         {"Measure": "Action", "Status": "Pass" if score["action_correct"] else "Did not pass"},
         {"Measure": "Escalation", "Status": "Pass" if score["escalation_correct"] else "Did not pass"},
-        {"Measure": "Evidence grounding", "Status": "Pass" if score["evidence_coverage"] else "Did not pass"},
+        {"Measure": "Required evidence references", "Status": "Pass" if score["evidence_coverage"] else "Did not pass"},
     ]
     st.caption("Official benchmark outcome")
     st.dataframe(outcomes, hide_index=True, width="stretch")
@@ -134,6 +136,8 @@ def render_case_battle() -> None:
     case_ids = case_battle_case_ids()
     default = default_case_battle_case()
     selected = st.selectbox("Comparison case", case_ids, index=case_ids.index(default), key="battle-case")
+    if selected == FEATURED_BATTLE_CASE:
+        st.caption("Featured comparison: CASE-006 clearly demonstrates an evidence-reference correction; all comparable cases are selectable.")
     battle = case_battle(selected)
     case = battle["case"]
     st.caption("SAME SUPPORT TICKET")
@@ -223,10 +227,10 @@ def render_recorded_workflow(case: dict[str, object], stages: dict[str, dict[str
 
 
 st.set_page_config(page_title="ResolveOps", layout="wide")
-st.markdown("""<style>.hero{padding:1.5rem;border:1px solid #345;background:#101a27;border-radius:16px}.card{padding:1rem;border:1px solid #345;border-radius:12px;background:#142130}.muted{color:#9ab}.workflow{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin:1rem 0}.workflow-step{border:1px solid #345;background:#101a27;border-radius:999px;padding:.45rem .7rem;color:#9ab;font-size:.82rem}.workflow-step.active{background:#1d3a35;border-color:#4d9b7d;color:#e7fff3;font-weight:600}.workflow-connector{width:1rem;height:1px;background:#345}.mode-card{min-height:8rem;padding:1rem;border:1px solid #345;border-radius:12px;background:#101a27}.mode-card.selected{border-color:#4d9b7d;background:#142b29}.mode-card h4{margin:.45rem 0 .25rem}.mode-card p{margin:0;color:#9ab;font-size:.86rem}.badge{display:inline-block;border:1px solid #4f718d;border-radius:999px;padding:.12rem .4rem;color:#b8d5ee;font-size:.68rem;font-weight:600;letter-spacing:.04em}</style>""", unsafe_allow_html=True)
+st.markdown("""<style>.hero{padding:1.5rem;border:1px solid #345;background:#101a27;border-radius:16px}.card{padding:1rem;border:1px solid #345;border-radius:12px;background:#142130}.muted{color:#9ab}.workflow{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin:1rem 0}.workflow-step{border:1px solid #345;background:#101a27;border-radius:999px;padding:.45rem .7rem;color:#9ab;font-size:.82rem}.workflow-step.active{background:#1d3a35;border-color:#4d9b7d;color:#e7fff3;font-weight:600}.workflow-connector{width:1rem;height:1px;background:#345}.mode-card{min-height:8rem;padding:1rem;border:1px solid #345;border-radius:12px;background:#101a27}.mode-card.selected{border-color:#4d9b7d;background:#142b29}.mode-card h4{margin:.45rem 0 .25rem}.mode-card p{margin:0;color:#9ab;font-size:.86rem}.badge{display:inline-block;border:1px solid #4f718d;border-radius:999px;padding:.12rem .4rem;color:#b8d5ee;font-size:.68rem;font-weight:600;letter-spacing:.04em}.improvement-heading{margin:.25rem 0}.metric-note{margin:.35rem 0 .65rem;color:#c4d5e5;font-size:.92rem}</style>""", unsafe_allow_html=True)
 report = comparison_report()
 final = report["runs"][-1] if report else {}
-st.markdown(f"<div class='hero'><h1>ResolveOps</h1><h3>Evidence-grounded support. Verified before action.</h3><p>Multi-agent technical support that investigates evidence, verifies its own resolution, and requires human approval before consequential simulated actions.</p><b>{final.get('vrsr_percent', 0):.1f}% Verified Resolution Success</b> &nbsp; <b>{final.get('evidence_coverage', 0):.0f}% Evidence Coverage</b> &nbsp; <b>Human Safety Gate</b></div>", unsafe_allow_html=True)
+st.markdown(f"<div class='hero'><h1>ResolveOps</h1><h3>Evidence-grounded support with a separate verification stage.</h3><p>Multi-agent technical support that investigates synthetic evidence, verifies its proposed resolution, and requires human approval before simulated state-changing actions.</p><b>{final.get('passed_cases', 0)}/{final.get('total_cases', 0)} strict benchmark successes</b> &nbsp; <b>{final.get('evidence_coverage', 0):.0f}% required evidence-reference coverage</b> &nbsp; <b>Human approval before simulated state-changing actions</b></div>", unsafe_allow_html=True)
 st.caption("Synthetic demo only — never enter real customer data, credentials, or private information.")
 
 api_key = os.environ.get("OPENAI_API_KEY")
@@ -281,9 +285,9 @@ with battle_tab:
     if len(report_runs) >= 3:
         baseline_run, final_run = report_runs[0], report_runs[-1]
         st.markdown("**Architecture, not a stronger model.**")
-        st.caption(f"Both frozen runs used {baseline_run['model']} with {baseline_run['reasoning_effort']} reasoning effort. The measured difference came from evidence specialization, independent verification, and bounded correction.")
+        st.caption(f"Both frozen runs used {baseline_run['model']} with {baseline_run['reasoning_effort']} reasoning effort. The measured difference came from evidence specialization, a separate verification stage, and bounded correction.")
         st.caption("Same 15 cases · same tools and synthetic world · same scorer.")
-        st.caption(f"{baseline_run['vrsr_percent']:.2f}% → {final_run['vrsr_percent']:.2f}% VRSR · {baseline_run['evidence_coverage']:.2f}% → {final_run['evidence_coverage']:.2f}% evidence coverage. Recorded latency and token use increased with the final architecture.")
+        st.caption(f"{baseline_run['vrsr_percent']:.2f}% → {final_run['vrsr_percent']:.2f}% strict benchmark success · {baseline_run['evidence_coverage']:.2f}% → {final_run['evidence_coverage']:.2f}% required evidence-reference coverage. Recorded latency and token use increased with the final architecture.")
     render_case_battle()
 
 with improvement:
@@ -291,16 +295,19 @@ with improvement:
         st.warning("Comparison report is unavailable. Run `python -m resolveops.evaluation.report_experiments`.")
     else:
         runs = report["runs"]
+        improvement_data = chart_data(report)
+        st.markdown("<h3 class='improvement-heading'>Strict Benchmark Success (VRSR)</h3>", unsafe_allow_html=True)
+        st.caption("A strict pass requires an accepted diagnosis or abstention, accepted action, correct escalation, required evidence-reference coverage, and no forbidden critical claim. Verifier decisions and Human Safety Gate approval are audited separately and do not affect this deterministic score.")
         columns = st.columns(3)
-        for column, run in zip(columns, runs):
-            column.metric(run["architecture"], f"{run['vrsr_percent']:.2f}%", f"Evidence {run['evidence_coverage']:.2f}%")
-        st.vega_lite_chart({"data": {"values": chart_data(report)}, "mark": "bar", "encoding": {"x": {"field": "stage", "type": "nominal", "axis": {"labelAngle": 0}}, "y": {"field": "vrsr", "type": "quantitative", "scale": {"domain": [0, 100]}}, "tooltip": [{"field": "vrsr", "type": "quantitative"}]}}, width="stretch")
-        st.metric("Baseline → final VRSR", f"+{runs[-1]['vrsr_percent']-runs[0]['vrsr_percent']:.1f} pp")
-        st.metric("Phase 4 → verifier VRSR", f"+{runs[-1]['vrsr_percent']-runs[1]['vrsr_percent']:.1f} pp")
-        st.subheader("Evidence Coverage")
-        st.vega_lite_chart({"data": {"values": evidence_coverage_data(report)}, "mark": "bar", "encoding": {"x": {"field": "stage", "type": "nominal", "axis": {"labelAngle": 0}}, "y": {"field": "evidence", "type": "quantitative", "scale": {"domain": [0, 100]}}, "tooltip": [{"field": "evidence", "type": "quantitative"}]}}, width="stretch")
+        for column, item in zip(columns, improvement_data):
+            column.metric(item["stage"], f"{item['vrsr']:.2f}%")
+        st.vega_lite_chart({"height": IMPROVEMENT_CHART_HEIGHT, "data": {"values": improvement_data}, "mark": "bar", "encoding": {"x": {"field": "stage", "type": "nominal", "axis": {"labelAngle": 0}}, "y": {"field": "vrsr", "type": "quantitative", "scale": {"domain": [0, 100]}}, "tooltip": [{"field": "vrsr", "type": "quantitative"}]}}, width="stretch")
+        st.markdown(f"<p class='metric-note'>VRSR improved by {runs[-1]['vrsr_percent']-runs[0]['vrsr_percent']:.1f} percentage points from baseline to final.</p>", unsafe_allow_html=True)
+        st.markdown("<h3 class='improvement-heading'>Required Evidence-Reference Coverage</h3>", unsafe_allow_html=True)
+        evidence_data = evidence_coverage_data(report)
+        st.vega_lite_chart({"height": IMPROVEMENT_CHART_HEIGHT, "data": {"values": evidence_data}, "mark": "bar", "encoding": {"x": {"field": "stage", "type": "nominal", "axis": {"labelAngle": 0}}, "y": {"field": "evidence", "type": "quantitative", "scale": {"domain": [0, 100]}}, "tooltip": [{"field": "evidence", "type": "quantitative"}]}}, width="stretch")
         coverage_columns = st.columns(3)
-        for column, item in zip(coverage_columns, evidence_coverage_data(report)):
+        for column, item in zip(coverage_columns, evidence_data):
             column.metric(item["stage"], f"{item['evidence']:.2f}%")
-        st.caption(f"Specialization and verification improved evidence grounding from {runs[0]['evidence_coverage']:.2f}% to {runs[-1]['evidence_coverage']:.2f}%.")
-        st.caption("Reliability came at a cost: latency and recorded tokens increased. Additional agents must earn their cost.")
+        st.markdown(f"<p class='metric-note'>Specialization and verification improved required evidence-reference coverage from {runs[0]['evidence_coverage']:.2f}% to {runs[-1]['evidence_coverage']:.2f}%.</p>", unsafe_allow_html=True)
+        st.markdown("<p class='metric-note'>Reliability came at a cost: latency and recorded tokens increased. Additional agents must earn their cost.</p>", unsafe_allow_html=True)

@@ -5,6 +5,7 @@ from resolveops.app import demo_data
 from resolveops.agents.resolveops.safety import ApprovalStatus, HumanApproval, safety_gate
 from resolveops.app.demo_data import (
     HISTORICAL_REPLAY,
+    IMPROVEMENT_CHART_HEIGHT,
     JUDGE_SIMULATION,
     LIVE_RESOLVEOPS,
     chart_data,
@@ -42,9 +43,10 @@ def test_demo_loaders_are_read_only_and_hide_evaluator_fields() -> None:
     assert chart_data(comparison_report())[0]["stage"] == "Baseline"
     assert evidence_coverage_data(comparison_report()) == [
         {"stage": "Baseline", "evidence": 73.33333333333333},
-        {"stage": "Investigator", "evidence": 93.33333333333333},
-        {"stage": "Verifier", "evidence": 100.0},
+        {"stage": "Investigator + Resolver", "evidence": 93.33333333333333},
+        {"stage": "Final ResolveOps", "evidence": 100.0},
     ]
+    assert IMPROVEMENT_CHART_HEIGHT == 180
     assert evidence_cards(stages["investigator-v1"]["output"])
     for row in comparison_rows(stages):
         assert isinstance(row["before"], str) and isinstance(row["after"], str) and row["changed"] in {"✓", "—"}
