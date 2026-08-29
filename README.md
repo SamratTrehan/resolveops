@@ -58,13 +58,13 @@ Ticket
 
 The fixed 15-case evaluation improved as follows, using the same synthetic cases, public output ontology, model family, and deterministic scoring contract:
 
-| Stage | Strict successes | VRSR | Required evidence-reference coverage |
-| --- | ---: | ---: | ---: |
-| Baseline v2 | 10/15 | 66.67% | 73.33% |
-| Investigator + Resolver | 12/15 | 80.00% | 93.33% |
-| + Verifier + optional one correction | 14/15 | 93.33% | 100.00% |
+| Stage | Strict benchmark successes (VRSR) | Required evidence-reference coverage |
+| --- | ---: | ---: |
+| Baseline | 10/15 (66.67%) | 73.33% |
+| Investigator + Resolver | 12/15 (80.00%) | 93.33% |
+| Final ResolveOps | 14/15 (93.33%) | 100% |
 
-Strict benchmark success requires:
+The deterministic strict-success scorer checks this implemented benchmark contract; it is not a general semantic-entailment judgment. A strict benchmark success requires:
 
 - an accepted diagnosis or justified abstention;
 - an accepted action;
@@ -82,7 +82,7 @@ Recorded token usage is reported, but historical dollar cost is unavailable beca
 
 ## Hot Take
 
-A Verifier is not independent merely because it has a different prompt. CASE-003 remained the one final failure: the Resolver conservatively abstained, and the same-model Verifier reinforced that conservative bias instead of correcting it. Verification improved aggregate reliability, but this case shows that role separation alone does not guarantee epistemic independence when stages share the same model, evidence, and uncertainty assumptions.
+A Verifier is not independent merely because it has a different role prompt. CASE-003 is the final known benchmark failure: the Resolver conservatively abstained, and the same-model Verifier reinforced that uncertainty instead of correcting it. This observed case does not prove a universal failure mode, but it shows that role separation alone did not guarantee epistemic independence when stages shared the same model, evidence, and uncertainty assumptions. Next, we would test deliberately differentiated verification evidence or disagreement calibration.
 
 ## Reproducible setup
 
@@ -179,12 +179,12 @@ The baseline is one tool-using agent. ResolveOps separates evidence collection, 
 
 ## Human approval demonstration
 
-The Streamlit historical playback is **OFFLINE / ZERO API COST**. In **Judge Demo**, select a recorded resolution whose action requires approval; the Safety Gate shows that simulated gateway activation is blocked pending an explicit human decision. Approving or rejecting it changes only the displayed synthetic safety record—never a real system, candidate, or score.
+The Streamlit historical playback is **OFFLINE / ZERO API COST**. In **Judge Demo**, select a recorded resolution whose action requires approval; the Safety Gate shows that simulated gateway activation is blocked pending an explicit human decision. The Human Safety Gate uses an isolated, session-local synthetic sandbox: approval changes only that sandbox's gateway/account provisioning state, while rejection leaves it unchanged. No external system, candidate, trajectory, benchmark artifact, or score is affected. Human execution remains outside deterministic benchmark scoring.
 
 ## Public output contract and safety
 
 The public, case-agnostic root-cause and action ontology lives in `resolveops/domain/support_ontology.py`. It standardizes output labels without revealing case-specific answers. Hidden truth, accepted evaluator sets, and forbidden evaluator claims remain outside agent runtime and normal demo presentation.
 
-Consequential simulation is deliberately separate from resolution quality: approval metadata does not alter `CandidateOutput` or VRSR scoring. ResolveOps does not claim 93% accuracy across general technical support. It demonstrates 14/15 strict successes on a frozen benchmark of 15 synthetic cases spanning repeated scenario families in a controlled world with a closed public ontology; CASE-003 remains the retained failure.
+Consequential simulation is deliberately separate from resolution quality: approval metadata does not alter `CandidateOutput` or VRSR scoring. ResolveOps does not claim 93% accuracy across general technical support. It demonstrates **14/15 strict benchmark successes (93.33%)** on a frozen benchmark of 15 synthetic cases spanning repeated scenario families in a controlled world with a closed public ontology; CASE-003 is the final known failure.
 
 See [PROJECT_SPEC.md](PROJECT_SPEC.md), [TRAJECTORIES.md](TRAJECTORIES.md), [IMPROVEMENT_CHANGELOG.md](IMPROVEMENT_CHANGELOG.md), [FINAL_AUDIT.md](FINAL_AUDIT.md), and [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md) for the project record and submission status.

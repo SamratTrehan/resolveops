@@ -6,6 +6,13 @@ import os
 import streamlit as st
 
 from resolveops.agents.resolveops.safety import HumanApproval, safety_gate
+from resolveops.app.synthetic_sandbox import (
+    SandboxError,
+    SyntheticActionRequest,
+    action_audit,
+    execute_synthetic_action,
+    read_sandbox_state,
+)
 from resolveops.app.demo_data import (
     HISTORICAL_REPLAY,
     JUDGE_CHALLENGE,
@@ -34,6 +41,7 @@ from resolveops.app.demo_data import (
     workflow_steps,
     workflow_stages,
 )
+from resolveops.domain.support_ontology import ActionId
 from resolveops.app.judge_challenge import (
     ChallengeAllowanceUsed,
     ChallengeExecutionError,
@@ -50,21 +58,35 @@ from resolveops.app.judge_challenge import (
 )
 
 
-def render_safety(answer: dict[str, object], context: str) -> None:
+def _provisioning_label(status: str) -> str:
+    return {
+        "awaiting_gateway_activation": "Pending",
+        "complete": "Active",
+    }.get(status, display_label(status))
+
+
+def render_safety(answer: dict[str, object], case: dict[str, object], context: str) -> None:
     reset_transient_approval(st.session_state, context)
-    decision = st.session_state.get("approval_decision")
-    gate = safety_gate(answer["recommended_action_id"], HumanApproval(decision) if decision else None)
-    st.caption("SIMULATED — NO REAL SYSTEM CHANGES")
+    try:
+        action_id = ActionId(str(answer["recommended_action_id"]))
+    except (KeyError, ValueError):
+        st.error("Execution blocked: the proposed action is not recognized by the synthetic safety gate.")
+        return
+    gate = safety_gate(action_id)
     if gate.approval_required:
-        st.write("**Approval required**")
-        st.write(f"Status: {display_label(gate.approval_status.value)}")
-        if decision:
-            st.write(f"Human decision: {display_label(decision)}")
-            st.write(f"Synthetic execution: {'Completed' if decision == HumanApproval.APPROVE.value else 'Blocked'}")
-            if decision == HumanApproval.REJECT.value:
-                st.write("No action executed.")
-        else:
-            st.caption(gate.summary)
+        st.subheader("Human-controlled execution")
+        st.caption("SYNTHETIC SANDBOX — NO REAL SYSTEM CHANGES")
+        st.caption("Recorded agent recommendation; human decision is performed now in this session-local sandbox.")
+        customer_id, device_id = str(case["customer_id"]), case.get("primary_device_id")
+        try:
+            current = read_sandbox_state(st.session_state, context, customer_id, str(device_id) if device_id else None)
+        except SandboxError as error:
+            st.error(f"Execution blocked: {error}")
+            return
+        st.markdown("<div class='card'><b>Proposed operation</b><br>Activate gateway provisioning<br><span class='muted'>Approval required before any session-local state change.</span></div>", unsafe_allow_html=True)
+        st.write(f"Current synthetic state: **Provisioning: {_provisioning_label(current.provisioning_status)}**")
+        st.caption("Approval: Required · Execution: Blocked pending human decision")
+        decision = st.session_state.get("approval_decision")
         left, right = st.columns(2)
         if left.button("Approve simulated action", key=f"approve-{context}"):
             st.session_state["approval_decision"] = HumanApproval.APPROVE.value
@@ -72,6 +94,42 @@ def render_safety(answer: dict[str, object], context: str) -> None:
         if right.button("Reject simulated action", key=f"reject-{context}"):
             st.session_state["approval_decision"] = HumanApproval.REJECT.value
             st.rerun()
+        result = action_audit(st.session_state, context)
+        if decision and (result is None or result.human_decision is None or result.human_decision.value != decision):
+            result = execute_synthetic_action(
+                st.session_state,
+                SyntheticActionRequest(
+                    context=context,
+                    run_or_case_id=str(case["case_id"]),
+                    customer_id=customer_id,
+                    primary_device_id=str(device_id) if device_id else None,
+                    action_id=action_id,
+                    human_decision=HumanApproval(decision),
+                ),
+            )
+        if result:
+            after = read_sandbox_state(st.session_state, context, customer_id, str(device_id) if device_id else None)
+            before_label = _provisioning_label(result.before_state.provisioning_status) if result.before_state else "Not available"
+            after_label = _provisioning_label(after.provisioning_status)
+            decision_label = "Approved" if result.human_decision is HumanApproval.APPROVE else "Rejected" if result.human_decision is HumanApproval.REJECT else "Pending"
+            execution_label = "Completed" if result.execution_status == "completed" else "Already active" if result.execution_status == "already_active" else "Blocked"
+            st.dataframe(
+                [
+                    {"Field": "Decision", "Result": decision_label},
+                    {"Field": "Execution", "Result": execution_label},
+                    {"Field": "Provisioning", "Result": f"{before_label} → {after_label}"},
+                ],
+                hide_index=True,
+                width="stretch",
+            )
+            if result.execution_status == "already_active":
+                st.info(result.blocked_reason)
+            elif result.blocked_reason:
+                st.caption(result.blocked_reason)
+            st.markdown("**Post-action verification**")
+            st.write(f"Gateway provisioning status: **{_provisioning_label(after.provisioning_status)}**")
+            with st.expander("Execution audit"):
+                st.json(result.model_dump(mode="json"))
     else:
         st.write(f"Safety gate: {display_label(gate.approval_status.value)} — {gate.summary}")
 
@@ -236,7 +294,7 @@ def render_recorded_workflow(
             value = display_label(str(answer.get(key))) if key != "confidence" else answer.get(key)
             column.markdown(f"<div class='card'><b>{key.replace('_', ' ').upper()}</b><br>{value}</div>", unsafe_allow_html=True)
         st.write(answer.get("customer_response"))
-        render_safety(answer, context)
+        render_safety(answer, case, context)
         st.download_button(download_label, json.dumps(export_payload or answer, indent=2), file_name=f"{case['case_id']}-resolution-packet.json", mime="application/json", key=f"download-{context}")
     rows = comparison_rows(stages)
     if any(row["changed"] == "✓" for row in rows):
@@ -244,7 +302,7 @@ def render_recorded_workflow(
         st.dataframe(rows, hide_index=True, width="stretch")
         st.write("**What the verifier changed:** " + ", ".join(row["label"] for row in rows if row["changed"] == "✓"))
     if case["case_id"] == "CASE-003":
-        st.info("Known limitation: shared conservative bias. Independent verification reduces error, but does not guarantee independent judgment.")
+        st.info("Final known benchmark failure: the Resolver's conservative abstention was reinforced by the same-model Verifier. This observed shared-bias case does not establish a universal rule, but role separation alone did not provide independent judgment here.")
 
 
 def render_fresh_result(result: FreshRunResult) -> None:
@@ -316,7 +374,7 @@ st.set_page_config(page_title="ResolveOps", layout="wide")
 st.markdown("""<style>.hero{padding:1.5rem;border:1px solid #345;background:#101a27;border-radius:16px}.card{padding:1rem;border:1px solid #345;border-radius:12px;background:#142130}.muted{color:#9ab}.workflow{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin:1rem 0}.workflow-step{border:1px solid #345;background:#101a27;border-radius:999px;padding:.45rem .7rem;color:#9ab;font-size:.82rem}.workflow-step.active{background:#1d3a35;border-color:#4d9b7d;color:#e7fff3;font-weight:600}.workflow-connector{width:1rem;height:1px;background:#345}.mode-card{min-height:8rem;padding:1rem;border:1px solid #345;border-radius:12px;background:#101a27}.mode-card.selected{border-color:#4d9b7d;background:#142b29}.mode-card h4{margin:.45rem 0 .25rem}.mode-card p{margin:0;color:#9ab;font-size:.86rem}.badge{display:inline-block;border:1px solid #4f718d;border-radius:999px;padding:.12rem .4rem;color:#b8d5ee;font-size:.68rem;font-weight:600;letter-spacing:.04em}.improvement-heading{margin:.25rem 0}.metric-note{margin:.35rem 0 .65rem;color:#c4d5e5;font-size:.92rem}</style>""", unsafe_allow_html=True)
 report = comparison_report()
 final = report["runs"][-1] if report else {}
-st.markdown(f"<div class='hero'><h1>ResolveOps</h1><h3>Evidence-grounded support with a separate verification stage.</h3><p>Multi-agent technical support that investigates synthetic evidence, verifies its proposed resolution, and requires human approval before simulated state-changing actions.</p><b>{final.get('passed_cases', 0)}/{final.get('total_cases', 0)} strict benchmark successes</b> &nbsp; <b>{final.get('evidence_coverage', 0):.0f}% required evidence-reference coverage</b> &nbsp; <b>Human approval before simulated state-changing actions</b></div>", unsafe_allow_html=True)
+st.markdown(f"<div class='hero'><h1>ResolveOps</h1><h3>Evidence-grounded support with a separate verification stage.</h3><p>Multi-agent technical support that investigates synthetic evidence, verifies its proposed resolution, and requires human approval before simulated state-changing actions.</p><b>{final.get('passed_cases', 0)}/{final.get('total_cases', 0)} strict benchmark successes ({final.get('vrsr_percent', 0):.2f}%)</b> &nbsp; <b>{final.get('evidence_coverage', 0):.0f}% required evidence-reference coverage</b> &nbsp; <b>Human approval before simulated state-changing actions</b></div>", unsafe_allow_html=True)
 st.caption("Synthetic demo only — never enter real customer data, credentials, or private information.")
 
 api_key = configured_server_key(st.secrets, os.environ)
@@ -420,7 +478,7 @@ with improvement:
         runs = report["runs"]
         improvement_data = chart_data(report)
         st.markdown("<h3 class='improvement-heading'>Strict Benchmark Success (VRSR)</h3>", unsafe_allow_html=True)
-        st.caption("A strict pass requires an accepted diagnosis or abstention, accepted action, correct escalation, required evidence-reference coverage, and no forbidden critical claim. Verifier decisions and Human Safety Gate approval are audited separately and do not affect this deterministic score.")
+        st.caption("The deterministic strict-success scorer checks the implemented benchmark contract: accepted diagnosis or abstention, accepted action, correct escalation, required evidence-reference coverage, and no forbidden critical claim. Verifier decisions and Human Safety Gate approval are audited separately and do not affect this model-quality score.")
         columns = st.columns(3)
         for column, item in zip(columns, improvement_data):
             column.metric(item["stage"], f"{item['vrsr']:.2f}%")

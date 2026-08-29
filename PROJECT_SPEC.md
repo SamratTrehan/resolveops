@@ -19,7 +19,7 @@ Each stage has a distinct responsibility. The Investigator gathers relevant evid
 
 The baseline will be one general-purpose tool-using agent operating with the same underlying model, tool environment, and evaluation cases as the final system, but without specialized orchestration or independent verification.
 
-The primary metric is **Verified Resolution Success Rate (VRSR)**, a strict deterministic conjunction. A case passes only when it has an accepted diagnosis or justified abstention, accepted action, correct escalation decision, required evidence-reference coverage, and no forbidden critical claim. Verifier approval/rejection and Human Safety Gate approval are audited separately; neither is part of this score.
+The primary metric is **Verified Resolution Success Rate (VRSR)**, a strict deterministic conjunction implemented by the benchmark scorer. A case passes only when it has an accepted diagnosis or justified abstention, accepted action, correct escalation decision, required evidence-reference coverage, and no forbidden critical claim. Verifier approval/rejection and Human Safety Gate approval are audited separately; neither is part of this model-quality score.
 
 Secondary metrics are:
 

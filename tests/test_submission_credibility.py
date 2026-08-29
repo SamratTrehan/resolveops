@@ -13,21 +13,23 @@ def test_final_changelog_has_no_scaffolding_and_records_discarded_experiment_and
     assert "Future iteration" not in changelog and "Pending" not in changelog
     assert "baseline-official-003" in changelog
     assert "Discarded — unfair output vocabulary" in changelog
-    assert "invalid and non-comparable" in changelog
+    assert "diagnostic and non-comparable" in changelog and "6c25714" in changelog
     assert "## Hot Take" in changelog and "CASE-003" in changelog
 
 
 def test_judge_claims_define_strict_success_scope_and_provenance() -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     app = (ROOT / "streamlit_app.py").read_text(encoding="utf-8")
-    assert "14/15 strict successes" in readme
-    assert "strict benchmark successes" in app
-    assert "Required evidence-reference coverage" in readme and "100.00%" in readme
+    assert "14/15 strict benchmark successes (93.33%)" in readme
+    assert "strict benchmark successes ({final.get('vrsr_percent', 0):.2f}%)" in app
+    assert "Required evidence-reference coverage" in readme and "100%" in readme
     assert "required evidence-reference coverage" in app
     assert "Verifier approval/rejection and Human Safety Gate approval are not part" in readme
     assert "## Evaluation provenance" in readme and "6c25714" in readme
     assert "does not claim 93% accuracy across general technical support" in readme
     assert "historical dollar cost is unavailable" in readme
+    assert "CASE-003 is the final known benchmark failure" in readme
+    assert "Final known benchmark failure" in app
     assert "benchmark_truth" not in app
 
 

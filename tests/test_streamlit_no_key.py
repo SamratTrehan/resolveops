@@ -2,6 +2,8 @@ from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
 
+from resolveops.app.synthetic_sandbox import read_sandbox_state
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -28,8 +30,10 @@ def test_no_key_streamlit_modes_are_safe_and_interactive(monkeypatch) -> None:
     next(button for button in app.button if button.label == "Run ResolveOps simulation").click().run()
     assert not app.exception
     assert {button.label for button in app.button} >= {"Approve simulated action", "Reject simulated action"}
+    assert read_sandbox_state(app.session_state, "simulation:CASE-002", "CUS-003", "DEV-004").provisioning_status == "awaiting_gateway_activation"
     next(button for button in app.button if button.label == "Approve simulated action").click().run()
     assert app.session_state["approval_decision"] == "approve"
+    assert read_sandbox_state(app.session_state, "simulation:CASE-002", "CUS-003", "DEV-004").provisioning_status == "complete"
 
     _button(app, "mode-FRESH").click().run()
     assert not app.exception
