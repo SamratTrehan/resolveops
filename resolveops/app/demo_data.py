@@ -2,10 +2,21 @@
 
 import json
 from pathlib import Path
+from typing import MutableMapping
 
 
 ROOT = Path(__file__).resolve().parents[2]
 FORBIDDEN = ("acceptable_root", "acceptable_action", "forbidden_claim", "evaluator_note", "hidden_truth")
+JUDGE_SIMULATION = "Interactive Judge Simulation — No API key required"
+HISTORICAL_REPLAY = "Historical Replay — No API key required"
+LIVE_RESOLVEOPS = "Live ResolveOps — OpenAI API key required"
+SIMULATION_SCENARIOS = (
+    ("Service outage", "CASE-001"),
+    ("Wi-Fi / local connectivity", "CASE-005"),
+    ("Camera / device issue", "CASE-008"),
+    ("Insufficient evidence / escalation", "CASE-011"),
+    ("Provisioning / approval-required", "CASE-002"),
+)
 
 
 def display_label(value: str | None) -> str:
@@ -63,6 +74,38 @@ def chart_data(report: dict[str, object]) -> list[dict[str, object]]:
 def comparison_report() -> dict[str, object] | None:
     path = ROOT / "evaluation/reports/final_comparison.json"
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
+
+
+def mode_comparison() -> list[dict[str, str]]:
+    return [
+        {"mode": "Judge Simulation", "api_key": "No", "inference": "No"},
+        {"mode": "Historical Replay", "api_key": "No", "inference": "No"},
+        {"mode": "Live ResolveOps", "api_key": "Yes", "inference": "Yes"},
+    ]
+
+
+def live_mode_available(api_key: str | None) -> bool:
+    return bool(api_key)
+
+
+def observable_case(case_id: str) -> dict[str, object]:
+    cases = json.loads((ROOT / "data/cases/benchmark_cases.json").read_text(encoding="utf-8"))
+    return next(case for case in cases if case["case_id"] == case_id)
+
+
+def simulation_scenarios() -> list[dict[str, object]]:
+    recorded = set(playback_cases())
+    return [
+        {"label": label, "case": observable_case(case_id)}
+        for label, case_id in SIMULATION_SCENARIOS
+        if case_id in recorded
+    ]
+
+
+def reset_transient_approval(state: MutableMapping[str, object], context: str) -> None:
+    if state.get("approval_context") != context:
+        state["approval_context"] = context
+        state.pop("approval_decision", None)
 
 
 def playback_cases(run_id: str = "resolveops-phase5a-001") -> list[str]:

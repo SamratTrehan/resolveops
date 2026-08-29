@@ -1,158 +1,137 @@
 # ResolveOps
 
-> **Work in progress:** Phase 3 adds a fair single-agent baseline implementation and local run artifacts. No official baseline result, specialized ResolveOps workflow, consequential action, or usable support interface exists yet.
+ResolveOps is an evidence-grounded, synthetic technical-support workflow for Tier-1 and Tier-2 agents. It investigates through deterministic tools, produces an evidence-backed resolution, independently verifies it, and requires human approval before consequential simulated actions.
 
-ResolveOps is intended to help Tier-1 and Tier-2 technical-support agents investigate fragmented evidence, propose an evidence-backed resolution, independently verify it, and escalate when the evidence is insufficient. All data and consequential actions in this hackathon will be synthetic.
+All customers, devices, accounts, actions, and historical artifacts in this repository are synthetic. ResolveOps does not connect to real customer systems.
 
-## Intended architecture
+## Judge Quick Start
 
-The planned flow is:
-
-```text
-Ticket -> Investigator -> evidence/tools -> Resolver -> Verifier
-       -> human approval when required -> Resolution Packet
-```
-
-The repository keeps Python code under the `resolveops/` namespace: the future application package (`resolveops/app/`), agent definitions (`resolveops/agents/`), deterministic diagnostic tools (`resolveops/tools/`), domain models (`resolveops/domain/`), and evaluation code (`resolveops/evaluation/`). JSON world state and Markdown knowledge articles live in `data/`; trajectories, tests, and the Streamlit entry point remain at the repository root.
-
-## Current phase
-
-Phase 4 implements the first ResolveOps workflow: `Ticket -> Investigator -> EvidenceBundle -> Resolver -> CandidateOutput`. The Investigator has the six deterministic tools; the Resolver has no diagnostic tools and decides only from the ticket, public ontology, and structured evidence handoff. The independent Verifier is not implemented.
-
-The Phase 4 hypothesis is that separating evidence collection from resolution improves evidence coverage and reduces unsupported conclusions without changing the model or tool surface. `baseline-official-004` is the frozen fair baseline (VRSR 66.67%, evidence coverage 73.33%); Phase 4 has not yet been benchmarked.
-
-Consequential simulated actions are safety-gated: gateway activation requires explicit human approval before any synthetic execution is allowed. Approval is separate from resolution quality and never changes CandidateOutput or scoring; pending and rejected actions remain blocked. No real systems or credentials are used.
-
-## Evaluation evidence
-
-The fair comparison uses the same frozen 15 cases, hidden truths, deterministic scorer, public ontology, simulator/tool world, `gpt-5.6-terra`, and medium reasoning effort. Agents receive no evaluator feedback; all cases remain in the denominator and execution failures count as failures. Only malformed structured JSON receives one infrastructure retry; Phase 5A's quality revision is separate. `baseline-official-003` is non-comparable because ontology IDs were hidden; `resolveops-phase4-001` is a diagnostic tool-name namespace defect. The fair baseline is `baseline-official-004` / baseline-v2.
-
-Generate the offline comparison report (no API calls):
-
-```bash
-python -m resolveops.evaluation.report_experiments
-```
-
-It writes `evaluation/reports/final_comparison.json` and `.md`. Live benchmark commands consume OpenAI API tokens. The project insight is that evidence discipline and independent verification improved reliability, but the verifier also increased latency and token usage; extra agents must earn their cost.
-
-## Setup
-
-Python 3.12 is required.
+**No OpenAI API key is required to evaluate ResolveOps.** This path is **OFFLINE / ZERO API COST**. It opens the Streamlit presentation using frozen historical artifacts; it does not run an agent or require an API key.
 
 Windows PowerShell:
 
 ```powershell
 python -m venv .venv
-.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-Copy-Item .env.example .env
+.venv\Scripts\python -m pip install -r requirements.txt
+.venv\Scripts\python -m streamlit run streamlit_app.py
 ```
 
-macOS or Linux:
+macOS/Linux:
 
 ```bash
 python3.12 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python -m streamlit run streamlit_app.py
+```
+
+The default **Interactive Judge Simulation** replays real recorded agent outputs for curated synthetic tickets, then applies only deterministic local safety interaction. **Historical Replay** is the direct, read-only trajectory view, including the CASE-003 known limitation. **Measured Improvement** shows the frozen baseline-to-final comparison. None of these paths loads evaluator-only truth or calls an API.
+
+## Final architecture
+
+```text
+Ticket
+-> Investigator
+-> Resolver
+-> Verifier
+-> optional one Resolver correction
+-> Human Safety Gate
+-> Resolution Packet
+```
+
+The fixed 15-case evaluation improved as follows, using the same synthetic cases, public output ontology, model family, and deterministic scoring contract:
+
+| Stage | Verified cases | VRSR | Evidence coverage |
+| --- | ---: | ---: | ---: |
+| Baseline v2 | 10/15 | 66.67% | 73.33% |
+| Investigator + Resolver | 12/15 | 80.00% | 93.33% |
+| + Verifier + optional one correction | 14/15 | 93.33% | 100.00% |
+
+The reliability improvement carries a visible tradeoff: average recorded latency rose from 9,692.86 ms to 23,815.48 ms and recorded token use from 45,661 to 151,432. The final comparison report preserves the run-level details.
+
+## Reproducible setup
+
+Python **3.12** is required. Create a local `.env` only for live runs:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+```bash
 cp .env.example .env
 ```
 
-Set `OPENAI_API_KEY`, `RESOLVEOPS_MODEL`, and `RESOLVEOPS_REASONING_EFFORT` in your shell before a live baseline run. The offline test suite, simulator demo, and benchmark inspection do not need them.
+`.env.example` contains placeholders only. Set these environment values for a live run:
 
-## Test
+```ini
+OPENAI_API_KEY=
+RESOLVEOPS_MODEL=gpt-5.6-terra
+RESOLVEOPS_REASONING_EFFORT=medium
+```
+
+Supported reasoning efforts are `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. The selected model and effort are recorded in manifests, runtime records, and trajectories.
+
+## Offline inspection and checks
+
+These commands are **OFFLINE / ZERO API COST**:
 
 ```bash
 python -m pytest
-```
-
-## Simulator demo
-
-With the virtual environment active, run:
-
-```bash
 python -m resolveops.tools.demo
-```
-
-The demo prints structured evidence for one synthetic customer without requiring an API key or network access.
-
-## Benchmark inspection
-
-```bash
 python -m resolveops.evaluation.inspect_benchmark
+python -m resolveops.evaluation.report_experiments
 ```
 
-This prints only observable benchmark inputs. `--show-truth` is an explicitly developer-only evaluator inspection option.
+The simulator demo prints deterministic synthetic evidence. Benchmark inspection prints observable case inputs only. `--show-truth` is a developer-only evaluator inspection option and is never used by agent runtime or the Streamlit demo. The report generator reads frozen score artifacts and writes only `evaluation/reports/final_comparison.json` and `.md`.
 
-## Baseline agent
+## Judge modes
 
-`baseline-v1` in `resolveops/agents/baseline/prompt.py` is preserved unchanged for historical reproducibility. New runs default to `baseline-v2`: the same one-agent baseline and ordinary troubleshooting instructions, plus the public output vocabulary below. It produces the Phase 2 `CandidateOutput` schema and records local JSON trajectories without loading hidden truth.
+| Mode | API key | New LLM inference | Purpose |
+| --- | --- | --- | --- |
+| Interactive Judge Simulation | No | No | Guided product exploration using recorded ResolveOps trajectories and deterministic synthetic safety behavior. |
+| Historical Replay | No | No | Direct read-only inspection of immutable official trajectories. |
+| Live ResolveOps | Yes | Yes | Fresh inference from a new explicit CLI run ID. |
 
-### Public support ontology
+The simulation maps service outage, local Wi-Fi, camera/device, insufficient-evidence, and approval-required provisioning scenarios to recorded Phase 5A cases. Safety decisions are temporary Streamlit session state; they never write trajectories, benchmark artifacts, reports, or synthetic source data.
 
-This public, case-agnostic contract lives in `resolveops/domain/support_ontology.py` and is shared by the baseline and future ResolveOps workflow. **Public ontology != case answer key.** It defines valid output labels; it does not reveal which label applies to any benchmark case.
+## Historical artifacts and scoring
 
-| Root-cause ID | Generic description |
-|---|---|
-| `regional_outage` | Service interruption affecting the customer's area. |
-| `pending_gateway_provisioning` | Replacement or new gateway activation/provisioning is incomplete. |
-| `camera_reconnect_needed` | Camera needs reconnection or reconfiguration rather than being proven defective. |
-| `dns_resolution_failure` | Connectivity exists but DNS/name resolution is unavailable. |
-| `local_wifi_configuration` | Issue is local to Wi-Fi/client configuration rather than upstream service. |
-| `account_standing_question` | Concern relates to an account notice without evidence of service suspension. |
-| `INSUFFICIENT_EVIDENCE` | Available evidence does not support a reliable root cause. |
+The frozen, comparable runs are retained read-only:
 
-| Action ID | Generic description |
-|---|---|
-| `communicate_outage_status` | Communicate known outage status and next step. |
-| `guide_gateway_activation` | Guide gateway activation or provisioning completion. |
-| `guide_camera_reconnect` | Guide camera reconnection to the available network. |
-| `guide_dns_recovery` | Guide standard DNS recovery and retest steps. |
-| `guide_wifi_reconnect` | Guide local Wi-Fi/client reconnection recovery. |
-| `review_account_notice` | Explain and direct review of an account-standing notice. |
-| `escalate_for_more_evidence` | Escalate because evidence is insufficient for a reliable resolution. |
+- `baseline-official-004` — Baseline v2
+- `resolveops-phase4-002` — Investigator + Resolver
+- `resolveops-phase5a-001` — Investigator + Resolver + Verifier + optional revision
 
-Configure a live model explicitly:
-
-```powershell
-$env:OPENAI_API_KEY = "..."
-$env:RESOLVEOPS_MODEL = "gpt-5.6-terra"
-$env:RESOLVEOPS_REASONING_EFFORT = "medium"
-```
-
-Run one development smoke case manually (this makes a live API call):
+Score a newly generated artifact set after its live runner has completed:
 
 ```bash
-python -m resolveops.agents.baseline.runner --case-id CASE-001 --run-id smoke-001
+python -m resolveops.evaluation.score_baseline_results --run-id baseline-new
+python -m resolveops.evaluation.score_resolveops_results --run-id resolveops-new
 ```
 
-The future official baseline run is explicit and is not run automatically:
+These scoring commands load evaluator-only truth and rewrite only the selected run's deterministic score outputs. They are for evaluation maintenance, not the public Judge Demo. Do not run them against the frozen historical runs unless an intentional artifact refresh is required.
+
+## Live agent execution and benchmark reruns
+
+The following commands are **LIVE / CONSUMES OPENAI API TOKENS**. They require `OPENAI_API_KEY`, use the configured model/effort, and create a new explicit run ID. Existing IDs are rejected without overwrite. Re-running a model-based benchmark is optional and is never needed for the judge simulation or historical replay.
 
 ```bash
-python -m resolveops.agents.baseline.runner --all --run-id baseline-official-001 --official
-python -m resolveops.evaluation.score_baseline_results --run-id baseline-official-001
+python -m resolveops.agents.baseline.runner --case-id CASE-001 --run-id baseline-smoke-new
+python -m resolveops.agents.baseline.runner --all --run-id baseline-new --official
+python -m resolveops.evaluation.score_baseline_results --run-id baseline-new
+
+python -m resolveops.agents.resolveops.runner --case-id CASE-001 --run-id resolveops-smoke-new
+python -m resolveops.agents.resolveops.runner --all --run-id resolveops-new
+python -m resolveops.evaluation.score_resolveops_results --run-id resolveops-new
 ```
 
-Phase 4 commands are also explicit and make live API calls only when manually run with an API key:
+The baseline is one tool-using agent. ResolveOps separates evidence collection, resolution, and independent verification. A case receives at most one retry only for malformed structured output; valid-but-wrong reasoning is never retried. Execution failures remain in the full benchmark denominator.
 
-```bash
-python -m resolveops.agents.resolveops.runner --case-id CASE-001 --run-id phase4-smoke-001
-python -m resolveops.agents.resolveops.runner --all --run-id resolveops-official-001
-```
+## Human approval demonstration
 
-The benchmark-default runtime lock is `gpt-5.6-terra` with reasoning effort `medium`. Supported effort values in the installed SDK are `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Generation artifacts record the actual model and effort in `manifest.json` and `runtime.json`; trajectories record both per case. Existing run IDs are rejected rather than overwritten. The scoring command is deliberately separate because it is the only step that loads evaluator-only truth.
+The Streamlit historical playback is **OFFLINE / ZERO API COST**. In **Judge Demo**, select a recorded resolution whose action requires approval; the Safety Gate shows that simulated gateway activation is blocked pending an explicit human decision. Approving or rejecting it changes only the displayed synthetic safety record—never a real system, candidate, or score.
 
-`baseline-official-001` and `baseline-official-002` are incomplete historical runner attempts. `baseline-official-003` completed but is a diagnostic, non-comparable run because the baseline was not given the canonical output vocabulary. The next explicit official run using `baseline-v2` is the fair baseline comparison; no result is implied here.
+## Public output contract and safety
 
-Each case receives at most one infrastructure retry, only for the recorded malformed structured-output `ModelBehaviorError`. A valid candidate is never retried based on its diagnosis, evidence, confidence, or evaluator outcome. In an `--all` run, an exhausted retry becomes a distinct `ExecutionFailure`: its trajectory and runtime record are retained, the runner continues with later cases, and it counts as a VRSR failure in the full 15-case denominator. It is not a model abstention (`INSUFFICIENT_EVIDENCE`) and does not fabricate a candidate. A run that attempted every requested case is completed even if it contains execution failures; `failure.json` is reserved for catastrophic/incomplete runs that cannot be scored.
+The public, case-agnostic root-cause and action ontology lives in `resolveops/domain/support_ontology.py`. It standardizes output labels without revealing case-specific answers. Hidden truth, accepted evaluator sets, and forbidden evaluator claims remain outside agent runtime and normal demo presentation.
 
-## Planned run command
-
-The placeholder Streamlit entry point can be started with:
-
-```bash
-python -m streamlit run streamlit_app.py
-```
-
-It currently shows only a Phase 0 status message; it does not run a support workflow.
+Consequential simulation is deliberately separate from resolution quality: approval metadata does not alter `CandidateOutput` or VRSR scoring. See [PROJECT_SPEC.md](PROJECT_SPEC.md), [TRAJECTORIES.md](TRAJECTORIES.md), [IMPROVEMENT_CHANGELOG.md](IMPROVEMENT_CHANGELOG.md), [FINAL_AUDIT.md](FINAL_AUDIT.md), and [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md) for the project record and submission status.

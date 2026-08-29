@@ -1,4 +1,27 @@
-from resolveops.app.demo_data import chart_data, comparison_rows, comparison_report, display_label, evidence_cards, judge_demo_case, playback, playback_cases, revision_diff, workflow_stages
+import hashlib
+from pathlib import Path
+
+from resolveops.app import demo_data
+from resolveops.app.demo_data import (
+    HISTORICAL_REPLAY,
+    JUDGE_SIMULATION,
+    LIVE_RESOLVEOPS,
+    chart_data,
+    comparison_rows,
+    comparison_report,
+    display_label,
+    evidence_cards,
+    judge_demo_case,
+    live_mode_available,
+    mode_comparison,
+    observable_case,
+    playback,
+    playback_cases,
+    reset_transient_approval,
+    revision_diff,
+    simulation_scenarios,
+    workflow_stages,
+)
 
 
 def test_demo_loaders_are_read_only_and_hide_evaluator_fields() -> None:
@@ -15,3 +38,36 @@ def test_demo_loaders_are_read_only_and_hide_evaluator_fields() -> None:
     assert evidence_cards(stages["investigator-v1"]["output"])
     for row in comparison_rows(stages):
         assert isinstance(row["before"], str) and isinstance(row["after"], str) and row["changed"] in {"✓", "—"}
+
+
+def test_no_key_judge_and_replay_modes_use_recorded_observable_artifacts_only() -> None:
+    assert not live_mode_available(None)
+    assert live_mode_available("server-side-key")
+    assert [row["mode"] for row in mode_comparison()] == ["Judge Simulation", "Historical Replay", "Live ResolveOps"]
+    assert [row["api_key"] for row in mode_comparison()] == ["No", "No", "Yes"]
+    assert JUDGE_SIMULATION.endswith("No API key required")
+    assert HISTORICAL_REPLAY.endswith("No API key required")
+    assert LIVE_RESOLVEOPS.endswith("OpenAI API key required")
+
+    scenarios = simulation_scenarios()
+    assert [scenario["label"] for scenario in scenarios] == ["Service outage", "Wi-Fi / local connectivity", "Camera / device issue", "Insufficient evidence / escalation", "Provisioning / approval-required"]
+    for scenario in scenarios:
+        case = scenario["case"]
+        assert case["case_id"] in playback_cases()
+        assert observable_case(case["case_id"])["ticket_text"] == case["ticket_text"]
+        assert not any(field in case for field in demo_data.FORBIDDEN)
+
+
+def test_simulation_is_read_only_and_approval_is_session_local() -> None:
+    path = Path("trajectories/resolveops/resolveops-phase5a-001/CASE-002-investigator-v1.json")
+    before = hashlib.sha256(path.read_bytes()).hexdigest()
+    stages = playback("resolveops-phase5a-001", "CASE-002")
+    assert stages["resolver-v1"]["output"]["recommended_action_id"] == "guide_gateway_activation"
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == before
+
+    state = {"approval_context": "simulation:CASE-002", "approval_decision": "approve"}
+    reset_transient_approval(state, "replay:CASE-003")
+    assert state == {"approval_context": "replay:CASE-003"}
+    reset_transient_approval(state, "replay:CASE-003")
+    assert state == {"approval_context": "replay:CASE-003"}
+    assert "run_case" not in Path(demo_data.__file__).read_text(encoding="utf-8")
