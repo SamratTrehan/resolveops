@@ -10,8 +10,6 @@ from resolveops.app.demo_data import (
     HISTORICAL_REPLAY,
     JUDGE_SIMULATION,
     LIVE_RESOLVEOPS,
-    FEATURED_BATTLE_CASE,
-    IMPROVEMENT_CHART_HEIGHT,
     chart_data,
     case_battle,
     case_battle_case_ids,
@@ -136,7 +134,7 @@ def render_case_battle() -> None:
     case_ids = case_battle_case_ids()
     default = default_case_battle_case()
     selected = st.selectbox("Comparison case", case_ids, index=case_ids.index(default), key="battle-case")
-    if selected == FEATURED_BATTLE_CASE:
+    if selected == default:
         st.caption("Featured comparison: CASE-006 clearly demonstrates an evidence-reference correction; all comparable cases are selectable.")
     battle = case_battle(selected)
     case = battle["case"]
@@ -301,11 +299,11 @@ with improvement:
         columns = st.columns(3)
         for column, item in zip(columns, improvement_data):
             column.metric(item["stage"], f"{item['vrsr']:.2f}%")
-        st.vega_lite_chart({"height": IMPROVEMENT_CHART_HEIGHT, "data": {"values": improvement_data}, "mark": "bar", "encoding": {"x": {"field": "stage", "type": "nominal", "axis": {"labelAngle": 0}}, "y": {"field": "vrsr", "type": "quantitative", "scale": {"domain": [0, 100]}}, "tooltip": [{"field": "vrsr", "type": "quantitative"}]}}, width="stretch")
+        st.vega_lite_chart({"height": 180, "data": {"values": improvement_data}, "mark": "bar", "encoding": {"x": {"field": "stage", "type": "nominal", "axis": {"labelAngle": 0}}, "y": {"field": "vrsr", "type": "quantitative", "scale": {"domain": [0, 100]}}, "tooltip": [{"field": "vrsr", "type": "quantitative"}]}}, width="stretch")
         st.markdown(f"<p class='metric-note'>VRSR improved by {runs[-1]['vrsr_percent']-runs[0]['vrsr_percent']:.1f} percentage points from baseline to final.</p>", unsafe_allow_html=True)
         st.markdown("<h3 class='improvement-heading'>Required Evidence-Reference Coverage</h3>", unsafe_allow_html=True)
         evidence_data = evidence_coverage_data(report)
-        st.vega_lite_chart({"height": IMPROVEMENT_CHART_HEIGHT, "data": {"values": evidence_data}, "mark": "bar", "encoding": {"x": {"field": "stage", "type": "nominal", "axis": {"labelAngle": 0}}, "y": {"field": "evidence", "type": "quantitative", "scale": {"domain": [0, 100]}}, "tooltip": [{"field": "evidence", "type": "quantitative"}]}}, width="stretch")
+        st.vega_lite_chart({"height": 180, "data": {"values": evidence_data}, "mark": "bar", "encoding": {"x": {"field": "stage", "type": "nominal", "axis": {"labelAngle": 0}}, "y": {"field": "evidence", "type": "quantitative", "scale": {"domain": [0, 100]}}, "tooltip": [{"field": "evidence", "type": "quantitative"}]}}, width="stretch")
         coverage_columns = st.columns(3)
         for column, item in zip(coverage_columns, evidence_data):
             column.metric(item["stage"], f"{item['evidence']:.2f}%")
