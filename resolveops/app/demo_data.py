@@ -80,6 +80,10 @@ def chart_data(report: dict[str, object]) -> list[dict[str, object]]:
     return [{"stage": label, "vrsr": run["vrsr_percent"], "evidence": run["evidence_coverage"]} for label, run in zip(labels, report["runs"])]
 
 
+def evidence_coverage_data(report: dict[str, object]) -> list[dict[str, object]]:
+    return [{"stage": item["stage"], "evidence": item["evidence"]} for item in chart_data(report)]
+
+
 def comparison_report() -> dict[str, object] | None:
     path = ROOT / "evaluation/reports/final_comparison.json"
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
@@ -118,6 +122,13 @@ def simulation_scenarios() -> list[dict[str, object]]:
 def reset_transient_approval(state: MutableMapping[str, object], context: str) -> None:
     if state.get("approval_context") != context:
         state["approval_context"] = context
+        state.pop("approval_decision", None)
+
+
+def reset_approval_for_mode(state: MutableMapping[str, object], mode: str) -> None:
+    if state.get("approval_mode") != mode:
+        state["approval_mode"] = mode
+        state.pop("approval_context", None)
         state.pop("approval_decision", None)
 
 

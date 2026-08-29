@@ -23,10 +23,16 @@ def test_no_key_streamlit_modes_are_safe_and_interactive(monkeypatch) -> None:
     app.button[3].click().run()
     assert not app.exception
     assert {button.label for button in app.button} >= {"Approve simulated action", "Reject simulated action"}
+    app.button[4].click().run()
+    assert app.session_state["approval_decision"] == "approve"
 
     app.button[1].click().run()
     assert not app.exception
     assert any("immutable official trajectories" in info.value for info in app.info)
+    historical = next(select for select in app.selectbox if select.label == "Case")
+    assert any(str(option).startswith("CASE-003") for option in historical.options)
+    historical.set_value("CASE-003").run()
+    assert not app.exception
     app.button[2].click().run()
     assert not app.exception
     assert app.button[2].disabled

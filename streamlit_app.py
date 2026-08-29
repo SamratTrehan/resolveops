@@ -18,6 +18,7 @@ from resolveops.app.demo_data import (
     comparison_rows,
     display_label,
     default_case_battle_case,
+    evidence_coverage_data,
     evidence_cards,
     judge_demo_case,
     live_mode_available,
@@ -27,6 +28,7 @@ from resolveops.app.demo_data import (
     playback,
     playback_cases,
     reset_transient_approval,
+    reset_approval_for_mode,
     simulation_scenarios,
     workflow_steps,
     workflow_stages,
@@ -38,8 +40,16 @@ def render_safety(answer: dict[str, object], context: str) -> None:
     decision = st.session_state.get("approval_decision")
     gate = safety_gate(answer["recommended_action_id"], HumanApproval(decision) if decision else None)
     st.caption("SIMULATED — NO REAL SYSTEM CHANGES")
-    st.write(f"Safety gate: {gate.approval_status.value.replace('_', ' ')} — {gate.summary}")
     if gate.approval_required:
+        st.write("**Approval required**")
+        st.write(f"Status: {display_label(gate.approval_status.value)}")
+        if decision:
+            st.write(f"Human decision: {display_label(decision)}")
+            st.write(f"Synthetic execution: {'Completed' if decision == HumanApproval.APPROVE.value else 'Blocked'}")
+            if decision == HumanApproval.REJECT.value:
+                st.write("No action executed.")
+        else:
+            st.caption(gate.summary)
         left, right = st.columns(2)
         if left.button("Approve simulated action", key=f"approve-{context}"):
             st.session_state["approval_decision"] = HumanApproval.APPROVE.value
@@ -47,6 +57,8 @@ def render_safety(answer: dict[str, object], context: str) -> None:
         if right.button("Reject simulated action", key=f"reject-{context}"):
             st.session_state["approval_decision"] = HumanApproval.REJECT.value
             st.rerun()
+    else:
+        st.write(f"Safety gate: {display_label(gate.approval_status.value)} — {gate.summary}")
 
 
 def render_workflow_strip(active: str) -> None:
@@ -219,7 +231,7 @@ st.caption("Synthetic demo only — never enter real customer data, credentials,
 
 api_key = os.environ.get("OPENAI_API_KEY")
 mode = render_mode_cards()
-reset_transient_approval(st.session_state, f"mode:{mode}")
+reset_approval_for_mode(st.session_state, mode)
 render_workflow_strip("Resolution" if mode != JUDGE_SIMULATION or st.session_state.get("simulation_started") else "Ticket")
 if mode == JUDGE_SIMULATION:
     st.info("Explore the full ResolveOps workflow using recorded agent outputs and synthetic support scenarios. No API key required; no new LLM inference occurs.")
@@ -251,9 +263,8 @@ with experience:
         else:
             st.caption("Choose a synthetic ticket and run the recorded simulation to inspect its full workflow.")
     elif mode == HISTORICAL_REPLAY:
-        paths = {"Judge Demo — revised success": judge_demo_case(), "Explore known limitation": "CASE-003"}
-        selected = st.radio("Historical trajectory", paths, horizontal=True)
-        case_id = paths[selected]
+        cases = playback_cases()
+        case_id = st.selectbox("Case", cases, index=cases.index(judge_demo_case()), format_func=lambda value: f"{value} — Recorded trajectory", key="historical-case")
         case = observable_case(case_id)
         render_recorded_workflow(case, playback("resolveops-phase5a-001", case_id), f"replay:{case_id}", "Historical Replay — immutable recorded trajectory, zero API calls")
     else:
@@ -286,4 +297,10 @@ with improvement:
         st.vega_lite_chart({"data": {"values": chart_data(report)}, "mark": "bar", "encoding": {"x": {"field": "stage", "type": "nominal", "axis": {"labelAngle": 0}}, "y": {"field": "vrsr", "type": "quantitative", "scale": {"domain": [0, 100]}}, "tooltip": [{"field": "vrsr", "type": "quantitative"}]}}, width="stretch")
         st.metric("Baseline → final VRSR", f"+{runs[-1]['vrsr_percent']-runs[0]['vrsr_percent']:.1f} pp")
         st.metric("Phase 4 → verifier VRSR", f"+{runs[-1]['vrsr_percent']-runs[1]['vrsr_percent']:.1f} pp")
+        st.subheader("Evidence Coverage")
+        st.vega_lite_chart({"data": {"values": evidence_coverage_data(report)}, "mark": "bar", "encoding": {"x": {"field": "stage", "type": "nominal", "axis": {"labelAngle": 0}}, "y": {"field": "evidence", "type": "quantitative", "scale": {"domain": [0, 100]}}, "tooltip": [{"field": "evidence", "type": "quantitative"}]}}, width="stretch")
+        coverage_columns = st.columns(3)
+        for column, item in zip(coverage_columns, evidence_coverage_data(report)):
+            column.metric(item["stage"], f"{item['evidence']:.2f}%")
+        st.caption(f"Specialization and verification improved evidence grounding from {runs[0]['evidence_coverage']:.2f}% to {runs[-1]['evidence_coverage']:.2f}%.")
         st.caption("Reliability came at a cost: latency and recorded tokens increased. Additional agents must earn their cost.")
