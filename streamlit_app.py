@@ -18,11 +18,13 @@ from resolveops.app.demo_data import (
     judge_demo_case,
     live_mode_available,
     mode_comparison,
+    mode_metadata,
     observable_case,
     playback,
     playback_cases,
     reset_transient_approval,
     simulation_scenarios,
+    workflow_steps,
     workflow_stages,
 )
 
@@ -41,6 +43,29 @@ def render_safety(answer: dict[str, object], context: str) -> None:
         if right.button("Reject simulated action", key=f"reject-{context}"):
             st.session_state["approval_decision"] = HumanApproval.REJECT.value
             st.rerun()
+
+
+def render_workflow_strip(active: str) -> None:
+    steps = workflow_steps(active)
+    markup = "<span class='workflow-connector'></span>".join(
+        f"<div class='workflow-step {'active' if step['active'] else ''}'>{step['label']}</div>" for step in steps
+    )
+    st.markdown(f"<div class='workflow'>{markup}</div>", unsafe_allow_html=True)
+
+
+def render_mode_cards() -> str:
+    if "selected_mode" not in st.session_state:
+        st.session_state["selected_mode"] = JUDGE_SIMULATION
+    st.markdown("#### Choose experience")
+    columns = st.columns(3)
+    for column, item in zip(columns, mode_metadata()):
+        selected = st.session_state["selected_mode"] == item["id"]
+        with column:
+            st.markdown(f"<div class='mode-card {'selected' if selected else ''}'><span class='badge'>{item['badge']}</span><h4>{item['label']}</h4><p>{item['summary']}</p></div>", unsafe_allow_html=True)
+            if st.button("Selected" if selected else "Choose", key=f"mode-{item['badge']}", disabled=selected, width="stretch"):
+                st.session_state["selected_mode"] = item["id"]
+                st.rerun()
+    return st.session_state["selected_mode"]
 
 
 def render_recorded_workflow(case: dict[str, object], stages: dict[str, dict[str, object]], context: str, source: str) -> None:
@@ -93,31 +118,31 @@ def render_recorded_workflow(case: dict[str, object], stages: dict[str, dict[str
 
 
 st.set_page_config(page_title="ResolveOps", layout="wide")
-st.markdown("""<style>.hero{padding:1.5rem;border:1px solid #345;background:#101a27;border-radius:16px}.card{padding:1rem;border:1px solid #345;border-radius:12px;background:#142130}.muted{color:#9ab}</style>""", unsafe_allow_html=True)
+st.markdown("""<style>.hero{padding:1.5rem;border:1px solid #345;background:#101a27;border-radius:16px}.card{padding:1rem;border:1px solid #345;border-radius:12px;background:#142130}.muted{color:#9ab}.workflow{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin:1rem 0}.workflow-step{border:1px solid #345;background:#101a27;border-radius:999px;padding:.45rem .7rem;color:#9ab;font-size:.82rem}.workflow-step.active{background:#1d3a35;border-color:#4d9b7d;color:#e7fff3;font-weight:600}.workflow-connector{width:1rem;height:1px;background:#345}.mode-card{min-height:8rem;padding:1rem;border:1px solid #345;border-radius:12px;background:#101a27}.mode-card.selected{border-color:#4d9b7d;background:#142b29}.mode-card h4{margin:.45rem 0 .25rem}.mode-card p{margin:0;color:#9ab;font-size:.86rem}.badge{display:inline-block;border:1px solid #4f718d;border-radius:999px;padding:.12rem .4rem;color:#b8d5ee;font-size:.68rem;font-weight:600;letter-spacing:.04em}</style>""", unsafe_allow_html=True)
 report = comparison_report()
 final = report["runs"][-1] if report else {}
-st.markdown(f"<div class='hero'><h1>ResolveOps</h1><h3>Evidence-grounded support. Verified before action.</h3><p>Multi-agent technical support that investigates evidence, verifies its own resolution, and requires human approval before consequential simulated actions.</p><b>✓ {final.get('vrsr_percent', 0):.1f}% Verified Resolution Success</b> &nbsp; <b>✓ {final.get('evidence_coverage', 0):.0f}% Evidence Coverage</b> &nbsp; <b>👤 Human-in-the-loop Safety</b></div>", unsafe_allow_html=True)
+st.markdown(f"<div class='hero'><h1>ResolveOps</h1><h3>Evidence-grounded support. Verified before action.</h3><p>Multi-agent technical support that investigates evidence, verifies its own resolution, and requires human approval before consequential simulated actions.</p><b>{final.get('vrsr_percent', 0):.1f}% Verified Resolution Success</b> &nbsp; <b>{final.get('evidence_coverage', 0):.0f}% Evidence Coverage</b> &nbsp; <b>Human Safety Gate</b></div>", unsafe_allow_html=True)
 st.caption("Synthetic demo only — never enter real customer data, credentials, or private information.")
-st.markdown("🎫 **Ticket** → 🔎 **Investigator** → 🧠 **Resolver** → 🛡️ **Verifier** → 🔁 **Conditional revision** → 👤 **Safety gate** → 📦 **Resolution**")
 
 api_key = os.environ.get("OPENAI_API_KEY")
-mode = st.radio("Experience mode", (JUDGE_SIMULATION, HISTORICAL_REPLAY, LIVE_RESOLVEOPS), horizontal=True)
+mode = render_mode_cards()
 reset_transient_approval(st.session_state, f"mode:{mode}")
+render_workflow_strip("Resolution" if mode != JUDGE_SIMULATION or st.session_state.get("simulation_started") else "Ticket")
 if mode == JUDGE_SIMULATION:
-    st.info("**Interactive Judge Simulation**\n\nThis mode replays real recorded ResolveOps agent outputs against synthetic cases so the full product can be explored without an API key. No new LLM inference occurs in this mode.")
+    st.info("Explore the full ResolveOps workflow using recorded agent outputs and synthetic support scenarios. No API key required; no new LLM inference occurs.")
 elif mode == HISTORICAL_REPLAY:
-    st.info("**Historical Replay** = direct, read-only inspection of immutable official trajectories. No API key and no new LLM inference are used.")
+    st.info("Inspect immutable official trajectories directly. This read-only view uses no API key and performs no new LLM inference.")
 else:
-    st.info("**Live ResolveOps** = genuinely fresh inference using the configured server-side OpenAI API key.")
+    st.info("Run fresh inference only with a configured server-side OpenAI API key.")
 
 st.dataframe(mode_comparison(), hide_index=True, width="stretch")
-experience, improvement = st.tabs(["Resolve a ticket", "Measured Improvement"])
+experience, improvement = st.tabs(["Run a scenario", "Measured Improvement"])
 
 with experience:
     if mode == JUDGE_SIMULATION:
         scenarios = simulation_scenarios()
         labels = {scenario["label"]: scenario for scenario in scenarios}
-        selected = st.selectbox("Curated synthetic ticket", labels)
+        selected = st.selectbox("Scenario", labels)
         scenario = labels[selected]
         case = scenario["case"]
         run_context = f"simulation:{case['case_id']}"

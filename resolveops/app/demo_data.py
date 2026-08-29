@@ -10,6 +10,12 @@ FORBIDDEN = ("acceptable_root", "acceptable_action", "forbidden_claim", "evaluat
 JUDGE_SIMULATION = "Interactive Judge Simulation — No API key required"
 HISTORICAL_REPLAY = "Historical Replay — No API key required"
 LIVE_RESOLVEOPS = "Live ResolveOps — OpenAI API key required"
+MODE_METADATA = (
+    {"id": JUDGE_SIMULATION, "label": "Interactive Judge Simulation", "badge": "NO KEY", "summary": "Full guided experience", "api_key": "No", "inference": "No"},
+    {"id": HISTORICAL_REPLAY, "label": "Historical Replay", "badge": "RECORDED", "summary": "Inspect official recorded runs", "api_key": "No", "inference": "No"},
+    {"id": LIVE_RESOLVEOPS, "label": "Live ResolveOps", "badge": "LIVE", "summary": "Fresh model inference", "api_key": "Yes", "inference": "Yes"},
+)
+WORKFLOW_LABELS = ("Ticket", "Investigator", "Resolver", "Verifier", "Conditional Revision", "Safety Gate", "Resolution")
 SIMULATION_SCENARIOS = (
     ("Service outage", "CASE-001"),
     ("Wi-Fi / local connectivity", "CASE-005"),
@@ -77,11 +83,15 @@ def comparison_report() -> dict[str, object] | None:
 
 
 def mode_comparison() -> list[dict[str, str]]:
-    return [
-        {"mode": "Judge Simulation", "api_key": "No", "inference": "No"},
-        {"mode": "Historical Replay", "api_key": "No", "inference": "No"},
-        {"mode": "Live ResolveOps", "api_key": "Yes", "inference": "Yes"},
-    ]
+    return [{"mode": item["label"], "api_key": item["api_key"], "inference": item["inference"]} for item in MODE_METADATA]
+
+
+def mode_metadata() -> tuple[dict[str, str], ...]:
+    return MODE_METADATA
+
+
+def workflow_steps(active: str = "Ticket") -> list[dict[str, object]]:
+    return [{"label": label, "active": label == active} for label in WORKFLOW_LABELS]
 
 
 def live_mode_available(api_key: str | None) -> bool:

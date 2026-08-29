@@ -13,17 +13,18 @@ def test_no_key_streamlit_modes_are_safe_and_interactive(monkeypatch) -> None:
     app = AppTest.from_file(str(ROOT / "streamlit_app.py"))
     app.run()
     assert not app.exception
-    assert app.radio[0].value == JUDGE_SIMULATION
-    assert any("No new LLM inference" in info.value for info in app.info)
+    assert app.button[0].label == "Selected"
+    assert any("no new llm inference" in info.value.lower() for info in app.info)
 
     app.selectbox[0].set_value("Provisioning / approval-required").run()
-    app.button[0].click().run()
+    app.button[3].click().run()
     assert not app.exception
     assert {button.label for button in app.button} >= {"Approve simulated action", "Reject simulated action"}
 
-    app.radio[0].set_value(HISTORICAL_REPLAY).run()
+    app.button[1].click().run()
     assert not app.exception
-    app.radio[0].set_value(LIVE_RESOLVEOPS).run()
+    assert any("immutable official trajectories" in info.value for info in app.info)
+    app.button[2].click().run()
     assert not app.exception
-    assert app.button[0].disabled
+    assert app.button[2].disabled
     assert any("requires an OpenAI API key" in info.value for info in app.info)

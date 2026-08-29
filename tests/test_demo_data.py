@@ -14,6 +14,7 @@ from resolveops.app.demo_data import (
     judge_demo_case,
     live_mode_available,
     mode_comparison,
+    mode_metadata,
     observable_case,
     playback,
     playback_cases,
@@ -21,6 +22,7 @@ from resolveops.app.demo_data import (
     revision_diff,
     simulation_scenarios,
     workflow_stages,
+    workflow_steps,
 )
 
 
@@ -43,11 +45,20 @@ def test_demo_loaders_are_read_only_and_hide_evaluator_fields() -> None:
 def test_no_key_judge_and_replay_modes_use_recorded_observable_artifacts_only() -> None:
     assert not live_mode_available(None)
     assert live_mode_available("server-side-key")
-    assert [row["mode"] for row in mode_comparison()] == ["Judge Simulation", "Historical Replay", "Live ResolveOps"]
+    assert [row["mode"] for row in mode_comparison()] == ["Interactive Judge Simulation", "Historical Replay", "Live ResolveOps"]
     assert [row["api_key"] for row in mode_comparison()] == ["No", "No", "Yes"]
     assert JUDGE_SIMULATION.endswith("No API key required")
     assert HISTORICAL_REPLAY.endswith("No API key required")
     assert LIVE_RESOLVEOPS.endswith("OpenAI API key required")
+    assert [(item["label"], item["badge"]) for item in mode_metadata()] == [
+        ("Interactive Judge Simulation", "NO KEY"),
+        ("Historical Replay", "RECORDED"),
+        ("Live ResolveOps", "LIVE"),
+    ]
+    steps = workflow_steps("Verifier")
+    assert [step["label"] for step in steps] == ["Ticket", "Investigator", "Resolver", "Verifier", "Conditional Revision", "Safety Gate", "Resolution"]
+    assert [step["label"] for step in steps if step["active"]] == ["Verifier"]
+    assert all(label.isascii() for label in [step["label"] for step in steps])
 
     scenarios = simulation_scenarios()
     assert [scenario["label"] for scenario in scenarios] == ["Service outage", "Wi-Fi / local connectivity", "Camera / device issue", "Insufficient evidence / escalation", "Provisioning / approval-required"]
