@@ -48,7 +48,4 @@ def test_no_key_streamlit_modes_are_safe_and_interactive(monkeypatch) -> None:
     assert any(str(option).startswith("CASE-003") for option in historical.options)
     historical.set_value("CASE-003").run()
     assert not app.exception
-    _button(app, "mode-LIVE").click().run()
-    assert not app.exception
-    assert next(button for button in app.button if button.label == "Run Live ResolveOps").disabled
-    assert any("requires an OpenAI API key" in info.value for info in app.info)
+    assert all(button.key != "mode-LIVE" for button in app.button)

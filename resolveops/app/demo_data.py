@@ -10,12 +10,10 @@ FORBIDDEN = ("acceptable_root", "acceptable_action", "forbidden_claim", "evaluat
 JUDGE_SIMULATION = "Interactive Judge Simulation — No API key required"
 JUDGE_CHALLENGE = "Judge Challenge — Fresh Inference"
 HISTORICAL_REPLAY = "Historical Replay — No API key required"
-LIVE_RESOLVEOPS = "Live ResolveOps — OpenAI API key required"
 MODE_METADATA = (
     {"id": JUDGE_SIMULATION, "label": "Interactive Judge Simulation", "badge": "NO KEY", "summary": "Full guided experience", "api_key": "No", "inference": "No"},
     {"id": JUDGE_CHALLENGE, "label": "Judge Challenge", "badge": "FRESH", "summary": "New model inference on one synthetic ticket", "api_key": "Server", "inference": "Yes"},
     {"id": HISTORICAL_REPLAY, "label": "Historical Replay", "badge": "RECORDED", "summary": "Inspect official recorded runs", "api_key": "No", "inference": "No"},
-    {"id": LIVE_RESOLVEOPS, "label": "Live ResolveOps", "badge": "LIVE", "summary": "Fresh model inference", "api_key": "Yes", "inference": "Yes"},
 )
 WORKFLOW_LABELS = ("Ticket", "Investigator", "Resolver", "Verifier", "Conditional Revision", "Safety Gate", "Resolution")
 IMPROVEMENT_STAGE_LABELS = ("Baseline", "Investigator + Resolver", "Final ResolveOps")
@@ -103,10 +101,6 @@ def mode_metadata() -> tuple[dict[str, str], ...]:
 
 def workflow_steps(active: str = "Ticket") -> list[dict[str, object]]:
     return [{"label": label, "active": label == active} for label in WORKFLOW_LABELS]
-
-
-def live_mode_available(api_key: str | None) -> bool:
-    return bool(api_key)
 
 
 def observable_case(case_id: str) -> dict[str, object]:

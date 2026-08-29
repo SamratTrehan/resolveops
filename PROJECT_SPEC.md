@@ -19,7 +19,7 @@ Each stage has a distinct responsibility. The Investigator gathers relevant evid
 
 The baseline will be one general-purpose tool-using agent operating with the same underlying model, tool environment, and evaluation cases as the final system, but without specialized orchestration or independent verification.
 
-The primary metric is **Verified Resolution Success Rate (VRSR)**, a strict deterministic conjunction implemented by the benchmark scorer. A case passes only when it has an accepted diagnosis or justified abstention, accepted action, correct escalation decision, required evidence-reference coverage, and no forbidden critical claim. Verifier approval/rejection and Human Safety Gate approval are audited separately; neither is part of this model-quality score.
+The primary metric is **Verified Resolution Success Rate (VRSR)**, a strict deterministic conjunction implemented by the benchmark scorer. A case passes only when it has an accepted diagnosis or justified abstention, accepted action, correct escalation decision, required evidence-reference coverage, and no forbidden structured claim-ID violation. That component does not semantically scan free-form prose. Verifier approval/rejection and Human Safety Gate approval are audited separately; neither is part of this model-quality score.
 
 Secondary metrics are:
 
@@ -42,7 +42,7 @@ The initial comparison system is one general-purpose tool-using baseline agent w
 
 The baseline and future ResolveOps workflow share a public, case-agnostic support ontology for root-cause and action output IDs. It is not an answer key: it exposes valid normalized labels and generic meanings, never case-specific correct answers, required tools, or forbidden claims. Candidate root-cause and action fields are constrained to this vocabulary so exact deterministic scoring evaluates the public contract rather than hidden enum naming. `INSUFFICIENT_EVIDENCE` remains a valid model abstention and is distinct from an execution failure.
 
-Phase 4 introduced an Investigator and Resolver; Phase 5A added a separate Verifier and at most one Resolver revision. All stages use the same runtime model and reasoning effort as the fair baseline. Role separation improves the measured result but does not itself guarantee epistemic independence, as the retained CASE-003 failure demonstrates.
+Phase 4 introduced an Investigator and Resolver; Phase 5A added a separate Verifier and at most one Resolver revision. All stages use the same runtime model and reasoning effort as the fair baseline, while the staged configurations use more inference compute. The final measured configuration has higher strict benchmark success but role separation does not itself guarantee epistemic independence, as the retained CASE-003 failure demonstrates.
 
 Consequential simulated actions are separated from resolution quality by an explicit human-approval gate. Approval is required before synthetic execution of actions that could imply provisioning or device-state change; no approval is inferred from an agent output. This safety metadata does not alter CandidateOutput, scoring, or the benchmark.
 

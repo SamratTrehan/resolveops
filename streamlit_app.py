@@ -17,7 +17,6 @@ from resolveops.app.demo_data import (
     HISTORICAL_REPLAY,
     JUDGE_CHALLENGE,
     JUDGE_SIMULATION,
-    LIVE_RESOLVEOPS,
     chart_data,
     case_battle,
     case_battle_case_ids,
@@ -29,7 +28,6 @@ from resolveops.app.demo_data import (
     evidence_coverage_data,
     evidence_cards,
     judge_demo_case,
-    live_mode_available,
     mode_comparison,
     mode_metadata,
     observable_case,
@@ -193,7 +191,7 @@ def render_battle_side(title: str, data: dict[str, object], final: bool = False)
         ]
     st.dataframe(rows, hide_index=True, width="stretch")
     outcomes = [
-        {"Measure": "Resolution", "Status": "Verified" if score["passed"] else "Did not pass"},
+        {"Measure": "Strict benchmark result", "Status": "Pass" if score["passed"] else "Did not pass"},
         {"Measure": "Diagnosis", "Status": "Pass" if score["diagnosis_correct"] else "Did not pass"},
         {"Measure": "Action", "Status": "Pass" if score["action_correct"] else "Did not pass"},
         {"Measure": "Escalation", "Status": "Pass" if score["escalation_correct"] else "Did not pass"},
@@ -298,9 +296,9 @@ def render_recorded_workflow(
         st.download_button(download_label, json.dumps(export_payload or answer, indent=2), file_name=f"{case['case_id']}-resolution-packet.json", mime="application/json", key=f"download-{context}")
     rows = comparison_rows(stages)
     if any(row["changed"] == "✓" for row in rows):
-        st.subheader("Verifier before vs after")
+        st.subheader("Resolver revision: before vs after")
         st.dataframe(rows, hide_index=True, width="stretch")
-        st.write("**What the verifier changed:** " + ", ".join(row["label"] for row in rows if row["changed"] == "✓"))
+        st.write("**Fields changed after verifier feedback:** " + ", ".join(row["label"] for row in rows if row["changed"] == "✓"))
     if case["case_id"] == "CASE-003":
         st.info("Final known benchmark failure: the Resolver's conservative abstention was reinforced by the same-model Verifier. This observed shared-bias case does not establish a universal rule, but role separation alone did not provide independent judgment here.")
 
@@ -382,7 +380,6 @@ mode = render_mode_cards()
 reset_approval_for_mode(st.session_state, mode)
 workflow_complete = (
     mode == HISTORICAL_REPLAY
-    or mode == LIVE_RESOLVEOPS
     or (mode == JUDGE_SIMULATION and st.session_state.get("simulation_started"))
     or (mode == JUDGE_CHALLENGE and st.session_state.get(FRESH_RESULT_KEY))
 )
@@ -393,8 +390,6 @@ elif mode == JUDGE_CHALLENGE:
     st.info("Run one fresh ResolveOps execution on a judge-controlled synthetic ticket. This path performs new model inference. The input is restricted to the synthetic support world. Frozen benchmark results are not modified.")
 elif mode == HISTORICAL_REPLAY:
     st.info("Inspect immutable official trajectories directly. This read-only view uses no API key and performs no new LLM inference.")
-else:
-    st.info("Run fresh inference only with a configured server-side OpenAI API key.")
 
 st.dataframe(mode_comparison(), hide_index=True, width="stretch")
 experience, battle_tab, improvement = st.tabs(["Run a scenario", "Case Battle", "Measured Improvement"])
@@ -452,23 +447,14 @@ with experience:
         case_id = st.selectbox("Case", cases, index=cases.index(judge_demo_case()), format_func=lambda value: f"{value} — Recorded trajectory", key="historical-case")
         case = observable_case(case_id)
         render_recorded_workflow(case, playback("resolveops-phase5a-001", case_id), f"replay:{case_id}", "Historical Replay — immutable recorded trajectory, zero API calls")
-    else:
-        st.write("Use this mode only for genuinely fresh, API-backed inference. The Streamlit demo does not request credentials or auto-run a model.")
-        st.button("Run Live ResolveOps", disabled=not live_mode_available(api_key), type="primary")
-        if not live_mode_available(api_key):
-            st.info("Live ResolveOps requires an OpenAI API key. Use Interactive Judge Simulation for the full no-key experience.")
-        else:
-            st.caption("Use the documented CLI to create a persisted live run with a new explicit run ID.")
-
 with battle_tab:
     st.caption("Frozen fair baseline versus final ResolveOps on the same observable support ticket. Zero API calls.")
     report_runs = report["runs"] if report else []
     if len(report_runs) >= 3:
         baseline_run, final_run = report_runs[0], report_runs[-1]
-        st.markdown("**Architecture, not a stronger model.**")
-        st.caption(f"Both frozen runs used {baseline_run['model']} with {baseline_run['reasoning_effort']} reasoning effort. The measured difference came from evidence specialization, a separate verification stage, and bounded correction.")
-        st.caption("Same 15 cases · same tools and synthetic world · same scorer.")
-        st.caption(f"{baseline_run['vrsr_percent']:.2f}% → {final_run['vrsr_percent']:.2f}% strict benchmark success · {baseline_run['evidence_coverage']:.2f}% → {final_run['evidence_coverage']:.2f}% required evidence-reference coverage. Recorded latency and token use increased with the final architecture.")
+        st.markdown("**Same model and reasoning effort; the staged configuration uses more inference compute.**")
+        st.caption(f"Under the same model, reasoning effort, cases, available tool surface, ontology, and scorer, the staged configuration achieved {final_run['passed_cases']}/{final_run['total_cases']} strict benchmark successes versus {baseline_run['passed_cases']}/{baseline_run['total_cases']} for the simple baseline.")
+        st.caption(f"Required evidence-reference coverage rose from {baseline_run['evidence_coverage']:.2f}% to {report_runs[1]['evidence_coverage']:.2f}% to {final_run['evidence_coverage']:.2f}% across the staged configurations. Recorded latency and token use were substantially higher for the final configuration.")
     render_case_battle()
 
 with improvement:
@@ -478,17 +464,17 @@ with improvement:
         runs = report["runs"]
         improvement_data = chart_data(report)
         st.markdown("<h3 class='improvement-heading'>Strict Benchmark Success (VRSR)</h3>", unsafe_allow_html=True)
-        st.caption("The deterministic strict-success scorer checks the implemented benchmark contract: accepted diagnosis or abstention, accepted action, correct escalation, required evidence-reference coverage, and no forbidden critical claim. Verifier decisions and Human Safety Gate approval are audited separately and do not affect this model-quality score.")
+        st.caption("The deterministic strict-success scorer checks the implemented benchmark contract: accepted diagnosis or abstention, accepted action, correct escalation, required evidence-reference coverage, and no forbidden structured claim-ID violation. This component does not semantically scan free-form prose. Verifier decisions and Human Safety Gate approval are audited separately and do not affect this model-quality score.")
         columns = st.columns(3)
         for column, item in zip(columns, improvement_data):
             column.metric(item["stage"], f"{item['vrsr']:.2f}%")
         st.vega_lite_chart({"height": 180, "data": {"values": improvement_data}, "mark": "bar", "encoding": {"x": {"field": "stage", "type": "nominal", "axis": {"labelAngle": 0}}, "y": {"field": "vrsr", "type": "quantitative", "scale": {"domain": [0, 100]}}, "tooltip": [{"field": "vrsr", "type": "quantitative"}]}}, width="stretch")
-        st.markdown(f"<p class='metric-note'>VRSR improved by {runs[-1]['vrsr_percent']-runs[0]['vrsr_percent']:.1f} percentage points from baseline to final.</p>", unsafe_allow_html=True)
+        st.markdown(f"<p class='metric-note'>The frozen staged configurations differ by {runs[-1]['vrsr_percent']-runs[0]['vrsr_percent']:.1f} percentage points in strict benchmark success from baseline to final.</p>", unsafe_allow_html=True)
         st.markdown("<h3 class='improvement-heading'>Required Evidence-Reference Coverage</h3>", unsafe_allow_html=True)
         evidence_data = evidence_coverage_data(report)
         st.vega_lite_chart({"height": 180, "data": {"values": evidence_data}, "mark": "bar", "encoding": {"x": {"field": "stage", "type": "nominal", "axis": {"labelAngle": 0}}, "y": {"field": "evidence", "type": "quantitative", "scale": {"domain": [0, 100]}}, "tooltip": [{"field": "evidence", "type": "quantitative"}]}}, width="stretch")
         coverage_columns = st.columns(3)
         for column, item in zip(coverage_columns, evidence_data):
             column.metric(item["stage"], f"{item['evidence']:.2f}%")
-        st.markdown(f"<p class='metric-note'>Specialization and verification improved required evidence-reference coverage from {runs[0]['evidence_coverage']:.2f}% to {runs[-1]['evidence_coverage']:.2f}%.</p>", unsafe_allow_html=True)
+        st.markdown(f"<p class='metric-note'>Required evidence-reference coverage rose from {runs[0]['evidence_coverage']:.2f}% to {runs[1]['evidence_coverage']:.2f}% to {runs[-1]['evidence_coverage']:.2f}% across the staged configurations.</p>", unsafe_allow_html=True)
         st.markdown("<p class='metric-note'>Reliability came at a cost: latency and recorded tokens increased. Additional agents must earn their cost.</p>", unsafe_allow_html=True)

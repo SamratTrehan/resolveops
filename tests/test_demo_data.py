@@ -8,7 +8,6 @@ from resolveops.app.demo_data import (
     IMPROVEMENT_CHART_HEIGHT,
     JUDGE_SIMULATION,
     JUDGE_CHALLENGE,
-    LIVE_RESOLVEOPS,
     chart_data,
     comparison_rows,
     comparison_report,
@@ -16,7 +15,6 @@ from resolveops.app.demo_data import (
     evidence_coverage_data,
     evidence_cards,
     judge_demo_case,
-    live_mode_available,
     mode_comparison,
     mode_metadata,
     observable_case,
@@ -54,19 +52,15 @@ def test_demo_loaders_are_read_only_and_hide_evaluator_fields() -> None:
 
 
 def test_no_key_judge_and_replay_modes_use_recorded_observable_artifacts_only() -> None:
-    assert not live_mode_available(None)
-    assert live_mode_available("server-side-key")
-    assert [row["mode"] for row in mode_comparison()] == ["Interactive Judge Simulation", "Judge Challenge", "Historical Replay", "Live ResolveOps"]
-    assert [row["api_key"] for row in mode_comparison()] == ["No", "Server", "No", "Yes"]
+    assert [row["mode"] for row in mode_comparison()] == ["Interactive Judge Simulation", "Judge Challenge", "Historical Replay"]
+    assert [row["api_key"] for row in mode_comparison()] == ["No", "Server", "No"]
     assert JUDGE_SIMULATION.endswith("No API key required")
     assert JUDGE_CHALLENGE == "Judge Challenge — Fresh Inference"
     assert HISTORICAL_REPLAY.endswith("No API key required")
-    assert LIVE_RESOLVEOPS.endswith("OpenAI API key required")
     assert [(item["label"], item["badge"]) for item in mode_metadata()] == [
         ("Interactive Judge Simulation", "NO KEY"),
         ("Judge Challenge", "FRESH"),
         ("Historical Replay", "RECORDED"),
-        ("Live ResolveOps", "LIVE"),
     ]
     steps = workflow_steps("Verifier")
     assert [step["label"] for step in steps] == ["Ticket", "Investigator", "Resolver", "Verifier", "Conditional Revision", "Safety Gate", "Resolution"]

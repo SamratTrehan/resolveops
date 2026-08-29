@@ -49,7 +49,7 @@ def write_report(root: Path = ROOT) -> tuple[Path, Path]:
     json_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     rows = ["# ResolveOps final comparison", "", "| Run | Architecture | Strict success (VRSR) | Required evidence-reference coverage | Latency ms | Tokens |", "|---|---|---:|---:|---:|---:|"]
     rows += [f"| {r['run_id']} | {r['architecture']} | {r['vrsr_percent']:.2f}% | {r['evidence_coverage']:.2f}% | {r['average_latency_ms']:.2f} | {r['recorded_token_usage']} |" for r in report["runs"]]
-    rows += ["", "Strict benchmark success: 66.67% -> 80.00% -> 93.33%; required evidence-reference coverage: 73.33% -> 93.33% -> 100.00%. Higher reliability came with latency/token cost.", "", "VRSR is the strict conjunction of accepted diagnosis/abstention, accepted action, correct escalation, required evidence references, and no forbidden critical claim. Verifier decisions and human approval are audited separately."]
+    rows += ["", "Strict benchmark success: 66.67% -> 80.00% -> 93.33%; required evidence-reference coverage: 73.33% -> 93.33% -> 100.00%. Higher reliability came with latency/token cost.", "", "VRSR is the strict conjunction of accepted diagnosis/abstention, accepted action, correct escalation, required evidence references, and no forbidden structured claim-ID violation. It does not semantically scan free-form prose. Verifier decisions and human approval are audited separately."]
     markdown_path.write_text("\n".join(rows) + "\n", encoding="utf-8")
     return json_path, markdown_path
 

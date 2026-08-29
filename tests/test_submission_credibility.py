@@ -15,6 +15,8 @@ def test_final_changelog_has_no_scaffolding_and_records_discarded_experiment_and
     assert "Discarded — unfair output vocabulary" in changelog
     assert "diagnostic and non-comparable" in changelog and "6c25714" in changelog
     assert "## Hot Take" in changelog and "CASE-003" in changelog
+    rows = [line for line in changelog.splitlines() if line.startswith("|")]
+    assert len(rows) == 7 and all(line.count("|") == 7 for line in rows)
 
 
 def test_judge_claims_define_strict_success_scope_and_provenance() -> None:
@@ -31,6 +33,16 @@ def test_judge_claims_define_strict_success_scope_and_provenance() -> None:
     assert "CASE-003 is the final known benchmark failure" in readme
     assert "Final known benchmark failure" in app
     assert "benchmark_truth" not in app
+    assert "no forbidden structured claim-ID violation" in readme
+    assert "does not semantically scan free-form prose" in readme and "does not semantically scan free-form prose" in app
+    assert "py -3.12 -m venv .venv" in readme
+    assert "### Expected frozen results" in readme and "73.33% -> 93.33% -> 100.00%" in readme
+    assert "Resolution\", \"Status\": \"Verified" not in app
+    assert "Resolver revision: before vs after" in app
+    assert "Fields changed after verifier feedback" in app
+    assert "Architecture, not a stronger model" not in app
+    assert "Specialization and verification improved" not in app
+    assert "LIVE_RESOLVEOPS" not in app
 
 
 def test_featured_case_is_fixed_without_outcome_search_and_metrics_are_unchanged() -> None:

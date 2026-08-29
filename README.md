@@ -11,7 +11,7 @@ All customers, devices, accounts, actions, and historical artifacts in this repo
 Windows PowerShell:
 
 ```powershell
-python -m venv .venv
+py -3.12 -m venv .venv
 .venv\Scripts\python -m pip install -r requirements.txt
 .venv\Scripts\python -m streamlit run streamlit_app.py
 ```
@@ -70,13 +70,13 @@ The deterministic strict-success scorer checks this implemented benchmark contra
 - an accepted action;
 - the correct escalation decision;
 - required evidence-reference coverage; and
-- no forbidden critical claim.
+- no forbidden structured claim-ID violation.
 
 Verifier approval/rejection and Human Safety Gate approval are not part of this deterministic pass calculation; those behaviors are audited separately.
 
-Required evidence-reference coverage means the required tool IDs and required source IDs appear in the candidate evidence references. It does not prove that every natural-language statement is semantically entailed, that every citation is perfectly attached to the correct claim, or that customer-facing prose has undergone complete semantic fact verification.
+Required evidence-reference coverage means the required tool IDs and required source IDs appear in the candidate evidence references. The forbidden-claim component checks structured claim IDs; it does not semantically scan free-form prose. Neither check proves that every natural-language statement is semantically entailed, that every citation is perfectly attached to the correct claim, or that customer-facing prose has undergone complete semantic fact verification.
 
-The reliability improvement carries a visible tradeoff: average recorded latency rose from 9,692.86 ms to 23,815.48 ms and recorded token use from 45,661 to 151,432. Investigator + Resolver primarily improved evidence discipline and strict conjunction-level success; diagnosis, action, and escalation each remained 86.67%. Adding verification/revision raised those three component metrics to 93.33% while required evidence-reference coverage reached 100%.
+The frozen comparison carries a visible compute tradeoff: average recorded latency rose from 9,692.86 ms to 23,815.48 ms and recorded token use from 45,661 to 151,432. Investigator + Resolver had higher evidence-reference coverage and strict conjunction-level success while diagnosis, action, and escalation each remained 86.67%. The final staged configuration recorded 93.33% for those three component metrics and 100% required evidence-reference coverage.
 
 Recorded token usage is reported, but historical dollar cost is unavailable because the run artifacts did not persist the complete pricing/accounting data needed for a defensible reconstruction. Baseline retry usage may also be undercounted where usage was unavailable.
 
@@ -126,7 +126,6 @@ The simulator demo prints deterministic synthetic evidence. Benchmark inspection
 | Interactive Judge Simulation | No | No | Guided product exploration using recorded ResolveOps trajectories and deterministic synthetic safety behavior. |
 | Judge Challenge | Server-side | Yes | One fresh, session-only production ResolveOps run on an observable synthetic case; never benchmark-scored. |
 | Historical Replay | No | No | Direct read-only inspection of immutable official trajectories. |
-| Live ResolveOps | Yes | Yes | Fresh inference from a new explicit CLI run ID. |
 
 The simulation maps service outage, local Wi-Fi, camera/device, insufficient-evidence, and approval-required provisioning scenarios to recorded Phase 5A cases. Safety decisions are temporary Streamlit session state; they never write trajectories, benchmark artifacts, reports, or synthetic source data.
 
@@ -146,6 +145,19 @@ python -m resolveops.evaluation.score_resolveops_results --run-id resolveops-new
 ```
 
 These scoring commands load evaluator-only truth and rewrite only the selected run's deterministic score outputs. They are for evaluation maintenance, not the public Judge Demo. Do not run them against the frozen historical runs unless an intentional artifact refresh is required.
+
+### Expected frozen results
+
+These are existing frozen results, not guaranteed outputs of a fresh stochastic rerun:
+
+```text
+baseline-official-004: 10/15 strict successes — 66.67%
+resolveops-phase4-002: 12/15 — 80.00%
+resolveops-phase5a-001: 14/15 — 93.33%
+
+required evidence-reference coverage:
+73.33% -> 93.33% -> 100.00%
+```
 
 ## Evaluation provenance
 
