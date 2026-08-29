@@ -1,4 +1,4 @@
-"""ResolveOps judge presentation: recorded simulation, replay, and optional live entrypoint."""
+"""ResolveOps judge presentation: recorded views and bounded fresh inference."""
 
 import json
 import os
@@ -8,6 +8,7 @@ import streamlit as st
 from resolveops.agents.resolveops.safety import HumanApproval, safety_gate
 from resolveops.app.demo_data import (
     HISTORICAL_REPLAY,
+    JUDGE_CHALLENGE,
     JUDGE_SIMULATION,
     LIVE_RESOLVEOPS,
     chart_data,
@@ -32,6 +33,20 @@ from resolveops.app.demo_data import (
     simulation_scenarios,
     workflow_steps,
     workflow_stages,
+)
+from resolveops.app.judge_challenge import (
+    ChallengeAllowanceUsed,
+    ChallengeExecutionError,
+    FreshRunResult,
+    FRESH_ERROR_KEY,
+    FRESH_RESULT_KEY,
+    FRESH_RUN_ALLOWANCE,
+    challenge_templates,
+    configured_server_key,
+    fresh_allowance_available,
+    resolution_packet_export,
+    run_challenge_once,
+    stage_mapping,
 )
 
 
@@ -73,7 +88,7 @@ def render_mode_cards() -> str:
     if "selected_mode" not in st.session_state:
         st.session_state["selected_mode"] = JUDGE_SIMULATION
     st.markdown("#### Choose experience")
-    columns = st.columns(3)
+    columns = st.columns(len(mode_metadata()))
     for column, item in zip(columns, mode_metadata()):
         selected = st.session_state["selected_mode"] == item["id"]
         with column:
@@ -175,7 +190,15 @@ def render_case_battle() -> None:
         st.json({"baseline": battle["baseline"]["candidate"], "resolveops": battle["resolveops"]["candidate"]})
 
 
-def render_recorded_workflow(case: dict[str, object], stages: dict[str, dict[str, object]], context: str, source: str) -> None:
+def render_recorded_workflow(
+    case: dict[str, object],
+    stages: dict[str, dict[str, object]],
+    context: str,
+    source: str,
+    final_answer: dict[str, object] | None = None,
+    export_payload: dict[str, object] | None = None,
+    download_label: str = "Download recorded Resolution Packet",
+) -> None:
     st.caption(source)
     st.subheader("Ticket")
     st.write(case["ticket_text"])
@@ -206,7 +229,7 @@ def render_recorded_workflow(case: dict[str, object], stages: dict[str, dict[str
                 st.json(output)
     final = stages.get("resolver-revision-v1") or stages.get("resolver-v1")
     if final and final.get("output"):
-        answer = final["output"]
+        answer = final_answer or final["output"]
         st.subheader("Resolution Packet")
         columns = st.columns(4)
         for column, key in zip(columns, ("root_cause_id", "recommended_action_id", "escalate", "confidence")):
@@ -214,7 +237,7 @@ def render_recorded_workflow(case: dict[str, object], stages: dict[str, dict[str
             column.markdown(f"<div class='card'><b>{key.replace('_', ' ').upper()}</b><br>{value}</div>", unsafe_allow_html=True)
         st.write(answer.get("customer_response"))
         render_safety(answer, context)
-        st.download_button("Download recorded Resolution Packet", json.dumps(answer, indent=2), file_name=f"{case['case_id']}-resolution-packet.json", mime="application/json", key=f"download-{context}")
+        st.download_button(download_label, json.dumps(export_payload or answer, indent=2), file_name=f"{case['case_id']}-resolution-packet.json", mime="application/json", key=f"download-{context}")
     rows = comparison_rows(stages)
     if any(row["changed"] == "✓" for row in rows):
         st.subheader("Verifier before vs after")
@@ -224,6 +247,71 @@ def render_recorded_workflow(case: dict[str, object], stages: dict[str, dict[str
         st.info("Known limitation: shared conservative bias. Independent verification reduces error, but does not guarantee independent judgment.")
 
 
+def render_fresh_result(result: FreshRunResult) -> None:
+    stages = stage_mapping(result)
+    investigator = stages.get("investigator-v1", {})
+    bundle = investigator.get("output", {})
+    calls = investigator.get("tool_calls", [])
+    resolver = stages.get("resolver-v1", {}).get("output", {})
+    verifier = stages.get("verifier-v1", {}).get("output", {})
+    revision_occurred = "resolver-revision-v1" in stages
+    st.success("Fresh demonstration run — not included in official benchmark metrics.")
+    st.markdown("**Generated during this session**")
+    st.caption(f"Run ID: {result.run_id} · Started: {result.started_at.isoformat()} · {result.model} · reasoning effort: {result.reasoning_effort}")
+    st.caption("Investigator → Resolver → Verifier → Conditional Revision → Safety Gate → Resolution")
+    st.markdown("**Investigator activity**")
+    st.caption(f"{len(calls)} tool calls · {len(bundle.get('evidence_references', []))} collected evidence references")
+    if calls:
+        st.dataframe(
+            [
+                {
+                    "Tool": call.get("tool_name"),
+                    "Source IDs": ", ".join(call.get("result", {}).get("source_ids", [])) or "None",
+                    "Observed result": call.get("result", {}).get("summary", "Synthetic tool result."),
+                }
+                for call in calls
+            ],
+            hide_index=True,
+            width="stretch",
+        )
+    st.markdown("**Resolver proposal**")
+    st.dataframe(
+        [
+            {"Field": "Root cause", "Value": display_label(resolver.get("root_cause_id"))},
+            {"Field": "Recommended action", "Value": display_label(resolver.get("recommended_action_id"))},
+            {"Field": "Escalate", "Value": display_value(resolver.get("escalate"))},
+            {"Field": "Confidence", "Value": display_value(resolver.get("confidence"))},
+            {"Field": "Evidence references", "Value": display_value(len(resolver.get("evidence_references", [])))},
+        ],
+        hide_index=True,
+        width="stretch",
+    )
+    if verifier.get("approved"):
+        st.success("Verifier approved without revision.")
+    else:
+        st.warning("Verifier requested one bounded Resolver revision." if revision_occurred else "Verifier requested revision; the fresh run did not produce one.")
+        if verifier.get("issues"):
+            st.caption("Issue categories: " + " · ".join(display_label(item.get("category")) for item in verifier["issues"]))
+        st.caption(verifier.get("feedback", ""))
+    render_recorded_workflow(
+        result.case.model_dump(mode="json"),
+        stages,
+        f"fresh:{result.run_id}",
+        f"Fresh demonstration run — generated during this session at {result.started_at.isoformat()}",
+        final_answer=result.candidate.model_dump(mode="json"),
+        export_payload=resolution_packet_export(result),
+        download_label="Download fresh Resolution Packet",
+    )
+    st.markdown("**Internal notes**")
+    st.write(result.candidate.internal_notes)
+    st.markdown("**Final evidence references**")
+    st.dataframe(
+        [item.model_dump(mode="json") for item in result.candidate.evidence_references],
+        hide_index=True,
+        width="stretch",
+    )
+
+
 st.set_page_config(page_title="ResolveOps", layout="wide")
 st.markdown("""<style>.hero{padding:1.5rem;border:1px solid #345;background:#101a27;border-radius:16px}.card{padding:1rem;border:1px solid #345;border-radius:12px;background:#142130}.muted{color:#9ab}.workflow{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin:1rem 0}.workflow-step{border:1px solid #345;background:#101a27;border-radius:999px;padding:.45rem .7rem;color:#9ab;font-size:.82rem}.workflow-step.active{background:#1d3a35;border-color:#4d9b7d;color:#e7fff3;font-weight:600}.workflow-connector{width:1rem;height:1px;background:#345}.mode-card{min-height:8rem;padding:1rem;border:1px solid #345;border-radius:12px;background:#101a27}.mode-card.selected{border-color:#4d9b7d;background:#142b29}.mode-card h4{margin:.45rem 0 .25rem}.mode-card p{margin:0;color:#9ab;font-size:.86rem}.badge{display:inline-block;border:1px solid #4f718d;border-radius:999px;padding:.12rem .4rem;color:#b8d5ee;font-size:.68rem;font-weight:600;letter-spacing:.04em}.improvement-heading{margin:.25rem 0}.metric-note{margin:.35rem 0 .65rem;color:#c4d5e5;font-size:.92rem}</style>""", unsafe_allow_html=True)
 report = comparison_report()
@@ -231,12 +319,20 @@ final = report["runs"][-1] if report else {}
 st.markdown(f"<div class='hero'><h1>ResolveOps</h1><h3>Evidence-grounded support with a separate verification stage.</h3><p>Multi-agent technical support that investigates synthetic evidence, verifies its proposed resolution, and requires human approval before simulated state-changing actions.</p><b>{final.get('passed_cases', 0)}/{final.get('total_cases', 0)} strict benchmark successes</b> &nbsp; <b>{final.get('evidence_coverage', 0):.0f}% required evidence-reference coverage</b> &nbsp; <b>Human approval before simulated state-changing actions</b></div>", unsafe_allow_html=True)
 st.caption("Synthetic demo only — never enter real customer data, credentials, or private information.")
 
-api_key = os.environ.get("OPENAI_API_KEY")
+api_key = configured_server_key(st.secrets, os.environ)
 mode = render_mode_cards()
 reset_approval_for_mode(st.session_state, mode)
-render_workflow_strip("Resolution" if mode != JUDGE_SIMULATION or st.session_state.get("simulation_started") else "Ticket")
+workflow_complete = (
+    mode == HISTORICAL_REPLAY
+    or mode == LIVE_RESOLVEOPS
+    or (mode == JUDGE_SIMULATION and st.session_state.get("simulation_started"))
+    or (mode == JUDGE_CHALLENGE and st.session_state.get(FRESH_RESULT_KEY))
+)
+render_workflow_strip("Resolution" if workflow_complete else "Ticket")
 if mode == JUDGE_SIMULATION:
     st.info("Explore the full ResolveOps workflow using recorded agent outputs and synthetic support scenarios. No API key required; no new LLM inference occurs.")
+elif mode == JUDGE_CHALLENGE:
+    st.info("Run one fresh ResolveOps execution on a judge-controlled synthetic ticket. This path performs new model inference. The input is restricted to the synthetic support world. Frozen benchmark results are not modified.")
 elif mode == HISTORICAL_REPLAY:
     st.info("Inspect immutable official trajectories directly. This read-only view uses no API key and performs no new LLM inference.")
 else:
@@ -264,6 +360,35 @@ with experience:
             render_recorded_workflow(case, playback("resolveops-phase5a-001", case["case_id"]), run_context, "Interactive Judge Simulation — recorded agent outputs, zero API calls")
         else:
             st.caption("Choose a synthetic ticket and run the recorded simulation to inspect its full workflow.")
+    elif mode == JUDGE_CHALLENGE:
+        templates = challenge_templates()
+        template_ids = [case.case_id for case in templates]
+        template_id = st.selectbox("Synthetic case template", template_ids, format_func=lambda value: f"{value} — observable synthetic ticket", key="fresh-template")
+        template = next(case for case in templates if case.case_id == template_id)
+        identity_columns = st.columns(2)
+        identity_columns[0].text_input("Customer", value=template.customer_id, disabled=True, key=f"fresh-customer-{template_id}")
+        identity_columns[1].text_input("Primary device", value=template.primary_device_id or "None", disabled=True, key=f"fresh-device-{template_id}")
+        ticket_text = st.text_area("Ticket text", value=template.ticket_text, max_chars=2_000, key=f"fresh-ticket-{template_id}")
+        st.caption("You can rewrite the symptom description. Customer/device state remains in the synthetic world.")
+        st.caption(f"Fresh run allowance: {FRESH_RUN_ALLOWANCE} per session. This is a session-level judge budget, not a security-grade global rate limit.")
+        if not api_key:
+            st.info("Fresh inference is temporarily unavailable. The recorded Judge Simulation and Historical Replay remain fully available.")
+        elif not fresh_allowance_available(st.session_state):
+            st.info("Fresh run used for this session. Use recorded replay to inspect additional cases.")
+        run_disabled = not api_key or not fresh_allowance_available(st.session_state)
+        if st.button("Run fresh ResolveOps", type="primary", disabled=run_disabled, key="run-fresh-resolveops"):
+            with st.spinner("Running fresh ResolveOps workflow..."):
+                try:
+                    run_challenge_once(st.session_state, template_id, ticket_text, api_key)
+                except (ChallengeAllowanceUsed, ChallengeExecutionError):
+                    pass
+            st.rerun()
+        if st.session_state.get(FRESH_ERROR_KEY):
+            st.error("Fresh inference did not complete. No benchmark artifacts were modified. Recorded judge modes remain available.")
+        if st.session_state.get(FRESH_RESULT_KEY):
+            render_fresh_result(FreshRunResult.model_validate(st.session_state[FRESH_RESULT_KEY]))
+        else:
+            st.caption("Fresh demonstration run — not included in official benchmark metrics.")
     elif mode == HISTORICAL_REPLAY:
         cases = playback_cases()
         case_id = st.selectbox("Case", cases, index=cases.index(judge_demo_case()), format_func=lambda value: f"{value} — Recorded trajectory", key="historical-case")

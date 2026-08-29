@@ -24,9 +24,25 @@ python3.12 -m venv .venv
 .venv/bin/python -m streamlit run streamlit_app.py
 ```
 
-The default **Interactive Judge Simulation** replays real recorded agent outputs for curated synthetic tickets, then applies only deterministic local safety interaction. **Historical Replay** is the direct, read-only trajectory view, including the CASE-003 known limitation. **Measured Improvement** shows the frozen baseline-to-final comparison. None of these paths loads evaluator-only truth or calls an API.
+The default **Interactive Judge Simulation** replays real recorded agent outputs for curated synthetic tickets, then applies only deterministic local safety interaction. **Historical Replay** is the direct, read-only trajectory view, including the CASE-003 known limitation. **Measured Improvement** shows the frozen baseline-to-final comparison. None of these recorded paths loads evaluator-only truth or calls an API.
 
 Open **Case Battle** to compare the frozen fair baseline and final ResolveOps architecture on the same support case. It is zero-API and derived only from immutable recorded artifacts.
+
+## Judge Challenge — Fresh Inference
+
+Judge Challenge performs one new ResolveOps inference per Streamlit session using a judge-selected observable synthetic case. The judge may rewrite the ticket symptom, while the template's synthetic customer and device IDs remain fixed. It reuses the production Investigator → Resolver → Verifier → optional one revision → Safety Gate workflow entirely in memory.
+
+Fresh demonstration runs are not benchmark-scored and never update official metrics, frozen trajectories, evaluation artifacts, or hidden truth. The server-side OpenAI credential is never displayed, written to session state, or requested through the UI. If fresh inference is unavailable, Interactive Judge Simulation, Historical Replay, Case Battle, and Measured Improvement remain fully usable.
+
+The one-run allowance is a Streamlit-session judge budget, not a security-grade global rate limiter. A browser refresh or new session may reset it.
+
+For Streamlit Cloud, set the maintainer-only secret under **App settings → Secrets** using top-level TOML syntax:
+
+```toml
+OPENAI_API_KEY = "..."
+```
+
+For local development, the environment-variable fallback remains supported. A placeholder is provided in `.streamlit/secrets.toml.example`; copy it to `.streamlit/secrets.toml` and add a real value only on your machine. `.streamlit/secrets.toml` and `.env` are ignored and must never be committed.
 
 ## Final architecture
 
@@ -108,6 +124,7 @@ The simulator demo prints deterministic synthetic evidence. Benchmark inspection
 | Mode | API key | New LLM inference | Purpose |
 | --- | --- | --- | --- |
 | Interactive Judge Simulation | No | No | Guided product exploration using recorded ResolveOps trajectories and deterministic synthetic safety behavior. |
+| Judge Challenge | Server-side | Yes | One fresh, session-only production ResolveOps run on an observable synthetic case; never benchmark-scored. |
 | Historical Replay | No | No | Direct read-only inspection of immutable official trajectories. |
 | Live ResolveOps | Yes | Yes | Fresh inference from a new explicit CLI run ID. |
 
